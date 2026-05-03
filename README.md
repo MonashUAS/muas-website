@@ -1,2 +1,2 @@
-# SUAS-Website
-Website for SUAS 2026. 
+# MUAS-Website
+Website for MUAS. 
