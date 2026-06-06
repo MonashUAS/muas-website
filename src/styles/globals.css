@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #000000;
+
+  --color-blue-50: #e6edf7;
+  --color-blue-100: #b0c7e6;
+  --color-blue-200: #8aacd9;
+  --color-blue-300: #5486c8;
+  --color-blue-400: #336ebd;
+  --color-blue-500: #004aad;
+  --color-blue-600: #00439d;
+  --color-blue-700: #00357b;
+  --color-blue-800: #00295f;
+  --color-blue-900: #001f49;
+
+  --color-black-50: #e6e6e6;
+  --color-black-100: #b0b0b0;
+  --color-black-200: #8a8a8a;
+  --color-black-300: #545454;
+  --color-black-400: #333333;
+  --color-black-500: #000000;
+
+  --color-red-50: #fbe8e8;
+  --color-red-100: #f2b9b9;
+  --color-red-200: #ec9797;
+  --color-red-300: #e46767;
+  --color-red-400: #de4949;
+  --color-red-500: #d61c1c;
+  --color-red-600: #c31919;
+  --color-red-700: #981414;
+  --color-red-800: #760f0f;
+  --color-red-900: #5a0c0c;
+
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --text-h1: 95px;
+  --text-h1--line-height: 142.5px;
+  --text-h1--font-weight: 500;
+  --text-h1--letter-spacing: 0;
+
+  --text-h2: 76px;
+  --text-h2--line-height: 114px;
+  --text-h2--font-weight: 500;
+  --text-h2--letter-spacing: 0;
+
+  --text-h3: 61px;
+  --text-h3--line-height: 91.5px;
+  --text-h3--font-weight: 500;
+  --text-h3--letter-spacing: 0;
+
+  --text-h4: 49px;
+  --text-h4--line-height: 73.5px;
+  --text-h4--font-weight: 500;
+  --text-h4--letter-spacing: 0;
+
+  --text-h5: 39px;
+  --text-h5--line-height: 58.5px;
+  --text-h5--font-weight: 500;
+  --text-h5--letter-spacing: 0;
+
+  --text-h6: 31px;
+  --text-h6--line-height: 46.5px;
+  --text-h6--font-weight: 500;
+  --text-h6--letter-spacing: 0;
+
+  --text-h7: 25px;
+  --text-h7--line-height: 25px;
+  --text-h7--font-weight: 500;
+  --text-h7--letter-spacing: 0;
+
+  --text-subtitle: 20px;
+  --text-subtitle--line-height: 30px;
+  --text-subtitle--font-weight: 500;
+  --text-subtitle--letter-spacing: 0;
+
+  --text-b1: 16px;
+  --text-b1--line-height: 24px;
+  --text-b1--font-weight: 500;
+  --text-b1--letter-spacing: 0;
+
+  --text-b2: 13px;
+  --text-b2--line-height: 19.5px;
+  --text-b2--font-weight: 500;
+  --text-b2--letter-spacing: 0;
+
+  --text-caption: 10px;
+  --text-caption--line-height: 15px;
+  --text-caption--font-weight: 500;
+  --text-caption--letter-spacing: 0;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    min-height: 100%;
+    background: var(--color-background);
+  }
+
+  body {
+    min-height: 100%;
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: var(--text-b1);
+    font-weight: var(--text-b1--font-weight);
+    line-height: var(--text-b1--line-height);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    margin: 0;
+  }
+}
