@@ -105,7 +105,7 @@ export function KeyFeatures() {
                   {/* feature title button */}
                   <button
                     type="button"
-                    className={`border border-red-700 px-4 py-3 text-left text-subtitle transition-colors hover:bg-red-950/40 ${
+                    className={`border border-red-700 px-4 py-3 text-left text-subtitle transition-colors hover:bg-red-950/40 hover:cursor-pointer ${
                       isExpanded ? "bg-red-950/35" : "bg-black-500"
                     }`}
                     onClick={() => setExpandedFeature(isExpanded ? null : feature.title)}
@@ -118,7 +118,7 @@ export function KeyFeatures() {
                   {/* plus/minus button */}
                   <button
                     type="button"
-                    className="flex items-center justify-center border border-red-700 bg-black-500 p-4 text-white transition-colors hover:bg-red-950/40"
+                    className="flex items-center justify-center border border-red-700 bg-black-500 p-4 text-white transition-colors hover:bg-red-950/40 hover:cursor-pointer"
                     onClick={() => setExpandedFeature(isExpanded ? null : feature.title)}
                     aria-label={`${isExpanded ? "Collapse" : "Expand"} ${feature.title}`}
                   >
