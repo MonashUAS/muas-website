@@ -6,12 +6,13 @@ const FRAME_COUNT = 420;
 const FRAME_PATH = "/images/redback-animation/hero%20frames/";
 
 // Increase this value to make the scroll animation slower, or reduce it to make it faster.
-const SCROLL_LENGTH_VH = 1000;
+const SCROLL_LENGTH_VH = 1200;
 
 // Text timing is controlled as scroll progress from 0 to 1 across the hero section.
 const TEXT_WINDOWS = {
-  suas: { fadeInStart: 0.005, fadeInEnd: 0.02, fadeOutStart: 0.13, fadeOutEnd: 0.2 },
-  presents: { fadeInStart: 0.22, fadeInEnd: 0.27, fadeOutStart: 0.34, fadeOutEnd: 0.41 },
+  suas: { fadeInStart: 0.005, fadeInEnd: 0.01, fadeOutStart: 0.03, fadeOutEnd: 0.07 },
+  presents: { fadeInStart: 0.08, fadeInEnd: 0.085, fadeOutStart: 0.105, fadeOutEnd: 0.13 },
+  redback: { fadeInStart: 0.15, fadeInEnd: 0.2, fadeOutStart: 0.175, fadeOutEnd: 0.35 },
   rescue: { fadeInStart: 0.43, fadeInEnd: 0.5, fadeOutStart: 0.63, fadeOutEnd: 0.76 },
   closing: { fadeInStart: 0.84, fadeInEnd: 0.94 },
 };
@@ -35,36 +36,48 @@ type OverlayCopy = {
   className: string;
   lines: string[];
   window: TextWindow;
+  position: string;
 };
 
 const overlayCopy: OverlayCopy[] = [
   {
     key: "suas",
-    className: "text-[clamp(3rem,9vw,8rem)]",
-    lines: ["SUAS 2026"],
+    className: "text-h5",
+    lines: ["SUAS 2026."],
     window: TEXT_WINDOWS.suas,
+    position: "justify-start text-left"
   },
   {
     key: "presents",
-    className: "text-[clamp(2.4rem,7vw,5.8rem)]",
+    className: "text-h5",
     lines: ["MUAS Presents"],
     window: TEXT_WINDOWS.presents,
+    position: "justify-start text-left"
+  },
+  {
+    key: "redback",
+    className: "text-h3",
+    lines: ["Redback."],
+    window: TEXT_WINDOWS.redback,
+    position: "justify-center text-center"
   },
   {
     key: "rescue",
-    className: "max-w-5xl text-[clamp(2.6rem,7vw,6rem)]",
+    className: "max-w-2xl text-h5",
     lines: [
-      "Search and rescue operations redefined. Built for the storm.",
+      "Built for search and rescue.",
       "Powered by innovation.",
       "Inspired by nature.",
     ],
     window: TEXT_WINDOWS.rescue,
+    position: "justify-end text-right"
   },
   {
     key: "closing",
-    className: "max-w-5xl text-[clamp(2.4rem,6vw,5.2rem)]",
-    lines: ["Rapid deployment of relief where they are needed most."],
+    className: "max-w-xl text-h5",
+    lines: ["Rapid deployment of relief where it is  needed most."],
     window: TEXT_WINDOWS.closing,
+    position: "justify-center text-center"
   },
 ];
 
@@ -123,7 +136,6 @@ export function ScrollHero() {
   return (
     <section ref={sectionRef} className="relative bg-black-500" style={{ height: `${SCROLL_LENGTH_VH}vh` }}>
       <div className="sticky top-0 h-screen overflow-hidden bg-black-500">
-        {/* eslint-disable-next-line @next/next/no-img-element -- The scroll sequence swaps 420 local frames by computed URL. */}
         <img
           alt="Redback aircraft animation"
           className="h-full w-full object-cover"
@@ -138,7 +150,7 @@ export function ScrollHero() {
             <div
               key={copy.key}
               aria-hidden={opacity < 0.05}
-              className="pointer-events-none absolute inset-0 flex items-center px-6 sm:px-10 lg:px-16"
+              className={`pointer-events-none absolute inset-0 flex items-center px-6 sm:px-10 lg:px-16 ${copy.position}`}
               style={{
                 opacity,
                 transform: `translateY(${24 - opacity * 24}px)`,
