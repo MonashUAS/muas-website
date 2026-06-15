@@ -5,14 +5,13 @@ import {
   Mail,
   MessageCircle,
   Plane,
-  Search,
   Trophy,
   UserRoundSearch,
   UsersRound,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { SidebarLink } from "./sidebar-link";
 import { SidebarGroup, SidebarSubLink } from "./sidebar-group";
 import { SidebarSearch } from "./sidebar-search";
@@ -39,27 +38,6 @@ export default function Sidebar() {
   const [searchQuery, setSearchQuery] = useState("");
   const sidebarRef = useRef<HTMLElement>(null);
 
-// Closes the sidebar if the user clicks anywhere outside of it
-  useEffect(() => {
-    function handleDocumentPointerDown(event: MouseEvent) {
-      if (
-        isExpanded &&                                      // 1. Sidebar must be open
-        sidebarRef.current &&                              // 2. Sidebar must exist in HTML
-        !sidebarRef.current.contains(event.target as Node) // 3. Click must be outside sidebar area
-      ) {
-        setIsExpanded(false);                              // Close it
-      }
-    }
-
-    // Start listening for clicks on the screen
-    document.addEventListener("mousedown", handleDocumentPointerDown);
-
-    // Stop listening for clicks when the sidebar disappears (prevents slow performance)
-    return () => {
-      document.removeEventListener("mousedown", handleDocumentPointerDown);
-    };
-  }, [isExpanded]); // Re-run this check whenever the sidebar opens or closes
-
   // Opens the sidebar when a user hovers their mouse over an icon
   const expandFromIcon = () => {
     if (!isExpanded) {
@@ -73,6 +51,7 @@ export default function Sidebar() {
       className={`fixed inset-y-0 left-0 z-50 overflow-hidden border-r border-blue-500/70 bg-black-500 text-white shadow-2xl transition-[width] duration-300 ease-out ${
         isExpanded ? "w-[268px]" : "w-[68px]"
       }`}
+      onMouseLeave={() => setIsExpanded(false)} // Closes the sidebar when the mouse leaves its area
     >
       {/* Background visual styles: sleek dark metallic gradient and soft blur */}
       <div className="absolute inset-0 bg-[linear-gradient(155deg,#001f49_0%,#02040a_46%,#05080d_100%)]" />
