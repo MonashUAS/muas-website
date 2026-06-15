@@ -5,7 +5,7 @@ import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   title: "MUAS Website",
-  description: "Melbourne University Aerospace Society",
+  description: "Monash Uncrewed Aerial Systems",
 };
 
 export default function RootLayout({
@@ -17,8 +17,15 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className="min-h-full bg-background text-foreground antialiased">
         <NavBar />
-        <main className="min-h-screen pl-[68px]">{children}</main>
-        <Footer />
+        <main className="grid min-h-screen grid-rows-[1fr_auto] pl-[68px]">
+          {/* The grow utility forces this container to expand and take up all remaining vertical space */}
+          <div className="w-full"> 
+            {children} 
+          </div>
+
+          <Footer />
+        </main>
+        
       </body>
     </html>
   );
