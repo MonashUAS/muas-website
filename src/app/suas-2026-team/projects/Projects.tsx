@@ -44,7 +44,7 @@ export function Projects() {
 
   // handleMouseMove updates the cursor direction based on the screen half being hovered.
   function handleMouseMove(event: MouseEvent<HTMLElement>) {
-    /* only track coordinate shifts when info panel is closed */
+    /* Only track coordinate shifts when info panel is closed */
     if (infoOpen) return; 
     
     setHoverSide(event.clientX < window.innerWidth / 2 ? "left" : "right");
@@ -58,13 +58,7 @@ export function Projects() {
   return (
     <section
       id="our-redback-projects"
-      className={`scroll-mt-10 bg-black-500 px-4 py-16 text-white sm:px-6 lg:px-10 ${
-        infoOpen 
-          ? "cursor-default" 
-          : hoverSide === "left" ? "cursor-project-left" : "cursor-project-right"
-      }`}
-      onClick={(event) => handleSectionClick(event, moveProject)}
-      onMouseMove={handleMouseMove}
+      className="scroll-mt-10 bg-black-500 px-4 py-16 text-white sm:px-6 lg:px-10"
     >
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center">
         <p className="text-b2 uppercase text-white/85">Explore</p>
@@ -72,15 +66,16 @@ export function Projects() {
           Our Redback Projects
         </h2>
 
+        {/* project selector dots */}
         <div className="mt-7 flex gap-3">
           {projects.map((project, index) => (
             <button
               key={project.slug}
               type="button"
               aria-label={`Show ${project.name}`}
-              className={`h-4 w-4 rounded-full transition-colors ${
+              className={`h-4 w-4 rounded-full transition-colors cursor-pointer ${
                 index === projectIndex ? "bg-blue-100" : "bg-blue-600 hover:bg-blue-300"
-              }`}
+              } `}
               onClick={(event) => {
                 event.stopPropagation();
                 selectProject(index);
@@ -89,17 +84,32 @@ export function Projects() {
           ))}
         </div>
 
-        <ProjectCard
-          key={activeProject.slug}
-          imageIndex={imageIndex}
-          infoOpen={infoOpen}
-          project={activeProject}
-          onToggleInfo={toggleInfo}
-        />
+        <div 
+          className={`w-full flex flex-col justify-center items-center ${
+            infoOpen 
+              ? "cursor-default" 
+              : hoverSide === "left" ? "cursor-project-left" : "cursor-project-right"
+          }`}
+          onClick={(event) => {
+            // Prevent carousel navigation when clicking if the info panel is open
+            if (infoOpen) return;
+            handleSectionClick(event, moveProject);
+          }}
+          onMouseMove={handleMouseMove}
+        >
+          <ProjectCard
+            key={activeProject.slug}
+            imageIndex={imageIndex}
+            infoOpen={infoOpen}
+            project={activeProject}
+            onToggleInfo={toggleInfo}
+          />
 
-        <h3 className="mt-8 max-w-full text-center text-[clamp(44px,8vw,86px)] font-bold uppercase leading-none text-white">
-          {activeProject.name}.
-        </h3>
+          <h3 className="mt-8 max-w-full text-center text-[clamp(44px,8vw,86px)] font-bold uppercase leading-none text-white">
+            {activeProject.name}.
+          </h3>
+        </div>
+        
       </div>
     </section>
   );

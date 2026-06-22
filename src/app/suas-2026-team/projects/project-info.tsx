@@ -28,7 +28,7 @@ export function ProjectInfoPanel({
           <button
             type="button"
             aria-expanded={infoOpen}
-            className="pointer-events-auto flex h-14 w-12 items-center justify-center bg-blue-900 text-white transition-colors group-hover:bg-blue-700"
+            className="pointer-events-auto flex h-14 w-12 items-center justify-center bg-blue-900 text-white transition-colors group-hover:bg-blue-700 cursor-pointer"
             onClick={(event) => {
               event.stopPropagation();
               onToggleInfo();
@@ -53,7 +53,7 @@ export function ProjectInfoPanel({
           ) : (
             <button
               type="button"
-              className="flex h-14 w-[72px] items-center justify-center whitespace-nowrap bg-blue-900 px-4 text-center text-caption text-white transition-colors hover:bg-blue-700"
+              className="flex h-14 w-[72px] items-center justify-center whitespace-nowrap bg-blue-900 px-4 text-center text-caption text-white transition-colors hover:bg-blue-700 cursor-pointer"
               onClick={(event) => {
                 event.stopPropagation();
                 onToggleInfo();
