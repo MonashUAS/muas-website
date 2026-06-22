@@ -44,6 +44,9 @@ export function Projects() {
 
   // handleMouseMove updates the cursor direction based on the screen half being hovered.
   function handleMouseMove(event: MouseEvent<HTMLElement>) {
+    /* only track coordinate shifts when info panel is closed */
+    if (infoOpen) return; 
+    
     setHoverSide(event.clientX < window.innerWidth / 2 ? "left" : "right");
   }
 
@@ -56,7 +59,9 @@ export function Projects() {
     <section
       id="our-redback-projects"
       className={`scroll-mt-10 bg-black-500 px-4 py-16 text-white sm:px-6 lg:px-10 ${
-        hoverSide === "left" ? "cursor-project-left" : "cursor-project-right"
+        infoOpen 
+          ? "cursor-default" 
+          : hoverSide === "left" ? "cursor-project-left" : "cursor-project-right"
       }`}
       onClick={(event) => handleSectionClick(event, moveProject)}
       onMouseMove={handleMouseMove}
@@ -117,4 +122,3 @@ function handleSectionClick(
 function wrapIndex(index: number, length: number) {
   return (index + length) % length;
 }
- 
