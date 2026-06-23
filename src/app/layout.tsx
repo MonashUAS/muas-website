@@ -6,6 +6,28 @@ import "@/styles/globals.css";
 export const metadata: Metadata = {
   title: "MUAS Website",
   description: "Monash Uncrewed Aerial Systems",
+  icons: {
+    icon: [
+      {
+        url: "/favicon/favicon-16x16.png",
+        sizes: "16x16",
+        type: "image/png",
+      },
+      {
+        url: "/favicon/favicon-32x32.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
+    ],
+    shortcut: "/favicon/favicon-32x32.png",
+    apple: [
+      {
+        url: "/favicon/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -15,17 +37,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <body className="min-h-full bg-background text-foreground antialiased">
+      <body className="flex min-h-screen flex-col bg-background text-foreground antialiased">
         <NavBar />
-        <main className="grid min-h-screen grid-rows-[1fr_auto] pl-[68px]">
-          {/* The grow utility forces this container to expand and take up all remaining vertical space */}
-          <div className="w-full"> 
-            {children} 
-          </div>
-
+        <div className="flex min-h-screen flex-1 flex-col pl-[68px]">
+          <main className="w-full flex-1">{children}</main>
           <Footer />
-        </main>
-        
+        </div>
       </body>
     </html>
   );
