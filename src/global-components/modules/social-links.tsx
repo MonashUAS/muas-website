@@ -1,6 +1,9 @@
-import Link from "next/link";
-import { LuFacebook, LuInstagram, LuLinkedin } from "react-icons/lu";
-import { MdOutlineEmail } from "react-icons/md";
+import {
+  LuFacebook,
+  LuInstagram,
+  LuLinkedin,
+  LuYoutube,
+} from "react-icons/lu";
 
 const socialLinks = [
   {
@@ -8,41 +11,46 @@ const socialLinks = [
     href: "https://www.facebook.com/MonashUAS/",
     label: "Facebook",
     external: true,
+    group: "social",
   },
   {
     icon: LuInstagram,
     href: "https://www.instagram.com/monash.uas/",
     label: "Instagram",
     external: true,
+    group: "social",
   },
   {
     icon: LuLinkedin,
     href: "https://au.linkedin.com/company/monashuas",
     label: "LinkedIn",
     external: true,
+    group: "social",
   },
   {
-    icon: MdOutlineEmail,
-    href: "/contact-us",
-    label: "Contact",
-    external: false,
+    icon: LuYoutube,
+    href: "https://www.youtube.com/@MonashUAS",
+    label: "YouTube",
+    external: true,
+    group: "youtube",
   },
 ];
 
 type SocialLinksProps = {
-  includeContact?: boolean;
+  includeYouTube?: boolean;
   className?: string;
   linkClassName?: string;
 };
 
 export function SocialLinks({
-  includeContact = false,
+  includeYouTube = false,
   className = "",
   linkClassName = "",
 }: SocialLinksProps) {
-  const links = includeContact
-    ? socialLinks
-    : socialLinks.filter((link) => link.external);
+  const links = socialLinks.filter((link) => {
+    if (link.group === "youtube") return includeYouTube;
+    return true;
+  });
 
   return (
     <div className={`flex items-center ${className || "gap-4"}`}>
@@ -54,7 +62,7 @@ export function SocialLinks({
           children: <Icon aria-hidden="true" />,
         };
 
-        return link.external ? (
+        return (
           <a
             key={link.label}
             href={link.href}
@@ -62,8 +70,6 @@ export function SocialLinks({
             rel="noopener noreferrer"
             {...sharedProps}
           />
-        ) : (
-          <Link key={link.label} href={link.href} {...sharedProps} />
         );
       })}
     </div>

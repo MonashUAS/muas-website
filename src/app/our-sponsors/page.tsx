@@ -1,6 +1,6 @@
+import { PageHero } from "@/global-components/modules/page-hero";
 import { SponsorGrid } from "@/global-components/modules/sponsor-grid";
 import { CircleCheck } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 const sponsorshipBenefits = [
@@ -24,20 +24,12 @@ const sponsorshipBenefits = [
 export default function OurSponsorsPage() {
   return (
     <div>
-      <section className="relative flex h-[320px] items-center justify-center overflow-hidden sm:h-[420px] lg:h-[520px]">
-        <Image
-          src="/images/heading images/our-sponsors.png"
-          alt="MUAS team members working on the NFC Drone"
-          fill
-          priority
-          sizes="(min-width: 68px) calc(100vw - 68px), 100vw"
-          className="object-cover object-center sm:object-[center_45%]"
-        />
-        <div className="absolute inset-0 bg-blue-900/45" />
-        <h1 className="relative px-6 text-center text-h6 font-bold tracking-[-0.07em] text-white sm:text-h3 lg:text-h2">
-          SPONSORSHIPS
-        </h1>
-      </section>
+      <PageHero
+        src="/images/heading images/our-sponsors-hero.jpg"
+        alt="MUAS team members working on the NFC Drone"
+        heading="SPONSORSHIPS"
+        objectPositionClassName="object-center sm:object-[center_45%]"
+      />
 
       <section className="bg-blue-900 px-6 py-9 text-white sm:py-11">
         <div className="mx-auto max-w-3xl space-y-8 text-center text-b1 leading-relaxed sm:text-subtitle">
@@ -66,21 +58,21 @@ export default function OurSponsorsPage() {
         <SponsorGrid />
       </section>
 
-      <section className="bg-blue-900 px-6 py-14 sm:py-20">
-        <div className="mx-auto max-w-5xl rounded bg-blue-50 px-6 py-10 shadow-[10px_10px_0_rgba(0,0,0,0.38)] sm:px-10 sm:py-12 lg:px-16">
-          <h2 className="text-center text-h6 font-bold tracking-[-0.02em] text-blue-900 sm:text-h4">
+      <section className="bg-blue-900 px-4 py-12 sm:px-6 sm:py-20">
+        <div className="mx-auto w-full max-w-5xl rounded bg-blue-50 px-4 py-8 shadow-[10px_10px_0_rgba(0,0,0,0.38)] sm:px-10 sm:py-12 lg:px-16">
+          <h2 className="text-center text-h7 font-bold leading-tight tracking-[-0.02em] text-blue-900 sm:text-h4">
             Interested In Becoming a Sponsor?
           </h2>
 
-          <div className="mx-auto mt-9 max-w-3xl space-y-7 sm:mt-10">
+          <div className="mx-auto mt-8 max-w-3xl space-y-6 sm:mt-10 sm:space-y-7">
             {sponsorshipBenefits.map((benefit) => {
               return (
                 <div
                   key={benefit.title}
-                  className="flex items-start gap-4 sm:gap-6"
+                  className="flex items-start gap-3 sm:gap-6"
                 >
                   <CircleCheck
-                    className="size-10 shrink-0 text-blue-500 sm:size-11"
+                    className="size-8 shrink-0 text-blue-500 sm:size-11"
                     strokeWidth={2.25}
                     aria-hidden="true"
                   />
@@ -97,7 +89,7 @@ export default function OurSponsorsPage() {
             })}
           </div>
 
-          <div className="mt-10 text-center">
+          <div className="mt-8 text-center sm:mt-10">
             <Link
               href="/contact-us"
               className="inline-flex min-h-11 items-center justify-center rounded bg-blue-500 px-6 py-3 text-b1 font-bold text-white transition-colors hover:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
