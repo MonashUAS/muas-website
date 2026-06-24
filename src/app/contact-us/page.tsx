@@ -71,7 +71,7 @@ export default function ContactUsPage() {
               </div>
             </div>
 
-            <div className="mt-7 border-t border-blue-200 pt-7 lg:mt-auto">
+            <div className="mt-6 border-t border-blue-200 pt-6 sm:mt-8 sm:pt-8">
               <h3 className="text-subtitle font-bold">Follow Us</h3>
 
               <SocialLinks
