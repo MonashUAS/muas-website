@@ -5,6 +5,7 @@ import { Mail, MapPin } from "lucide-react";
 export default function ContactUsPage() {
   return (
     <div className="flex w-full flex-1 flex-col">
+      {/* Hero banner shown at the top of the contact page. */}
       <PageHero
         src="/images/heading images/contact-us.JPG"
         alt="Monash UAS team members holding an uncrewed aircraft"
@@ -13,8 +14,11 @@ export default function ContactUsPage() {
         overlayClassName="bg-blue-900/50"
       />
 
+      {/* Main content area: contact information on the left, map on the right. */}
       <section className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-8 sm:gap-8 sm:px-6 sm:py-10 lg:flex-1 lg:grid-cols-2 lg:items-stretch lg:py-8">
+        {/* Contact details card. */}
         <div className="flex flex-col rounded bg-blue-50 text-blue-900 shadow-lg">
+          {/* Card heading and short description. */}
           <header className="px-5 pt-6 sm:px-10 sm:pt-8">
             <div className="border-b border-blue-200 pb-6 sm:pb-8">
               <h2 className="text-h6 font-bold sm:text-h5">
@@ -27,8 +31,10 @@ export default function ContactUsPage() {
             </div>
           </header>
 
+          {/* Contact methods and social links. */}
           <div className="flex flex-1 flex-col px-5 py-6 sm:px-10 sm:py-8">
             <div className="space-y-6 sm:space-y-8">
+              {/* Email contact row. */}
               <div className="flex items-start gap-3 sm:gap-5">
                 <span
                   className="grid size-11 shrink-0 place-items-center rounded-full bg-blue-500 text-white sm:size-12"
@@ -49,6 +55,7 @@ export default function ContactUsPage() {
                 </div>
               </div>
 
+              {/* Physical location row. */}
               <div className="flex items-start gap-3 sm:gap-5">
                 <span
                   className="grid size-11 shrink-0 place-items-center rounded-full bg-blue-500 text-white sm:size-12"
@@ -71,6 +78,7 @@ export default function ContactUsPage() {
               </div>
             </div>
 
+            {/* Social media links for MUAS. */}
             <div className="mt-6 border-t border-blue-200 pt-6 sm:mt-8 sm:pt-8">
               <h3 className="text-subtitle font-bold">Follow Us</h3>
 
@@ -83,6 +91,7 @@ export default function ContactUsPage() {
           </div>
         </div>
 
+        {/* Embedded Google Map showing the Monash Makerspace location. */}
         <div className="aspect-[4/3] overflow-hidden rounded bg-black-50 shadow-lg lg:h-full lg:aspect-auto">
           <iframe
             src="https://www.google.com/maps?q=Monash+Makerspace,+G.37A+23+College+Walk,+Monash+University+Clayton+Campus+3800&output=embed"
