@@ -39,7 +39,7 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className="flex min-h-screen flex-col bg-background text-foreground antialiased">
         <NavBar />
-        <div className="flex min-h-screen flex-1 flex-col pl-[68px]">
+        <div className="flex min-h-screen flex-1 flex-col pt-20">
           <main className="flex w-full flex-1 flex-col">{children}</main>
           <Footer />
         </div>
