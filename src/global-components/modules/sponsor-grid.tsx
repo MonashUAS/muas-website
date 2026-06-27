@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-type Sponsor = {
+export type Sponsor = {
   name: string;
   src: string;
   frameClassName: string;
@@ -14,7 +14,9 @@ type SponsorRow = {
   sponsors: Sponsor[];
 };
 
-const sponsorRows: SponsorRow[] = [
+// Shared sponsor data. The sponsors page renders it as a grid, while the
+// homepage carousel flattens the same rows so logo updates stay in one place.
+export const sponsorRows: SponsorRow[] = [
   {
     desktopColumns: 2,
     sponsors: [
