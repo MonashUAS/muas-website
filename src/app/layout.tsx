@@ -39,6 +39,7 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className="flex min-h-screen flex-col bg-background text-foreground antialiased">
         <NavBar />
+        {/* Offset page content below the fixed top navigation bar. */}
         <div className="flex min-h-screen flex-1 flex-col pt-20">
           <main className="flex w-full flex-1 flex-col">{children}</main>
           <Footer />
