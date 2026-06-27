@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const FRAME_COUNT = 420;
-const FRAME_PATH = "/images/redback-animation/hero%20frames/";
+const FRAME_PATH = "/images/redback-animation/";
 
 // Increase this value to make the scroll animation slower, or reduce it to make it faster.
 const SCROLL_LENGTH_VH = 1200;
