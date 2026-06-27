@@ -68,7 +68,7 @@ export function Footer() {
             className="h-auto w-40"
           />
           <p className="text-b1 leading-relaxed text-white/64">
-            Monash Uncrewed Aerial Systems - Demonstrating the humanitarian potential of Drone Technology since 2011
+            Monash Uncrewed Aerial Systems - Demonstrating the humanitarian potential of Drone Technology since 2011.
           </p>
         </div>
 
