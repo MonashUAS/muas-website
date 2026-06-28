@@ -1,10 +1,9 @@
 import {
   HomepageExplorePanels,
   HomepageHero,
-  HomepageNextSteps,
   HomepageRedbackParallax,
   HomepageSponsorCarousel,
-} from "@/features/home";
+} from "./home";
 
 export default function Home() {
   return (
@@ -13,7 +12,6 @@ export default function Home() {
       <HomepageExplorePanels />
       <HomepageRedbackParallax />
       <HomepageSponsorCarousel />
-      <HomepageNextSteps />
     </>
   );
 }
