@@ -3,64 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { heroSlides } from "../data/hero-slides";
+import { usePrefersReducedMotion } from "../utils/use-prefers-reduced-motion";
 
 const IMAGE_DURATION_MS = 5000;
 const VIDEO_MAX_DURATION_MS = 12000;
 
-type HeroSlide =
-  | {
-      type: "image";
-      src: string;
-      alt: string;
-    }
-  | {
-      type: "video";
-      src: string;
-    };
-
-// Add or remove homepage media here. Files use URL-safe names, and the order
-// is manually mixed so image and video slides do not feel grouped or predictable.
-const heroSlides: HeroSlide[] = [
-  {
-    type: "image",
-    src: "/images/homepage/composites.jpg",
-    alt: "MUAS composites work in progress",
-  },
-  {
-    type: "video",
-    src: "/images/homepage/redback-flight.mov",
-  },
-  {
-    type: "image",
-    src: "/images/homepage/full-team-photo.jpg",
-    alt: "MUAS team group portrait",
-  },
-  {
-    type: "image",
-    src: "/images/homepage/flight-day.jpg",
-    alt: "MUAS team preparing aircraft before launch",
-  },
-  {
-    type: "video",
-    src: "/images/homepage/outreach-2.mov",
-  },
-  {
-    type: "image",
-    src: "/images/homepage/nfc-team.jpg",
-    alt: "MUAS NFC team",
-  },
-  {
-    type: "image",
-    src: "/images/homepage/flight-monitor.jpg",
-    alt: "MUAS members monitoring flight data",
-  },
-  {
-    type: "image",
-    src: "/images/homepage/outreach-1.jpg",
-    alt: "MUAS outreach event",
-  },
-];
-
+// The homepage hero owns only slideshow behavior; slide content lives in data
+// so the media sequence can be updated without touching interaction code.
 export function HomepageHero() {
   const [activeSlide, setActiveSlide] = useState(0);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -209,21 +159,4 @@ export function HomepageHero() {
       </div>
     </section>
   );
-}
-
-// Tracks reduced-motion preference so the slideshow does not auto-advance.
-function usePrefersReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
-
-    updatePreference();
-    mediaQuery.addEventListener("change", updatePreference);
-
-    return () => mediaQuery.removeEventListener("change", updatePreference);
-  }, []);
-
-  return prefersReducedMotion;
 }

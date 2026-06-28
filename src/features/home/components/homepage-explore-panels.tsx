@@ -2,59 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { explorePanels, temporaryPanelImage } from "../data/explore-panels";
 
-type ExplorePanel = {
-  title: string;
-  href: string;
-  preview: string;
-  alt: string;
-};
-
-const temporaryPanelImage = "/images/placeholder (to be replaced)/placeholder image.jpg";
-
-// Temporary placeholder image. Replace each panel image before final production.
-// Panel labels/routes/copy live here; all panels intentionally share the same
-// image while final section photography is still being selected.
-const explorePanels: ExplorePanel[] = [
-  {
-    title: "Our Team",
-    href: "/our-team",
-    preview: "Meet the students behind MUAS and the teams building our aircraft.",
-    alt: "Temporary Our Team panel placeholder",
-  },
-  {
-    title: "Our Drones",
-    href: "/our-drones",
-    preview: "See the aircraft, systems, and technology behind our builds.",
-    alt: "Temporary Our Drones panel placeholder",
-  },
-  {
-    title: "Competitions",
-    href: "/competitions",
-    preview: "Follow our work across national and international UAV competitions.",
-    alt: "Temporary Competitions panel placeholder",
-  },
-  {
-    title: "Recruitment",
-    href: "/recruitment",
-    preview: "Help shape the next generation of drone technology with MUAS.",
-    alt: "Temporary Recruitment panel placeholder",
-  },
-  {
-    title: "Sponsor Us",
-    href: "/our-sponsors",
-    preview: "See the partners supporting student-led aerospace innovation.",
-    alt: "Temporary Sponsor Us panel placeholder",
-  },
-  {
-    title: "Contact",
-    href: "/contact-us",
-    preview:
-      "Start a conversation with MUAS about partnerships, recruitment, or enquiries.",
-    alt: "Temporary Contact panel placeholder",
-  },
-];
-
+// This section remains the cinematic image-panel navigation near the top of
+// the homepage. Panel data is separated so labels/routes/images have one edit point.
 export function HomepageExplorePanels() {
   return (
     <section className="bg-[linear-gradient(180deg,#02040a_0%,#001f49_46%,#02040a_100%)] px-4 py-5 text-white sm:px-6 lg:px-8 lg:py-8">
