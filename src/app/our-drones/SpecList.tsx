@@ -9,10 +9,10 @@ type SpecListProps = {
 export function SpecList({ title, specs }: SpecListProps) {
   return (
     <section>
-      <h3 className="mb-5 text-center text-h7 font-black uppercase leading-none text-blue-900 sm:text-left">
+      <h3 className="mb-5 text-center text-h7 font-black uppercase leading-none text-blue-900">
         {title}
       </h3>
-      <dl className="space-y-4 text-caption sm:text-b2">
+      <dl className="mx-auto max-w-sm space-y-4 text-center text-caption sm:text-b2">
         {specs.map((spec) => (
           <div key={`${spec.label}-${spec.value}`} className="grid grid-cols-[1fr_auto_1fr] gap-5">
             <dt className="text-right text-black-500">{spec.label}</dt>
