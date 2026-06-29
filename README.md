@@ -1,8 +1,16 @@
+# MUAS Website
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -14,23 +22,74 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contact Form / Resend Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The Contact Us form sends messages through [Resend](https://resend.com/) using the `/api/contact` route.
 
-## Learn More
+The form does **not** open the user’s native email app. When a visitor submits the form, the website sends the message directly to the configured contact email address.
 
-To learn more about Next.js, take a look at the following resources:
+### Required environment variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create a `.env.local` file in the project root:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+RESEND_API_KEY=
+CONTACT_TO_EMAIL=contact@monashuas.org
+CONTACT_FROM_EMAIL=onboarding@resend.dev
+```
 
-## Deploy on Vercel
+`RESEND_API_KEY` should be replaced with the real Resend API key.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Do **not** commit `.env.local` to GitHub.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Current test setup
+
+At the moment, the contact form is configured to send using Resend’s test sender:
+
+```env
+CONTACT_FROM_EMAIL=onboarding@resend.dev
+```
+
+This is suitable for testing only.
+
+For production, the sending domain should be verified in Resend and the sender should be changed to something like:
+
+```env
+CONTACT_FROM_EMAIL="MUAS Website <website@monashuas.org>"
+```
+
+### Domain verification
+
+To send from `website@monashuas.org`, the `monashuas.org` domain must be verified in Resend.
+
+In Resend:
+
+1. Add the domain `monashuas.org`.
+2. Copy the DNS records Resend provides.
+3. Add those records in the domain’s DNS provider.
+4. Wait for Resend to verify the domain.
+5. Once verified, update `CONTACT_FROM_EMAIL` to use the MUAS domain.
+
+Until the domain is verified, keep using:
+
+```env
+CONTACT_FROM_EMAIL=onboarding@resend.dev
+```
+
+### Production deployment
+
+When deploying, add the same environment variables to the hosting provider, such as Vercel:
+
+```env
+RESEND_API_KEY=
+CONTACT_TO_EMAIL=contact@monashuas.org
+CONTACT_FROM_EMAIL=
+```
+
+After updating environment variables in production, redeploy the site.
+
+
+
+

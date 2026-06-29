@@ -176,7 +176,7 @@ export function HomepageSectionsExplorer() {
               <button
                 type="button"
                 onClick={goToPreviousSlide}
-                className="absolute left-3 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-2xl text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:left-5 sm:h-12 sm:w-12"
+                className="absolute left-2 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-2xl text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:left-5 sm:h-12 sm:w-12"
                 aria-label="Show previous section"
               >
                 ‹
@@ -184,7 +184,7 @@ export function HomepageSectionsExplorer() {
               <button
                 type="button"
                 onClick={goToNextSlide}
-                className="absolute right-3 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-2xl text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:right-5 sm:h-12 sm:w-12"
+                className="absolute right-2 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-2xl text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:right-5 sm:h-12 sm:w-12"
                 aria-label="Show next section"
               >
                 ›

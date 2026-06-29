@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 type ContactPayload = {
   name?: unknown;
@@ -9,18 +9,13 @@ type ContactPayload = {
 };
 
 const requiredEnvVars = [
-  "SMTP_HOST",
-  "SMTP_PORT",
-  "SMTP_USER",
-  "SMTP_PASS",
-  "SMTP_FROM_EMAIL",
+  "RESEND_API_KEY",
   "CONTACT_TO_EMAIL",
+  "CONTACT_FROM_EMAIL",
 ] as const;
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// SMTP credentials stay server-side. Configure the required env vars above in
-// deployment; never expose them through NEXT_PUBLIC variables.
 export async function POST(request: Request) {
   let payload: ContactPayload;
 
@@ -28,7 +23,7 @@ export async function POST(request: Request) {
     payload = await request.json();
   } catch {
     return NextResponse.json(
-      { ok: false, error: "Invalid request payload." },
+      { ok: false, success: false, error: "Invalid request payload." },
       { status: 400 },
     );
   }
@@ -40,7 +35,14 @@ export async function POST(request: Request) {
 
   if (!name || !emailPattern.test(email) || !subject || !message) {
     return NextResponse.json(
-      { ok: false, error: "Please provide all required fields." },
+      { ok: false, success: false, error: "Please provide all required fields." },
+      { status: 400 },
+    );
+  }
+
+  if (message.length > 5000) {
+    return NextResponse.json(
+      { ok: false, success: false, error: "Message is too long." },
       { status: 400 },
     );
   }
@@ -49,57 +51,65 @@ export async function POST(request: Request) {
 
   if (missingEnvVars.length > 0) {
     console.error(
-      `Contact form SMTP configuration missing: ${missingEnvVars.join(", ")}`,
+      `Contact form Resend configuration missing: ${missingEnvVars.join(", ")}`,
     );
 
     return NextResponse.json(
-      { ok: false, error: "Contact form is not configured." },
+      { ok: false, success: false, error: "Contact form is not configured." },
       { status: 500 },
     );
   }
 
-  const smtpPort = Number(process.env.SMTP_PORT);
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
-  if (!Number.isFinite(smtpPort)) {
-    console.error("Contact form SMTP_PORT is not a valid number.");
-
-    return NextResponse.json(
-      { ok: false, error: "Contact form is not configured." },
-      { status: 500 },
-    );
-  }
-
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: smtpPort,
-    secure: smtpPort === 465,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeSubject = escapeHtml(subject);
+  const safeMessage = escapeHtml(message);
 
   try {
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM_EMAIL,
-      to: process.env.CONTACT_TO_EMAIL,
+    const { data, error } = await resend.emails.send({
+      from: process.env.CONTACT_FROM_EMAIL as string,
+      to: [process.env.CONTACT_TO_EMAIL as string],
       replyTo: email,
       subject: `MUAS Contact Form: ${subject}`,
       text: [
+        "New MUAS website contact form submission",
+        "",
         `Name: ${name}`,
         `Email: ${email}`,
         `Subject: ${subject}`,
         "",
+        "Message:",
         message,
       ].join("\n"),
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2>New MUAS website contact form submission</h2>
+          <p><strong>Name:</strong> ${safeName}</p>
+          <p><strong>Email:</strong> ${safeEmail}</p>
+          <p><strong>Subject:</strong> ${safeSubject}</p>
+          <hr />
+          <p style="white-space: pre-wrap;">${safeMessage}</p>
+        </div>
+      `,
     });
 
-    return NextResponse.json({ ok: true });
+    if (error) {
+      console.error("Resend contact form email failed:", error);
+
+      return NextResponse.json(
+        { ok: false, success: false, error: "Message failed to send." },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({ ok: true, success: true, id: data?.id });
   } catch (error) {
     console.error("Contact form email failed to send:", error);
 
     return NextResponse.json(
-      { ok: false, error: "Message failed to send." },
+      { ok: false, success: false, error: "Message failed to send." },
       { status: 500 },
     );
   }
@@ -107,4 +117,13 @@ export async function POST(request: Request) {
 
 function normalizeField(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }

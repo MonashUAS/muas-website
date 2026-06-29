@@ -57,10 +57,11 @@ export default function ContactUsPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const form = event.currentTarget;
 
     setSubmissionState("loading");
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
     const payload = {
       name: String(formData.get("name") ?? ""),
       email: String(formData.get("email") ?? ""),
@@ -76,14 +77,17 @@ export default function ContactUsPage() {
         },
         body: JSON.stringify(payload),
       });
+      const responsePayload = await response.json().catch(() => null);
 
       if (!response.ok) {
+        console.error("Contact form submission failed:", responsePayload);
         throw new Error("Contact request failed.");
       }
 
-      event.currentTarget.reset();
+      form.reset();
       setSubmissionState("success");
-    } catch {
+    } catch (error) {
+      console.error("Contact form submission error:", error);
       setSubmissionState("error");
     }
   };
@@ -93,7 +97,7 @@ export default function ContactUsPage() {
       <section className="relative overflow-hidden px-5 pb-16 pt-24 sm:px-8 sm:pb-20 sm:pt-28 lg:px-12 lg:pb-24 lg:pt-32">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_22%,rgba(84,134,200,0.24),transparent_34%)]" />
 
-        <div className="relative mx-auto max-w-[1500px]">
+        <div className="relative mx-auto max-w-[1720px]">
           <div className="max-w-4xl">
             <h1 className="text-[clamp(4rem,10vw,9rem)] font-medium leading-[0.86] tracking-[-0.06em] text-white">
               Get in Touch
@@ -102,8 +106,8 @@ export default function ContactUsPage() {
         </div>
       </section>
 
-      <section className="px-5 pb-32 sm:px-8 sm:pb-40 lg:px-12 lg:pb-52">
-        <div className="mx-auto grid max-w-[1500px] gap-8 lg:min-h-[720px] lg:grid-cols-2 lg:items-stretch">
+      <section className="px-5 pb-10 sm:px-8 sm:pb-20 lg:px-12 lg:pb-52">
+        <div className="mx-auto grid max-w-[1720px] gap-8 lg:min-h-[720px] lg:grid-cols-2 lg:items-stretch">
           <form
             onSubmit={handleSubmit}
             className="flex min-h-[680px] flex-col rounded-[1.75rem] border border-white/18 bg-white/[0.13] p-6 shadow-2xl shadow-black/28 backdrop-blur-xl sm:p-8 lg:p-10"
@@ -161,7 +165,7 @@ export default function ContactUsPage() {
             <div className="mt-4 min-h-6" aria-live="polite">
               {submissionState === "success" ? (
                 <p className="text-b1 text-blue-50">
-                  Message sent successfully.
+                  Message sent successfully. We&apos;ll get back to you soon.
                 </p>
               ) : null}
 
@@ -187,7 +191,7 @@ export default function ContactUsPage() {
       </section>
 
       <section className="px-5 pb-24 sm:px-8 sm:pb-28 lg:px-12">
-        <div className="mx-auto max-w-[1500px]">
+        <div className="mx-auto max-w-[1720px]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="text-[clamp(2.6rem,6vw,5.4rem)] font-medium leading-[0.9] tracking-[-0.05em]">
@@ -206,12 +210,12 @@ export default function ContactUsPage() {
                   href={card.href}
                   target={card.external ? "_blank" : undefined}
                   rel={card.external ? "noopener noreferrer" : undefined}
-                  className="group flex min-h-48 flex-col justify-between rounded-[1.25rem] border border-white/10 bg-white/[0.055] p-5 text-white outline-none transition-[transform,background-color,border-color] duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.085] focus-visible:-translate-y-1 focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none"
+                  className="group flex min-h-28 flex-col justify-between rounded-[1.25rem] border border-white/10 bg-white/[0.055] p-4 text-white outline-none transition-[transform,background-color,border-color] duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.085] focus-visible:-translate-y-1 focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none sm:min-h-40 sm:p-5 lg:min-h-48"
                   aria-label={`${card.label}: ${card.action}`}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <Icon
-                      className="text-3xl text-blue-50/86"
+                      className="text-xl text-blue-50/86 sm:text-2xl lg:text-3xl"
                       aria-hidden="true"
                     />
 
@@ -222,11 +226,11 @@ export default function ContactUsPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-h6 font-medium tracking-[-0.03em]">
+                    <h3 className="text-b1 font-medium tracking-[-0.03em] sm:text-subtitle lg:text-h6">
                       {card.label}
                     </h3>
 
-                    <p className="mt-2 text-b1 text-blue-50/64">
+                    <p className="mt-1 text-sm leading-5 text-blue-50/64 sm:mt-1.5 sm:text-b1">
                       {card.action}
                     </p>
                   </div>
