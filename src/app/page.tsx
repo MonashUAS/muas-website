@@ -2,6 +2,7 @@ import {
   HomepageExplorePanels,
   HomepageHero,
   HomepageRedbackParallax,
+  HomepageSectionsExplorer,
   HomepageSponsorCarousel,
 } from "./home";
 
@@ -12,6 +13,7 @@ export default function Home() {
       <HomepageExplorePanels />
       <HomepageRedbackParallax />
       <HomepageSponsorCarousel />
+      <HomepageSectionsExplorer />
     </>
   );
 }
