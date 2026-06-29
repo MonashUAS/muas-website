@@ -1,108 +1,276 @@
-import { PageHero } from "@/global-components/modules/page-hero";
-import { SocialLinks } from "@/global-components/modules/social-links";
-import { Mail, MapPin } from "lucide-react";
+"use client";
+
+import type { FormEvent } from "react";
+import { useState } from "react";
+import {
+  LuArrowUpRight,
+  LuFacebook,
+  LuInstagram,
+  LuLinkedin,
+  LuMail,
+  LuYoutube,
+} from "react-icons/lu";
+
+type SubmissionState = "idle" | "loading" | "success" | "error";
+
+const socialCards = [
+  {
+    label: "Facebook",
+    action: "Follow us",
+    href: "https://www.facebook.com/MonashUAS/",
+    icon: LuFacebook,
+    external: true,
+  },
+  {
+    label: "Instagram",
+    action: "Follow us",
+    href: "https://www.instagram.com/monash.uas/",
+    icon: LuInstagram,
+    external: true,
+  },
+  {
+    label: "LinkedIn",
+    action: "Connect with us",
+    href: "https://au.linkedin.com/company/monashuas",
+    icon: LuLinkedin,
+    external: true,
+  },
+  {
+    label: "YouTube",
+    action: "Subscribe",
+    href: "https://www.youtube.com/@MonashUAS",
+    icon: LuYoutube,
+    external: true,
+  },
+  {
+    label: "Email",
+    action: "contact@monashuas.org",
+    href: "mailto:contact@monashuas.org",
+    icon: LuMail,
+    external: false,
+  },
+];
 
 export default function ContactUsPage() {
+  const [submissionState, setSubmissionState] =
+    useState<SubmissionState>("idle");
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    setSubmissionState("loading");
+
+    const formData = new FormData(event.currentTarget);
+    const payload = {
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      subject: String(formData.get("subject") ?? ""),
+      message: String(formData.get("message") ?? ""),
+    };
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Contact request failed.");
+      }
+
+      event.currentTarget.reset();
+      setSubmissionState("success");
+    } catch {
+      setSubmissionState("error");
+    }
+  };
+
   return (
-    <div className="flex w-full flex-1 flex-col">
-      {/* Hero banner shown at the top of the contact page. */}
-      <PageHero
-        src="/images/heading images/contact-us.JPG"
-        alt="Monash UAS team members holding an uncrewed aircraft"
-        heading="CONTACT US"
-        objectPositionClassName="object-[center_60%]"
-        overlayClassName="bg-blue-900/50"
-      />
+    <main className="min-h-screen bg-[linear-gradient(180deg,#02040a_0%,#001f49_44%,#02040a_100%)] text-white">
+      <section className="relative overflow-hidden px-5 pb-16 pt-24 sm:px-8 sm:pb-20 sm:pt-28 lg:px-12 lg:pb-24 lg:pt-32">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_22%,rgba(84,134,200,0.24),transparent_34%)]" />
 
-      {/* Main content area: contact information on the left, map on the right. */}
-      <section className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-8 sm:gap-8 sm:px-6 sm:py-10 lg:flex-1 lg:grid-cols-2 lg:items-stretch lg:py-8">
-        {/* Contact details card. */}
-        <div className="flex flex-col rounded bg-blue-50 text-blue-900 shadow-lg">
-          {/* Card heading and short description. */}
-          <header className="px-5 pt-6 sm:px-10 sm:pt-8">
-            <div className="border-b border-blue-200 pb-6 sm:pb-8">
-              <h2 className="text-h6 font-bold sm:text-h5">
-                Contact Details
-              </h2>
-
-              <p className="mt-2 max-w-md text-b1 leading-relaxed text-black-400">
-                Get in touch with the team or visit us at the Monash Makerspace.
-              </p>
-            </div>
-          </header>
-
-          {/* Contact methods and social links. */}
-          <div className="flex flex-1 flex-col px-5 py-6 sm:px-10 sm:py-8">
-            <div className="space-y-6 sm:space-y-8">
-              {/* Email contact row. */}
-              <div className="flex items-start gap-3 sm:gap-5">
-                <span
-                  className="grid size-11 shrink-0 place-items-center rounded-full bg-blue-500 text-white sm:size-12"
-                  aria-hidden="true"
-                >
-                  <Mail className="size-5" />
-                </span>
-
-                <div className="min-w-0">
-                  <h3 className="text-subtitle font-bold">E-mail</h3>
-
-                  <a
-                    href="mailto:contact@monashuas.org"
-                    className="mt-1 inline-block break-all text-b1 text-blue-500 underline decoration-blue-300 underline-offset-4 transition-colors hover:text-blue-700 focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
-                  >
-                    contact@monashuas.org
-                  </a>
-                </div>
-              </div>
-
-              {/* Physical location row. */}
-              <div className="flex items-start gap-3 sm:gap-5">
-                <span
-                  className="grid size-11 shrink-0 place-items-center rounded-full bg-blue-500 text-white sm:size-12"
-                  aria-hidden="true"
-                >
-                  <MapPin className="size-5" />
-                </span>
-
-                <div className="min-w-0">
-                  <h3 className="text-subtitle font-bold">Location</h3>
-
-                  <address className="mt-1 max-w-md text-b1 leading-relaxed text-black-400 not-italic">
-                    Monash Makerspace – G.37A
-                    <br />
-                    23 College Walk, Monash University
-                    <br />
-                    Clayton Campus 3800
-                  </address>
-                </div>
-              </div>
-            </div>
-
-            {/* Social media links for MUAS. */}
-            <div className="mt-6 border-t border-blue-200 pt-6 sm:mt-8 sm:pt-8">
-              <h3 className="text-subtitle font-bold">Follow Us</h3>
-
-              <SocialLinks
-                includeYouTube
-                className="mt-4 flex-wrap gap-3"
-                linkClassName="border border-blue-200 bg-white text-2xl text-blue-900 transition-colors hover:border-blue-400 hover:bg-blue-100"
-              />
-            </div>
+        <div className="relative mx-auto max-w-[1500px]">
+          <div className="max-w-4xl">
+            <h1 className="text-[clamp(4rem,10vw,9rem)] font-medium leading-[0.86] tracking-[-0.06em] text-white">
+              Get in Touch
+            </h1>
           </div>
         </div>
+      </section>
 
-        {/* Embedded Google Map showing the Monash Makerspace location. */}
-        <div className="aspect-[4/3] overflow-hidden rounded bg-black-50 shadow-lg lg:h-full lg:aspect-auto">
-          <iframe
-            src="https://www.google.com/maps?q=Monash+Makerspace,+G.37A+23+College+Walk,+Monash+University+Clayton+Campus+3800&output=embed"
-            title="Google Maps location of Monash Makerspace"
-            className="h-full w-full border-0"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            allowFullScreen
-          />
+      <section className="px-5 pb-32 sm:px-8 sm:pb-40 lg:px-12 lg:pb-52">
+        <div className="mx-auto grid max-w-[1500px] gap-8 lg:min-h-[720px] lg:grid-cols-2 lg:items-stretch">
+          <form
+            onSubmit={handleSubmit}
+            className="flex min-h-[680px] flex-col rounded-[1.75rem] border border-white/18 bg-white/[0.13] p-6 shadow-2xl shadow-black/28 backdrop-blur-xl sm:p-8 lg:p-10"
+          >
+            <div className="grid gap-5 sm:grid-cols-2">
+              <ContactField
+                id="name"
+                label="Name"
+                name="name"
+                autoComplete="name"
+                required
+              />
+
+              <ContactField
+                id="email"
+                label="Email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+              />
+            </div>
+
+            <div className="mt-5">
+              <ContactField
+                id="subject"
+                label="Subject"
+                name="subject"
+                required
+              />
+            </div>
+
+            <label className="mt-5 block flex-1" htmlFor="message">
+              <span className="text-b2 font-medium uppercase tracking-[0.18em] text-blue-50/62">
+                Message
+              </span>
+
+              <textarea
+                id="message"
+                name="message"
+                required
+                rows={11}
+                className="mt-2 min-h-[300px] w-full resize-y rounded-xl border border-white/18 bg-black/20 px-4 py-3 text-b1 text-white outline-none transition-colors placeholder:text-blue-50/32 focus:border-blue-200/70 focus:bg-black/28 focus:ring-1 focus:ring-blue-200/50"
+              />
+            </label>
+
+            <button
+              type="submit"
+              disabled={submissionState === "loading"}
+              className="mt-7 inline-flex min-h-12 w-fit items-center justify-center rounded-full bg-white px-7 text-b1 font-medium text-blue-950 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 disabled:cursor-not-allowed disabled:bg-white/60 disabled:text-blue-950/70 motion-reduce:transition-none"
+            >
+              {submissionState === "loading" ? "Sending..." : "Send Message"}
+            </button>
+
+            <div className="mt-4 min-h-6" aria-live="polite">
+              {submissionState === "success" ? (
+                <p className="text-b1 text-blue-50">
+                  Message sent successfully.
+                </p>
+              ) : null}
+
+              {submissionState === "error" ? (
+                <p className="text-b1 text-red-100">
+                  Something went wrong. Please try again.
+                </p>
+              ) : null}
+            </div>
+          </form>
+
+          <div className="min-h-[680px] overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.055] p-4 shadow-2xl shadow-black/20 backdrop-blur-md">
+            <iframe
+              src="https://www.google.com/maps?q=Monash+Makerspace,+G.37A+23+College+Walk,+Monash+University+Clayton+Campus+3800&output=embed"
+              title="Google Maps location of Monash Makerspace"
+              className="h-[560px] w-full rounded-[1.25rem] border-0 lg:h-full"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
         </div>
       </section>
-    </div>
+
+      <section className="px-5 pb-24 sm:px-8 sm:pb-28 lg:px-12">
+        <div className="mx-auto max-w-[1500px]">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="text-[clamp(2.6rem,6vw,5.4rem)] font-medium leading-[0.9] tracking-[-0.05em]">
+                Find Us Online
+              </h2>
+            </div>
+          </div>
+
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {socialCards.map((card) => {
+              const Icon = card.icon;
+
+              return (
+                <a
+                  key={card.label}
+                  href={card.href}
+                  target={card.external ? "_blank" : undefined}
+                  rel={card.external ? "noopener noreferrer" : undefined}
+                  className="group flex min-h-48 flex-col justify-between rounded-[1.25rem] border border-white/10 bg-white/[0.055] p-5 text-white outline-none transition-[transform,background-color,border-color] duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.085] focus-visible:-translate-y-1 focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none"
+                  aria-label={`${card.label}: ${card.action}`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <Icon
+                      className="text-3xl text-blue-50/86"
+                      aria-hidden="true"
+                    />
+
+                    <LuArrowUpRight
+                      className="text-xl text-blue-50/50 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white motion-reduce:transition-none"
+                      aria-hidden="true"
+                    />
+                  </div>
+
+                  <div>
+                    <h3 className="text-h6 font-medium tracking-[-0.03em]">
+                      {card.label}
+                    </h3>
+
+                    <p className="mt-2 text-b1 text-blue-50/64">
+                      {card.action}
+                    </p>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+type ContactFieldProps = {
+  id: string;
+  label: string;
+  name: string;
+  type?: string;
+  autoComplete?: string;
+  required?: boolean;
+};
+
+function ContactField({
+  id,
+  label,
+  name,
+  type = "text",
+  autoComplete,
+  required = false,
+}: ContactFieldProps) {
+  return (
+    <label className="block" htmlFor={id}>
+      <span className="text-b2 font-medium uppercase tracking-[0.18em] text-blue-50/62">
+        {label}
+      </span>
+
+      <input
+        id={id}
+        name={name}
+        type={type}
+        autoComplete={autoComplete}
+        required={required}
+        className="mt-2 h-12 w-full rounded-xl border border-white/18 bg-black/20 px-4 text-b1 text-white outline-none transition-colors placeholder:text-blue-50/32 focus:border-blue-200/70 focus:bg-black/28 focus:ring-1 focus:ring-blue-200/50"
+      />
+    </label>
   );
 }
