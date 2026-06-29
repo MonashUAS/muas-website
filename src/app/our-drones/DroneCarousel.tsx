@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import type { Drone } from "./drone-data";
 import { DroneDetailsModal } from "./DroneDetailsModal";
 import { DroneVisual } from "./DroneVisual";
+import { useWheelNavigation } from "./useWheelNavigation";
 
 type DroneCarouselProps = {
   drones: Drone[];
@@ -13,7 +14,8 @@ type DroneCarouselProps = {
 export function DroneCarousel({ drones }: DroneCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(6);
   const [selectedDrone, setSelectedDrone] = useState<Drone | null>(null);
-  const lastWheelAt = useRef(0);
+  const [isActiveHovered, setIsActiveHovered] = useState(false);
+  const carouselRef = useRef<HTMLElement | null>(null);
   const visibleDrones = useMemo(() => getVisibleDrones(drones, activeIndex), [activeIndex, drones]);
 
   // navigateTo moves the active drone to the requested index.
@@ -24,41 +26,45 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
     [drones.length],
   );
 
-  // handleWheel converts a scroll gesture into carousel navigation.
-  const handleWheel = useCallback(
-    (event: React.WheelEvent<HTMLElement>) => {
-      const now = Date.now();
-
-      if (Math.abs(event.deltaY) < 10 || now - lastWheelAt.current < 520) {
-        return;
-      }
-
-      event.preventDefault();
-      lastWheelAt.current = now;
-      navigateTo(activeIndex + (event.deltaY > 0 ? 1 : -1));
+  // stepCarousel moves the carousel in response to captured wheel direction.
+  const stepCarousel = useCallback(
+    (direction: number) => {
+      navigateTo(activeIndex + direction);
     },
     [activeIndex, navigateTo],
   );
 
+  useWheelNavigation(carouselRef, {
+    cooldownMs: 520,
+    enabled: selectedDrone === null,
+    onStep: stepCarousel,
+    threshold: 10,
+  });
+
   return (
     <section
+      ref={carouselRef}
       className="relative flex min-h-[calc(100vh-5rem)] items-center justify-center overflow-hidden bg-gradient-to-b from-blue-100 via-blue-50 to-white px-4 py-12"
-      onWheel={handleWheel}
     >
+      {/* header */}
       <div className="absolute top-8 text-center uppercase text-blue-900">
         <p className="text-caption font-black leading-none">Explore</p>
         <h1 className="mt-1 text-h7 font-black leading-none sm:text-h6">Our Drones</h1>
       </div>
 
+    {/* carousel */}
       <div className="relative flex h-[68vh] min-h-[430px] w-full max-w-6xl items-center justify-center">
         {visibleDrones.map(({ drone, index, offset }) => {
           const isActive = offset === 0;
 
           return (
+            /* drone image - button */
             <button
               aria-label={isActive ? `Open ${drone.name} details` : `Show ${drone.name}`}
-              className="absolute flex items-center justify-center transition-all duration-700 ease-out"
+              className="absolute flex cursor-pointer items-center justify-center transition-all duration-700 ease-out"
               key={drone.slug}
+              onMouseEnter={() => setIsActiveHovered(isActive)}
+              onMouseLeave={() => setIsActiveHovered(false)}
               onClick={() => (isActive ? setSelectedDrone(drone) : navigateTo(index))}
               style={{
                 height: isActive ? "46vh" : "22vh",
@@ -77,14 +83,18 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
         })}
       </div>
 
+      {/* active drone name - button */}
       <button
-        className="absolute bottom-14 max-w-[92vw] text-h4 font-black uppercase leading-none text-blue-900 transition hover:text-blue-500 sm:text-h2"
+        className={`absolute bottom-14 max-w-[92vw] cursor-pointer text-h4 font-black uppercase leading-none transition sm:text-h2 ${
+          isActiveHovered ? "text-blue-500" : "text-blue-900 hover:text-blue-500"
+        }`}
         onClick={() => setSelectedDrone(drones[activeIndex])}
         type="button"
       >
         {drones[activeIndex].name}.
       </button>
-
+      
+      {/* if a drone is selected, show the details modal */}
       {selectedDrone ? (
         <DroneDetailsModal drone={selectedDrone} onClose={() => setSelectedDrone(null)} />
       ) : null}

@@ -3,16 +3,17 @@
 import { useCallback, useRef, useState } from "react";
 import type { Drone } from "./drone-data";
 import { DroneVisual } from "./DroneVisual";
+import { useWheelNavigation } from "./useWheelNavigation";
 
 type DroneImageCarouselProps = {
   drone: Drone;
   images: Array<string | undefined>;
 };
 
-// DroneImageCarousel lets gallery-enabled drones cycle through supporting images.
+// DroneImageCarousel is the component that renders the drone image gallery in the DroneDetailsModal. It supports mouse wheel and click navigation.
 export function DroneImageCarousel({ drone, images }: DroneImageCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const lastWheelAt = useRef(0);
+  const galleryRef = useRef<HTMLDivElement | null>(null);
 
   // moveGallery advances through the gallery with wraparound.
   const moveGallery = useCallback(
@@ -22,27 +23,17 @@ export function DroneImageCarousel({ drone, images }: DroneImageCarouselProps) {
     [images.length],
   );
 
-  // handleWheel converts vertical wheel movement into a single gallery step.
-  const handleWheel = useCallback(
-    (event: React.WheelEvent<HTMLDivElement>) => {
-      const now = Date.now();
-
-      if (Math.abs(event.deltaY) < 8 || now - lastWheelAt.current < 420) {
-        return;
-      }
-
-      event.preventDefault();
-      lastWheelAt.current = now;
-      moveGallery(event.deltaY > 0 ? 1 : -1);
-    },
-    [moveGallery],
-  );
+  useWheelNavigation(galleryRef, {
+    cooldownMs: 420,
+    onStep: moveGallery,
+    threshold: 8,
+  });
 
   return (
     <div
+      ref={galleryRef}
       aria-label={`${drone.name} image gallery`}
       className="relative mx-auto mt-16 flex h-44 w-full max-w-4xl items-center justify-center overflow-hidden sm:h-56"
-      onWheel={handleWheel}
     >
       {images.map((image, index) => {
         const offset = getShortestOffset(index, activeIndex, images.length);
@@ -51,7 +42,7 @@ export function DroneImageCarousel({ drone, images }: DroneImageCarouselProps) {
         return (
           <button
             aria-label={`Show ${drone.name} gallery image ${index + 1}`}
-            className="absolute h-32 w-[38vw] max-w-sm min-w-40 transition-all duration-500 ease-out sm:h-48"
+            className="absolute h-32 w-[38vw] max-w-sm min-w-40 cursor-pointer transition-all duration-500 ease-out sm:h-48"
             key={`${image ?? "placeholder"}-${index}`}
             onClick={() => setActiveIndex(index)}
             style={{
