@@ -1,166 +1,119 @@
 "use client";
 
-import {
-  Handshake,
-  Mail,
-  MessageCircle,
-  Plane,
-  Trophy,
-  UserRoundSearch,
-  UsersRound,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRef, useState } from "react";
-import { SidebarLink } from "./sidebar-link";
-import { SidebarGroup, SidebarSubLink } from "./sidebar-group";
-import { SidebarSearch } from "./sidebar-search";
+import { useCallback, useEffect, useId, useState } from "react";
+import { MenuOverlay } from "./menu-overlay";
+import { NavbarTopRow } from "./navbar-top-row";
+import type { OverlayMode } from "./navbar-top-row";
+import { SearchOverlay } from "./search-overlay";
 
-const teamSections = [
-  { href: "/aerostructures", label: "Aerostructures" },
-  { href: "/avionics", label: "Avionics" },
-  { href: "/flight-ops", label: "Flight Operations" },
-  { href: "/operations", label: "Operations" },
-  { href: "/propulsion", label: "Propulsion" },
-];
-
-const competitionSections = [
-  { href: "/nfc-2025", label: "NFC 2025" },
-  { href: "/suas-2026-home", label: "SUAS 2026 Homepage" },
-  { href: "/suas-2026-team", label: "SUAS 2026 Team" },
-];
-
-{/* Main sidebar container: changes width smoothly when expanded/collapsed */}
 export default function Sidebar() {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [teamOpen, setTeamOpen] = useState(true);
-  const [competitionsOpen, setCompetitionsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const sidebarRef = useRef<HTMLElement>(null);
+  const [overlayMode, setOverlayMode] = useState<OverlayMode>(null);
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+  const menuId = useId();
+  const searchId = useId();
 
-  // Opens the sidebar when a user hovers their mouse over an icon
-  const expandFromIcon = () => {
-    if (!isExpanded) {
-      setIsExpanded(true);
+  const isOverlayOpen = overlayMode !== null;
+  const isSearchMode = overlayMode === "search";
+
+  const closeOverlay = useCallback(() => {
+    setOverlayMode(null);
+    setExpandedGroup(null);
+  }, []);
+
+  // The menu and search views share one full-screen overlay shell.
+  useEffect(() => {
+    if (!isOverlayOpen) {
+      return;
     }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeOverlay();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeOverlay, isOverlayOpen]);
+
+  const openMenu = () => {
+    setExpandedGroup(null);
+    setOverlayMode("menu");
+  };
+
+  const openSearch = () => {
+    setExpandedGroup(null);
+    setOverlayMode("search");
   };
 
   return (
-    <aside
-      ref={sidebarRef}
-      className={`fixed inset-y-0 left-0 z-50 overflow-hidden border-r border-blue-500/70 bg-black-500 text-white shadow-2xl transition-[width] duration-300 ease-out ${
-        isExpanded ? "w-[268px]" : "w-[68px]"
-      }`}
-      onMouseLeave={() => setIsExpanded(false)} // Closes the sidebar when the mouse leaves its area
-    >
-      {/* Background visual styles: sleek dark metallic gradient and soft blur */}
-      <div className="absolute inset-0 bg-[linear-gradient(155deg,#001f49_0%,#02040a_46%,#05080d_100%)]" />
-      <div className="absolute inset-0 backdrop-blur-[2px]" />
-
-      {/* Navigation Layout Wrapper */}
-      <nav className="relative flex h-full flex-col gap-5 px-3 py-10">
-        
-        {/* Homepage Link & Team Logo: Swaps between micro-logo and full brand text on hover */}
-        <Link
-          href="/"
-          className={`mb-2 flex h-24 items-end ${
-            isExpanded ? "justify-center" : "justify-center"
-          }`}
-          onMouseEnter={expandFromIcon}
-        >
-          <Image
-            src={isExpanded ? "/logos/logo-with-text.svg" : "/logos/logo.svg"}
-            alt="MUAS Logo"
-            width={isExpanded ? 150 : 44}
-            height={isExpanded ? 80 : 44}
-            className="h-auto w-auto"
-            priority
+    <>
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[linear-gradient(155deg,#001f49_0%,#02040a_46%,#05080d_100%)] text-white shadow-[0_12px_32px_rgba(0,0,0,0.16)]">
+        <nav>
+          <NavbarTopRow
+            overlayMode={overlayMode}
+            menuId={menuId}
+            searchId={searchId}
+            openMenu={openMenu}
+            openSearch={openSearch}
+            closeOverlay={closeOverlay}
           />
-        </Link>
+        </nav>
+      </header>
 
-        {/* Search */}
-        <SidebarSearch
-          isExpanded={isExpanded}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onExpand={expandFromIcon}
-        />
-
-        {/* Main List of Navigation Links */}
-        <div className="flex flex-col gap-2">
-          
-          {/* Team links (dropdown) */}
-          <SidebarGroup
-            href="/our-team"
-            icon={<UsersRound className="size-5" />}
-            label="Our Team"
-            isExpanded={isExpanded}
-            isOpen={teamOpen}
-            onExpand={expandFromIcon}
-            onToggle={() => setTeamOpen((current) => !current)}
-          >
-            {teamSections.map((item) => (
-              <SidebarSubLink key={item.href} href={item.href} label={item.label} />
-            ))}
-          </SidebarGroup>
-
-          <SidebarLink
-            href="/our-drones"
-            icon={<Plane className="size-5" />}
-            label="Our Drones"
-            isExpanded={isExpanded}
-            onExpand={expandFromIcon}
-          />
-
-          {/* Competition links (dropdown) */}
-          <SidebarGroup
-            href="/competitions"
-            icon={<Trophy className="size-5" />}
-            label="Competitions"
-            isExpanded={isExpanded}
-            isOpen={competitionsOpen}
-            onExpand={expandFromIcon}
-            onToggle={() => setCompetitionsOpen((current) => !current)}
-          >
-            {competitionSections.map((item) => (
-              <SidebarSubLink key={item.href} href={item.href} label={item.label} />
-            ))}
-          </SidebarGroup>
-
-          <SidebarLink
-            href="/newsletter"
-            icon={<Mail className="size-5" />}
-            label="Newsletter"
-            isExpanded={isExpanded}
-            onExpand={expandFromIcon}
-          />
-          <SidebarLink
-            href="/our-sponsors"
-            icon={<Handshake className="size-5" />}
-            label="Sponsors"
-            isExpanded={isExpanded}
-            onExpand={expandFromIcon}
-          />
-          <SidebarLink
-            href="/recruitment"
-            icon={<UserRoundSearch className="size-5" />}
-            label="Recruitment"
-            isExpanded={isExpanded}
-            onExpand={expandFromIcon}
-          />
-          <SidebarLink
-            href="/contact-us"
-            icon={<MessageCircle className="size-5" />}
-            label="Contact Us"
-            isExpanded={isExpanded}
-            onExpand={expandFromIcon}
-          />
+      <div
+        id={menuId}
+        role="dialog"
+        aria-modal="true"
+        aria-label={isSearchMode ? "Site search" : "Main navigation"}
+        className={`fixed inset-0 z-[60] overflow-y-auto bg-[#02050b] text-white transition-[opacity,visibility] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          isOverlayOpen ? "visible opacity-100" : "invisible opacity-0"
+        }`}
+      >
+        <div className="pointer-events-none fixed inset-0">
+          <div className="absolute inset-0 bg-[linear-gradient(155deg,#001f49_0%,#02040a_46%,#05080d_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(84,134,200,0.2),transparent_30%),radial-gradient(circle_at_82%_18%,rgba(176,199,230,0.08),transparent_28%)]" />
+          <div className="absolute inset-x-0 top-0 h-20 border-b border-white/10" />
+          <div className="absolute bottom-0 left-0 h-1/2 w-full bg-[linear-gradient(0deg,rgba(0,0,0,0.46),transparent)]" />
         </div>
-      </nav>
-    </aside>
+
+        <div
+          className={`relative flex min-h-screen flex-col transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            isOverlayOpen ? "translate-y-0" : "translate-y-4"
+          }`}
+        >
+          <NavbarTopRow
+            overlayMode={overlayMode}
+            menuId={menuId}
+            searchId={searchId}
+            openMenu={openMenu}
+            openSearch={openSearch}
+            closeOverlay={closeOverlay}
+            isOverlayHeader
+          />
+
+          {overlayMode === "menu" ? (
+            <MenuOverlay
+              menuId={menuId}
+              isOverlayOpen={isOverlayOpen}
+              expandedGroup={expandedGroup}
+              setExpandedGroup={setExpandedGroup}
+              closeOverlay={closeOverlay}
+            />
+          ) : null}
+
+          {overlayMode === "search" ? (
+            <SearchOverlay searchId={searchId} closeOverlay={closeOverlay} />
+          ) : null}
+        </div>
+      </div>
+    </>
   );
 }
-
-
-
-

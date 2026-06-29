@@ -9,20 +9,20 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/favicon/favicon-16x16.png",
+        url: "/favicon/favicon-16x16.png?v=20260624",
         sizes: "16x16",
         type: "image/png",
       },
       {
-        url: "/favicon/favicon-32x32.png",
+        url: "/favicon/favicon-32x32.png?v=20260624",
         sizes: "32x32",
         type: "image/png",
       },
     ],
-    shortcut: "/favicon/favicon-32x32.png",
+    shortcut: "/favicon/favicon-32x32.png?v=20260624",
     apple: [
       {
-        url: "/favicon/apple-touch-icon.png",
+        url: "/favicon/apple-touch-icon.png?v=20260624",
         sizes: "180x180",
         type: "image/png",
       },
@@ -39,8 +39,9 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className="flex min-h-screen flex-col bg-background text-foreground antialiased">
         <NavBar />
-        <div className="flex min-h-screen flex-1 flex-col pl-[68px]">
-          <main className="w-full flex-1">{children}</main>
+        {/* Offset page content below the fixed top navigation bar. */}
+        <div className="flex min-h-screen flex-1 flex-col pt-20">
+          <main className="flex w-full flex-1 flex-col">{children}</main>
           <Footer />
         </div>
       </body>

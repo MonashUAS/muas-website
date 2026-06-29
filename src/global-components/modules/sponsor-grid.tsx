@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-type Sponsor = {
+export type Sponsor = {
   name: string;
   src: string;
   frameClassName: string;
@@ -14,7 +14,9 @@ type SponsorRow = {
   sponsors: Sponsor[];
 };
 
-const sponsorRows: SponsorRow[] = [
+// Shared sponsor data. The sponsors page renders it as a grid, while the
+// homepage carousel flattens the same rows so logo updates stay in one place.
+export const sponsorRows: SponsorRow[] = [
   {
     desktopColumns: 2,
     sponsors: [
@@ -173,8 +175,8 @@ export function SponsorGrid() {
           rowIndex === 0
             ? ""
             : rowIndex === sponsorRows.length - 1
-              ? "mt-2 sm:mt-3 lg:mt-4"
-              : "mt-6 sm:mt-8 lg:mt-10";
+              ? "mt-1 sm:mt-3 lg:mt-4"
+              : "mt-3 sm:mt-6 lg:mt-10";
 
         return (
           <div
@@ -183,7 +185,7 @@ export function SponsorGrid() {
               rowElements.current[rowIndex] = element;
             }}
             data-row-index={rowIndex}
-            className={`grid grid-cols-12 gap-x-8 gap-y-4 transition-[opacity,transform] duration-700 ease-out motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none ${rowSpacingClass} ${
+            className={`grid grid-cols-12 gap-y-2 transition-[opacity,transform] duration-700 ease-out motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none sm:gap-x-8 sm:gap-y-4 ${rowSpacingClass} ${
               visibleRows[rowIndex]
                 ? "translate-y-0 opacity-100"
                 : "translate-y-5 opacity-0"
@@ -192,6 +194,8 @@ export function SponsorGrid() {
             {row.sponsors.map((sponsor, sponsorIndex) => {
               const isTabletOrphan =
                 row.desktopColumns === 3 && sponsorIndex === 2;
+              const isTabletCentered =
+                row.desktopColumns === 1 || isTabletOrphan;
 
               const desktopColumnClass =
                 row.desktopColumns === 1
@@ -205,25 +209,27 @@ export function SponsorGrid() {
                   key={sponsor.name}
                   className={`col-span-12 flex items-center justify-center sm:col-span-6 ${
                     row.desktopColumns === 2
-                      ? "h-56 sm:h-60 lg:h-64"
-                      : "h-40 sm:h-44 lg:h-48"
+                      ? "h-44 sm:h-52 lg:h-64"
+                      : "h-32 sm:h-40 lg:h-48"
                   } ${desktopColumnClass} ${
-                    isTabletOrphan
+                    isTabletCentered
                       ? "sm:col-start-4 lg:col-start-auto"
                       : ""
                   }`}
                 >
-                  <div className={`relative ${sponsor.frameClassName}`}>
+                  <div
+                    className={`relative max-h-full ${sponsor.frameClassName}`}
+                  >
                     <Image
                       src={sponsor.src}
                       alt={`${sponsor.name} logo`}
                       fill
                       sizes={
                         row.desktopColumns === 1
-                          ? "(min-width: 1024px) 18rem, (min-width: 640px) 18rem, 85vw"
+                          ? "(min-width: 1024px) 18rem, (min-width: 640px) 18rem, calc(100vw - 116px)"
                           : row.desktopColumns === 2
-                            ? "(min-width: 1024px) 32rem, (min-width: 640px) 45vw, 85vw"
-                            : "(min-width: 1024px) 21rem, (min-width: 640px) 45vw, 85vw"
+                            ? "(min-width: 1024px) 32rem, (min-width: 640px) calc(50vw - 74px), calc(100vw - 116px)"
+                            : "(min-width: 1024px) 21rem, (min-width: 640px) calc(50vw - 74px), calc(100vw - 116px)"
                       }
                       className="object-contain"
                     />
