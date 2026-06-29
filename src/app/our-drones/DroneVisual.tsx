@@ -5,7 +5,8 @@ type DroneVisualProps = {
   className?: string;
 };
 
-// DroneVisual renders a real drone image when available, otherwise a branded placeholder.
+// DroneVisual renders a real drone image when available, otherwise a branded placeholder. 
+//TODO: REMOVE THIS ONCE ALL PLACEHOLDERS ARE REPLACED WITH REAL DRONE IMAGES.
 export function DroneVisual({ drone, className = "" }: DroneVisualProps) {
   if (drone.heroImage) {
     return (
