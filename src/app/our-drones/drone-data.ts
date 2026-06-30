@@ -20,7 +20,7 @@ export const drones: Drone[] = [
     slug: "redback",
     name: "Redback",
     description: [
-      "Redback is MUAS' latest competition aircraft, designed around rapid deployment, reliable autonomous flight, and search-and-rescue mission capability.",
+      "Redback is our latest competition aircraft (SUAS 2026), designed around rapid deployment and search-and-rescue mission capability.",
     ],
     heroImage: "/images/drones/redback.png",
     features: [
