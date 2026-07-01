@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import type { Drone } from "./drone-data";
-import { DroneVisual } from "./DroneVisual";
+import { DroneVisual } from "./drone-visual";
 import { useWheelNavigation } from "./useWheelNavigation";
 
 type DroneImageCarouselProps = {

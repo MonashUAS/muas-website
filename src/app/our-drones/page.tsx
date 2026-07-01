@@ -1,4 +1,4 @@
-import { DroneCarousel } from "./DroneCarousel";
+import { DroneCarousel } from "./drone-carousel";
 import { drones } from "./drone-data";
 
 // OurDronesPage renders the interactive fleet carousel.

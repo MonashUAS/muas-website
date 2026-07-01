@@ -3,9 +3,9 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Drone } from "./drone-data";
-import { DroneImageCarousel } from "./DroneImageCarousel";
-import { DroneVisual } from "./DroneVisual";
-import { SpecList } from "./SpecList";
+import { DroneImageCarousel } from "./drone-image-carousel";
+import { DroneVisual } from "./drone-visual";
+import { SpecList } from "./spec-list";
 
 type DroneDetailsModalProps = {
   drone: Drone;
