@@ -44,7 +44,7 @@ export const searchRegistry: SearchResult[] = [
   {
     title: "Aerostructures",
     category: "Teams",
-    url: "/aerostructures",
+    url: "/sections/aerostructures",
     description:
       "Learn about the team responsible for airframes, structures, composites, and aircraft integration.",
     keywords: ["airframe", "structures", "composites"],
@@ -52,7 +52,7 @@ export const searchRegistry: SearchResult[] = [
   {
     title: "Avionics",
     category: "Teams",
-    url: "/avionics",
+    url: "/sections/avionics",
     description:
       "See how MUAS develops onboard electronics, software, sensing, and aircraft control systems.",
     keywords: ["electronics", "software", "systems"],
@@ -60,7 +60,7 @@ export const searchRegistry: SearchResult[] = [
   {
     title: "Flight Operations",
     category: "Teams",
-    url: "/flight-ops",
+    url: "/sections/flight-ops",
     description:
       "Find out how MUAS plans, tests, and operates aircraft safely during flight campaigns.",
     keywords: ["flight ops", "pilots", "testing"],
@@ -68,7 +68,7 @@ export const searchRegistry: SearchResult[] = [
   {
     title: "Operations",
     category: "Teams",
-    url: "/operations",
+    url: "/sections/operations",
     description:
       "Explore the business, logistics, media, and organisational work that keeps MUAS running.",
     keywords: ["business", "logistics", "media"],
@@ -76,7 +76,7 @@ export const searchRegistry: SearchResult[] = [
   {
     title: "Propulsion",
     category: "Teams",
-    url: "/propulsion",
+    url: "/sections/propulsion",
     description:
       "Learn about the motors, batteries, powertrain, and performance systems behind MUAS aircraft.",
     keywords: ["motor", "battery", "powertrain"],
