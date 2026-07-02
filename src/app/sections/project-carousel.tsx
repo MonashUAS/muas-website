@@ -41,7 +41,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
         return (
           <button
             aria-label={`Show ${project.name} project`}
-            className="absolute flex w-[70vw] max-w-2xl min-w-64 cursor-pointer flex-col text-left text-white transition-all duration-500 ease-out"
+            className={`absolute flex w-[70vw] max-w-2xl min-w-64 ${isActive ? 'cursor-default' : 'cursor-pointer'} flex-col text-left text-white transition-all duration-500 ease-out`}
             key={project.name}
             onClick={() => setActiveIndex(index)}
             style={{
@@ -59,7 +59,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
               src={project.image}
               width={1024}
             />
-            <span className="mt-5 block text-h6 font-black uppercase leading-none underline decoration-white underline-offset-8">
+            <span className="mt-5 block text-h6 font-black uppercase underline decoration-white underline-offset-8 leading-tight">
               {project.name}
             </span>
             <span className="mt-5 block max-w-2xl text-b2 leading-relaxed text-blue-50">
