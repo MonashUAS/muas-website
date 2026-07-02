@@ -59,7 +59,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
           <X aria-hidden size={34} strokeWidth={3} />
         </button>
 
-        <h2 className="text-h5 font-black uppercase leading-none text-blue-900 sm:text-h4 ">
+        <h2 className="text-h5 font-black uppercase leading-none text-blue-900 sm:text-h4 tracking-[-0.05em]">
           {drone.name}.
         </h2>
 
@@ -73,7 +73,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
           <DroneVisual drone={drone} />
         </div>
 
-        <div className="mx-auto mt-10 grid max-w-4xl gap-10 sm:grid-cols-2">
+        <div className="mx-auto mt-10 grid max-w-4xl gap-10 sm:grid-cols-2 ">
           <SpecList specs={drone.features} title="Key Features" />
           <SpecList specs={drone.dimensions} title="Dimensions" />
         </div>

@@ -66,7 +66,7 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
 // HeroVideo renders the fixed autoplaying section video behind the folding content.
 function HeroVideo({ section, shade }: { section: TeamSection; shade: number }) {
   return (
-    <section className="fixed inset-x-0 top-20 z-0 flex h-[calc(100vh-5rem)] items-center justify-center overflow-hidden">
+    <section className="fixed inset-x-0 top-20 z-0 flex h-[calc(100vh-5rem)] items-center justify-center overflow-hidden ">
       <video
         aria-label={`${section.name} hero video`}
         autoPlay
@@ -78,7 +78,7 @@ function HeroVideo({ section, shade }: { section: TeamSection; shade: number }) 
       />
       <div className="absolute inset-0 bg-black transition-colors duration-200" style={{ opacity: shade }} />
       <div className="relative z-10 mx-auto max-w-5xl px-6 text-center uppercase">
-        <h1 className="text-h4 font-black leading-none sm:text-h2">{section.name}</h1>
+        <h1 className="text-h4 font-black leading-none sm:text-h2 tracking-[-0.05em]">{section.name}</h1>
         <p className="mx-auto mt-5 max-w-3xl text-b2 font-black leading-relaxed sm:text-b1">
           {section.shortDescription}
         </p>
@@ -167,7 +167,7 @@ function Projects({ section }: { section: TeamSection }) {
         isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >
-      <h2 className="text-center text-h6 font-black sm:text-h5">Projects</h2>
+      <h2 className="text-center text-h6 font-black sm:text-h5 tracking-[-0.05em]">Projects</h2>
       <ProjectCarousel projects={section.projects} />
     </section>
   );
@@ -215,7 +215,7 @@ function NextSection({ section }: { section: TeamSection }) {
         href={`/sections/${section.slug}`}
         onClick={handleNextClick}
       >
-        <h2 className="text-h6 font-black leading-tight sm:text-h5">
+        <h2 className="text-h6 font-black leading-tight sm:text-h5 tracking-[-0.05em]">
           Next Section: <span className="underline underline-offset-8">{section.name}</span>
         </h2>
         <div ref={previewRef} className="mt-10 aspect-[16/9] w-full max-w-3xl overflow-hidden bg-blue-900">

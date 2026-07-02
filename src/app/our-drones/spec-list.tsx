@@ -9,7 +9,7 @@ type SpecListProps = {
 export function SpecList({ title, specs }: SpecListProps) {
   return (
     <section>
-      <h3 className="mb-5 text-center text-h7 font-black uppercase leading-none text-blue-900">
+      <h3 className="mb-5 text-center text-h7 font-black uppercase leading-none text-blue-900 tracking-[-0.05em]">
         {title}
       </h3>
       <dl className="mx-auto max-w-sm space-y-4 text-center text-caption sm:text-b2">
