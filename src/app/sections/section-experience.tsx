@@ -100,7 +100,7 @@ function ContentSections({ section }: { section: TeamSection }) {
 // Description renders the section overview and lead portraits over an interactive blue field.
 function Description({ section }: { section: TeamSection }) {
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-col items-center py-20 text-center">
+    <section className="h-[calc(100vh-10rem)] mx-auto flex w-full max-w-5xl flex-col items-center justify-center py-20 text-center">
       <ParticleText text={section.description} />
       <h2 className="mt-14 text-subtitle font-black">
         {section.leads.length === 1 ? "Section Lead" : "Section Leads"}
@@ -163,7 +163,7 @@ function Projects({ section }: { section: TeamSection }) {
   return (
     <section
       ref={sectionRef}
-      className={`overflow-hidden py-20 transition duration-[1600ms] ease-out ${
+      className={`h-[calc(100vh)] flex flex-col items-center justify-center overflow-hidden py-20 transition duration-[1600ms] ease-out ${
         isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >
@@ -208,10 +208,10 @@ function NextSection({ section }: { section: TeamSection }) {
   };
 
   return (
-    <section className="relative z-10 bg-white px-6 py-20 text-blue-900">
+    <section className="relative z-10 flex h-[calc(100vh-8rem)] items-center justify-center bg-white px-6 py-20 text-blue-900">
       <Link
         aria-label={`Learn about ${section.name}`}
-        className="group mx-auto flex max-w-4xl flex-col items-center text-center"
+        className="group flex max-w-4xl flex-col items-center text-center"
         href={`/sections/${section.slug}`}
         onClick={handleNextClick}
       >
@@ -230,6 +230,7 @@ function NextSection({ section }: { section: TeamSection }) {
           />
         </div>
       </Link>
+
       {transitionRect ? (
         <TransitionPreview
           isFullScreen={isTransitionFullScreen}
