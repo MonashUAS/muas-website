@@ -68,6 +68,7 @@ export default function OurSponsorsPage() {
               <h1 className="max-w-full break-words text-[clamp(3.75rem,12vw,9rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
                 Sponsor Us
               </h1>
+
               <p className="mt-6 max-w-3xl text-b1 leading-relaxed text-blue-50 sm:text-subtitle">
                 Join leading companies in supporting student-led aerospace
                 innovation, hands-on engineering, and the next generation of
@@ -85,6 +86,7 @@ export default function OurSponsorsPage() {
                       <p className="break-words text-h7 font-bold leading-tight text-white sm:text-h5">
                         {stat.value}
                       </p>
+
                       <p className="mt-2 text-b2 leading-snug text-blue-100 sm:text-b1">
                         {stat.label}
                       </p>
@@ -96,6 +98,7 @@ export default function OurSponsorsPage() {
 
             <div className="relative min-w-0 lg:self-stretch">
               <div className="absolute -inset-8 bg-blue-500/18 blur-3xl" />
+
               <div className="relative h-full min-h-[230px] border border-blue-200/25 bg-blue-900/20 shadow-[0_32px_100px_rgba(0,0,0,0.5)] [clip-path:polygon(8%_0,100%_0,100%_100%,0_100%)] sm:min-h-[300px] lg:min-h-full">
                 <div className="relative h-[230px] overflow-hidden bg-blue-900 sm:h-[300px] lg:h-full [clip-path:polygon(8%_0,100%_0,100%_100%,0_100%)]">
                   <Image
@@ -106,6 +109,7 @@ export default function OurSponsorsPage() {
                     sizes="(min-width: 1024px) 48vw, 100vw"
                     className="object-cover object-[50%_52%]"
                   />
+
                   <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.42)_0%,rgba(0,31,73,0.08)_48%,rgba(0,0,0,0.24)_100%),linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,31,73,0.48)_100%)]" />
                   <div className="absolute inset-x-6 top-5 h-px bg-blue-100/35" />
                   <div className="absolute bottom-5 right-7 h-10 w-28 border-b border-r border-blue-100/30" />
@@ -121,36 +125,37 @@ export default function OurSponsorsPage() {
         headingId="thanks-to-heading"
       />
 
-      <section className="relative overflow-hidden bg-[linear-gradient(145deg,#02040a_0%,#001126_46%,#001f49_100%)] px-5 py-14 text-white sm:px-8 sm:py-20 lg:px-12">
+      <section className="relative overflow-hidden bg-[linear-gradient(145deg,#02040a_0%,#001126_46%,#001f49_100%)] px-5 py-10 text-white sm:px-8 sm:py-16 lg:px-12 lg:py-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(84,134,200,0.18),transparent_30%),radial-gradient(circle_at_84%_64%,rgba(0,74,173,0.2),transparent_34%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:86px_86px] opacity-25" />
 
-        <div className="relative mx-auto grid max-w-[1720px] gap-10 lg:grid-cols-[minmax(280px,0.7fr)_minmax(0,1fr)] lg:gap-14">
+        <div className="relative mx-auto grid max-w-[1720px] gap-8 lg:grid-cols-[minmax(280px,0.7fr)_minmax(0,1fr)] lg:gap-14">
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <h2 className="text-[clamp(3rem,7vw,6.4rem)] font-medium leading-[0.9] tracking-[-0.05em]">
+            <h2 className="text-[clamp(2.8rem,7vw,6.4rem)] font-medium leading-[0.9] tracking-[-0.05em]">
               Why Sponsor MUAS?
             </h2>
-            <p className="mt-5 max-w-xl text-b1 leading-relaxed text-blue-50 sm:text-subtitle">
+
+            <p className="mt-4 max-w-xl text-b1 leading-relaxed text-blue-50 sm:mt-5 sm:text-subtitle">
               Partner with MUAS to support student-led aerospace engineering
               and the next generation of drone technology.
             </p>
 
             <Link
               href="/contact-us"
-              className="mt-8 inline-flex min-h-12 items-center justify-center rounded bg-white px-6 py-3 text-b1 font-bold text-blue-900 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="mt-6 inline-flex min-h-11 items-center justify-center rounded bg-white px-5 py-2.5 text-b1 font-bold text-blue-900 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:mt-8 sm:min-h-12 sm:px-6 sm:py-3"
             >
               Become a Sponsor
             </Link>
           </div>
 
-          <div className="space-y-5">
-            {sponsorBenefitItems.map((benefit, index) => {
+          <div className="space-y-4 sm:space-y-5">
+            {sponsorBenefitItems.map((benefit) => {
               return (
                 <div
                   key={benefit.title}
-                  className="group grid overflow-hidden rounded-[1.35rem] border border-white/12 bg-white/[0.07] shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-md sm:grid-cols-[minmax(190px,0.42fr)_minmax(0,1fr)] sm:rounded-[1.75rem]"
+                  className="group grid overflow-hidden rounded-[1.15rem] border border-white/12 bg-white/[0.07] shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-md sm:grid-cols-[minmax(190px,0.42fr)_minmax(0,1fr)] sm:rounded-[1.75rem]"
                 >
-                  <div className="relative h-52 overflow-hidden bg-blue-900 sm:h-auto sm:min-h-64 sm:[clip-path:polygon(0_0,100%_0,88%_100%,0_100%)]">
+                  <div className="relative h-36 overflow-hidden bg-blue-900 sm:h-auto sm:min-h-64 sm:[clip-path:polygon(0_0,100%_0,88%_100%,0_100%)]">
                     <Image
                       src={benefit.image}
                       alt={benefit.alt}
@@ -158,17 +163,16 @@ export default function OurSponsorsPage() {
                       sizes="(min-width: 1024px) 28vw, (min-width: 640px) 38vw, 100vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
                     />
+
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,31,73,0.48)_100%)]" />
                   </div>
 
-                  <div className="relative p-5 sm:p-7 lg:p-8">
-                    <div className="absolute right-5 top-5 text-b2 font-bold text-blue-100/50">
-                      {String(index + 1).padStart(2, "0")}
-                    </div>
-                    <h3 className="pr-12 text-h7 font-bold leading-tight tracking-[-0.02em] text-white sm:text-h6">
+                  <div className="p-4 sm:p-7 lg:p-8">
+                    <h3 className="text-subtitle font-bold leading-tight tracking-[-0.02em] text-white sm:text-h6">
                       {benefit.title}
                     </h3>
-                    <p className="mt-4 text-b1 leading-relaxed text-blue-50/82">
+
+                    <p className="mt-2.5 text-b2 leading-relaxed text-blue-50/82 sm:mt-4 sm:text-b1">
                       {benefit.description}
                     </p>
                   </div>
