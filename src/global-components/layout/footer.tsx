@@ -13,7 +13,7 @@ const footerLinks = [
   { href: "/our-team", label: "Our Team" },
   { href: "/our-drones", label: "Our Drones" },
   { href: "/competitions", label: "Competitions" },
-  { href: "/our-sponsors", label: "Sponsors" },
+  { href: "/our-sponsors", label: "Sponsor Us" },
   { href: "/recruitment", label: "Recruitment" },
   { href: "/contact-us", label: "Contact Us" },
 ];

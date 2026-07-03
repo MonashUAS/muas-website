@@ -1,6 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
+import Image from "next/image";
 import { useState } from "react";
 import {
   LuArrowUpRight,
@@ -12,6 +13,8 @@ import {
 } from "react-icons/lu";
 
 type SubmissionState = "idle" | "loading" | "success" | "error";
+
+const contactHeroImage = "/images/contact us page/contact-us.JPG";
 
 const socialCards = [
   {
@@ -97,6 +100,15 @@ export default function ContactUsPage() {
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#02040a_0%,#001f49_44%,#02040a_100%)] text-white">
       <section className="relative overflow-hidden px-5 pb-8 pt-12 sm:px-8 sm:pb-14 sm:pt-20 lg:px-12 lg:pb-24 lg:pt-32">
+        <Image
+          src={contactHeroImage}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="pointer-events-none object-cover object-[center_42%] opacity-18"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(2,4,10,0.95)_0%,rgba(0,31,73,0.78)_48%,rgba(2,4,10,0.7)_100%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_22%,rgba(84,134,200,0.24),transparent_34%)]" />
 
         <div className="relative mx-auto max-w-[1720px]">

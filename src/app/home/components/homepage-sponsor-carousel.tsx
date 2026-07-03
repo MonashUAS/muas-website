@@ -8,18 +8,26 @@ import { sponsorRows } from "@/global-components/modules/sponsor-grid";
 const sponsors = sponsorRows.flatMap((row) => row.sponsors);
 const duplicatedSponsors = [...sponsors, ...sponsors];
 
-export function HomepageSponsorCarousel() {
+type HomepageSponsorCarouselProps = {
+  heading?: string;
+  headingId?: string;
+};
+
+export function HomepageSponsorCarousel({
+  heading = "Made Possible By",
+  headingId = "homepage-sponsors-heading",
+}: HomepageSponsorCarouselProps) {
   return (
     <section
       className="overflow-hidden bg-white px-4 py-14 text-blue-900 sm:px-6 sm:py-16 lg:px-8"
-      aria-labelledby="homepage-sponsors-heading"
+      aria-labelledby={headingId}
     >
       <div className="mx-auto max-w-[1720px]">
         <h2
-          id="homepage-sponsors-heading"
+          id={headingId}
           className="text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-none tracking-[-0.05em]"
         >
-          Made Possible By
+          {heading}
         </h2>
 
         <div

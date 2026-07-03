@@ -51,7 +51,7 @@ export const navigationGroups: NavGroup[] = [
   {
     label: "Connect",
     links: [
-      { href: "/our-sponsors", label: "Sponsors" },
+      { href: "/our-sponsors", label: "Sponsor Us" },
       { href: "/recruitment", label: "Recruitment" },
       { href: "/contact-us", label: "Contact Us" },
     ],

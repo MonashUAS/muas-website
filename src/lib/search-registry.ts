@@ -154,7 +154,7 @@ export const searchRegistry: SearchResult[] = [
     keywords: ["projects", "redback"],
   },
   {
-    title: "Sponsors",
+    title: "Sponsor Us",
     category: "Connect",
     url: "/our-sponsors",
     description:
