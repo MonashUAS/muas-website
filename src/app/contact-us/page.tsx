@@ -57,6 +57,7 @@ export default function ContactUsPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     const form = event.currentTarget;
 
     setSubmissionState("loading");
@@ -77,6 +78,7 @@ export default function ContactUsPage() {
         },
         body: JSON.stringify(payload),
       });
+
       const responsePayload = await response.json().catch(() => null);
 
       if (!response.ok) {
@@ -94,25 +96,25 @@ export default function ContactUsPage() {
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#02040a_0%,#001f49_44%,#02040a_100%)] text-white">
-      <section className="relative overflow-hidden px-5 pb-16 pt-24 sm:px-8 sm:pb-20 sm:pt-28 lg:px-12 lg:pb-24 lg:pt-32">
+      <section className="relative overflow-hidden px-5 pb-8 pt-12 sm:px-8 sm:pb-14 sm:pt-20 lg:px-12 lg:pb-24 lg:pt-32">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_22%,rgba(84,134,200,0.24),transparent_34%)]" />
 
         <div className="relative mx-auto max-w-[1720px]">
           <div className="max-w-4xl">
-            <h1 className="text-[clamp(4rem,10vw,9rem)] font-medium leading-[0.86] tracking-[-0.06em] text-white">
+            <h1 className="text-[clamp(3.35rem,14vw,9rem)] font-medium leading-[0.86] tracking-[-0.06em] text-white">
               Get in Touch
             </h1>
           </div>
         </div>
       </section>
 
-      <section className="px-5 pb-10 sm:px-8 sm:pb-20 lg:px-12 lg:pb-52">
-        <div className="mx-auto grid max-w-[1720px] gap-8 lg:min-h-[720px] lg:grid-cols-2 lg:items-stretch">
+      <section className="px-5 pb-8 sm:px-8 sm:pb-12 lg:px-12 lg:pb-20">
+        <div className="mx-auto grid max-w-[1720px] gap-5 sm:gap-8 lg:min-h-[720px] lg:grid-cols-2 lg:items-stretch">
           <form
             onSubmit={handleSubmit}
-            className="flex min-h-[680px] flex-col rounded-[1.75rem] border border-white/18 bg-white/[0.13] p-6 shadow-2xl shadow-black/28 backdrop-blur-xl sm:p-8 lg:p-10"
+            className="flex min-h-0 flex-col rounded-[1.25rem] border border-white/18 bg-white/[0.13] p-4 shadow-2xl shadow-black/28 backdrop-blur-xl sm:min-h-[620px] sm:rounded-[1.75rem] sm:p-8 lg:min-h-[680px] lg:p-10"
           >
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-5">
               <ContactField
                 id="name"
                 label="Name"
@@ -131,7 +133,7 @@ export default function ContactUsPage() {
               />
             </div>
 
-            <div className="mt-5">
+            <div className="mt-3.5 sm:mt-5">
               <ContactField
                 id="subject"
                 label="Subject"
@@ -140,8 +142,8 @@ export default function ContactUsPage() {
               />
             </div>
 
-            <label className="mt-5 block flex-1" htmlFor="message">
-              <span className="text-b2 font-medium uppercase tracking-[0.18em] text-blue-50/62">
+            <label className="mt-3.5 block flex-1 sm:mt-5" htmlFor="message">
+              <span className="text-[0.68rem] font-medium uppercase tracking-[0.18em] text-blue-50/62 sm:text-b2">
                 Message
               </span>
 
@@ -149,20 +151,20 @@ export default function ContactUsPage() {
                 id="message"
                 name="message"
                 required
-                rows={11}
-                className="mt-2 min-h-[300px] w-full resize-y rounded-xl border border-white/18 bg-black/20 px-4 py-3 text-b1 text-white outline-none transition-colors placeholder:text-blue-50/32 focus:border-blue-200/70 focus:bg-black/28 focus:ring-1 focus:ring-blue-200/50"
+                rows={6}
+                className="mt-1.5 min-h-[135px] w-full resize-y rounded-lg border border-white/18 bg-black/20 px-3.5 py-3 text-b1 text-white outline-none transition-colors placeholder:text-blue-50/32 focus:border-blue-200/70 focus:bg-black/28 focus:ring-1 focus:ring-blue-200/50 sm:mt-2 sm:min-h-[260px] sm:rounded-xl sm:px-4 lg:min-h-[300px]"
               />
             </label>
 
             <button
               type="submit"
               disabled={submissionState === "loading"}
-              className="mt-7 inline-flex min-h-12 w-fit items-center justify-center rounded-full bg-white px-7 text-b1 font-medium text-blue-950 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 disabled:cursor-not-allowed disabled:bg-white/60 disabled:text-blue-950/70 motion-reduce:transition-none"
+              className="mt-4 inline-flex min-h-10 w-fit items-center justify-center rounded-full bg-white px-5 text-b1 font-medium text-blue-950 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 disabled:cursor-not-allowed disabled:bg-white/60 disabled:text-blue-950/70 motion-reduce:transition-none sm:mt-7 sm:min-h-12 sm:px-7"
             >
               {submissionState === "loading" ? "Sending..." : "Send Message"}
             </button>
 
-            <div className="mt-4 min-h-6" aria-live="polite">
+            <div className="mt-3 min-h-6 sm:mt-4" aria-live="polite">
               {submissionState === "success" ? (
                 <p className="text-b1 text-blue-50">
                   Message sent successfully. We&apos;ll get back to you soon.
@@ -177,11 +179,11 @@ export default function ContactUsPage() {
             </div>
           </form>
 
-          <div className="min-h-[680px] overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.055] p-4 shadow-2xl shadow-black/20 backdrop-blur-md">
+          <div className="min-h-[320px] overflow-hidden rounded-[1.35rem] border border-white/10 bg-white/[0.055] p-3 shadow-2xl shadow-black/20 backdrop-blur-md sm:min-h-[440px] sm:rounded-[1.75rem] sm:p-4 lg:min-h-[680px]">
             <iframe
               src="https://www.google.com/maps?q=Monash+Makerspace,+G.37A+23+College+Walk,+Monash+University+Clayton+Campus+3800&output=embed"
               title="Google Maps location of Monash Makerspace"
-              className="h-[560px] w-full rounded-[1.25rem] border-0 lg:h-full"
+              className="h-[320px] w-full rounded-[1rem] border-0 sm:h-[440px] sm:rounded-[1.25rem] lg:h-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen
@@ -200,7 +202,7 @@ export default function ContactUsPage() {
             </div>
           </div>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {socialCards.map((card) => {
               const Icon = card.icon;
 
@@ -263,7 +265,7 @@ function ContactField({
 }: ContactFieldProps) {
   return (
     <label className="block" htmlFor={id}>
-      <span className="text-b2 font-medium uppercase tracking-[0.18em] text-blue-50/62">
+      <span className="text-[0.68rem] font-medium uppercase tracking-[0.18em] text-blue-50/62 sm:text-b2">
         {label}
       </span>
 
@@ -273,7 +275,7 @@ function ContactField({
         type={type}
         autoComplete={autoComplete}
         required={required}
-        className="mt-2 h-12 w-full rounded-xl border border-white/18 bg-black/20 px-4 text-b1 text-white outline-none transition-colors placeholder:text-blue-50/32 focus:border-blue-200/70 focus:bg-black/28 focus:ring-1 focus:ring-blue-200/50"
+        className="mt-1.5 h-10 w-full rounded-lg border border-white/18 bg-black/20 px-3.5 text-b1 text-white outline-none transition-colors placeholder:text-blue-50/32 focus:border-blue-200/70 focus:bg-black/28 focus:ring-1 focus:ring-blue-200/50 sm:mt-2 sm:h-12 sm:rounded-xl sm:px-4"
       />
     </label>
   );
