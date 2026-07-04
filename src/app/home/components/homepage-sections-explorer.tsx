@@ -131,8 +131,8 @@ export function HomepageSectionsExplorer() {
             </h2>
 
             <p className="mt-7 max-w-xl text-b1 leading-7 text-blue-50/75 sm:text-subtitle">
-              From aircraft structures to flight operations, every MUAS section
-              plays a role in taking our systems from concept to competition.
+              From operations to propulsion, every MUAS section
+              plays a critical role in taking our systems from concept to reality.
             </p>
           </div>
 
@@ -145,7 +145,7 @@ export function HomepageSectionsExplorer() {
             onFocus={() => setIsPaused(true)}
             onBlur={() => setIsPaused(false)}
           >
-            <div className="relative">
+            <div className="relative px-12 sm:px-16 lg:px-20">
               <div
                 className="overflow-hidden rounded-[1.5rem]"
                 onPointerDown={handlePointerDown}
@@ -176,15 +176,16 @@ export function HomepageSectionsExplorer() {
               <button
                 type="button"
                 onClick={goToPreviousSlide}
-                className="absolute left-2 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-2xl text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:left-5 sm:h-12 sm:w-12"
+                className="absolute left-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-2xl text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
                 aria-label="Show previous section"
               >
                 ‹
               </button>
+
               <button
                 type="button"
                 onClick={goToNextSlide}
-                className="absolute right-2 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-2xl text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:right-5 sm:h-12 sm:w-12"
+                className="absolute right-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-2xl text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
                 aria-label="Show next section"
               >
                 ›
