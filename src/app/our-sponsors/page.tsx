@@ -40,7 +40,7 @@ const sponsorImpactStats = [
     label: "Recruitment applicants in 2025",
   },
   {
-    value: "570+",
+    value: "700+",
     label: "Event attendees in 2025",
   },
   {
@@ -48,8 +48,8 @@ const sponsorImpactStats = [
     label: "NFC 2025 design category",
   },
   {
-    value: "SUAS 2026",
-    label: "Redback competition campaign",
+    value: "500K+",
+    label: "Total social media views",
   },
 ];
 
