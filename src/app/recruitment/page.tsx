@@ -36,7 +36,10 @@ export default function RecruitmentPage() {
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#02040a_0%,#001f49_48%,#02040a_100%)] text-white">
-      <section className="relative isolate overflow-hidden px-5 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+      <section
+        id="recruitment-page"
+        className="relative isolate scroll-mt-20 overflow-hidden px-5 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20"
+      >
         <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_16%_10%,rgba(0,74,173,0.34),transparent_30%),radial-gradient(circle_at_86%_58%,rgba(84,134,200,0.18),transparent_34%)]" />
         <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:84px_84px] opacity-25" />
 

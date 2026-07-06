@@ -80,7 +80,10 @@ export function HomepageHero() {
   );
 
   return (
-    <section className="relative min-h-[calc(100svh-5rem)] overflow-hidden bg-black-500 text-white">
+    <section
+      id="homepage-hero"
+      className="relative min-h-[calc(100svh-5rem)] scroll-mt-20 overflow-hidden bg-black-500 text-white"
+    >
       <div className="absolute inset-0">
         {heroSlides.map((slide, index) => {
           const isActive = index === activeSlide;

@@ -8,18 +8,30 @@ import {
   LuYoutube,
 } from "react-icons/lu";
 
-const footerLinks = [
-  { href: "/", label: "Home" },
-  { href: "/our-team", label: "Our Team" },
-  { href: "/our-drones", label: "Our Drones" },
-  { href: "/our-sponsors", label: "Sponsor Us" },
-  { href: "/recruitment", label: "Recruitment" },
-  { href: "/contact-us", label: "Contact Us" },
-];
-
-const footerSuasLinks = [
-  { href: "/suas-2026-home", label: "Our Initiative" },
-  { href: "/suas-2026-team", label: "The SUAS Team" },
+const footerNavigationGroups = [
+  {
+    label: "Explore",
+    links: [
+      { href: "/", label: "Home" },
+      { href: "/our-team", label: "Our Team" },
+      { href: "/our-drones", label: "Our Drones" },
+    ],
+  },
+  {
+    label: "SUAS 2026",
+    links: [
+      { href: "/suas-2026-home", label: "Our Initiative" },
+      { href: "/suas-2026-team", label: "The SUAS Team" },
+    ],
+  },
+  {
+    label: "Connect",
+    links: [
+      { href: "/our-sponsors", label: "Sponsor Us" },
+      { href: "/recruitment", label: "Recruitment" },
+      { href: "/contact-us", label: "Contact Us" },
+    ],
+  },
 ];
 
 const footerSocialLinks = [
@@ -60,9 +72,12 @@ const footerLinkClass =
 
 export function Footer() {
   return (
-    <footer className="relative z-20 w-full shrink-0 bg-[linear-gradient(155deg,#001f49_0%,#02040a_48%,#05080d_100%)] text-white">
-      {/* Three-column footer: brand context, site navigation, and labelled socials. */}
-      <div className="mx-auto grid w-full max-w-[1500px] gap-12 px-6 py-14 sm:px-8 lg:grid-cols-[minmax(320px,1.35fr)_minmax(180px,0.8fr)_minmax(260px,0.9fr)] lg:gap-24 lg:px-12 lg:py-16">
+    <footer
+      id="site-footer"
+      className="relative z-20 w-full shrink-0 scroll-mt-20 bg-[linear-gradient(155deg,#001f49_0%,#02040a_48%,#05080d_100%)] text-white"
+    >
+      {/* Footer sections mirror the main navigation hierarchy. */}
+      <div className="mx-auto grid w-full max-w-[1500px] gap-12 px-6 py-14 sm:px-8 lg:grid-cols-[minmax(300px,1.1fr)_minmax(420px,1.4fr)_minmax(240px,0.8fr)] lg:gap-20 lg:px-12 lg:py-16">
         <div className="flex max-w-lg flex-col items-start gap-5">
           <Image
             src="/logos/logo-with-text.svg"
@@ -76,26 +91,25 @@ export function Footer() {
           </p>
         </div>
 
-        <nav className="flex flex-col gap-4" aria-label="Footer navigation">
-          <h2 className="text-caption uppercase tracking-[0.2em] text-blue-100/58">
-            Navigation
-          </h2>
-          <div className="grid gap-3">
-            {footerLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={footerLinkClass}>
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          <div className="mt-3 grid gap-3">
-            <h3 className="text-caption uppercase tracking-[0.2em] text-blue-100/58">
-              SUAS 2026
-            </h3>
-            {footerSuasLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={footerLinkClass}>
-                {link.label}
-              </Link>
+        <nav aria-label="Footer navigation">
+          <div className="grid gap-8 sm:grid-cols-3 sm:gap-6">
+            {footerNavigationGroups.map((group) => (
+              <div key={group.label} className="flex flex-col gap-4">
+                <h2 className="text-caption uppercase tracking-[0.2em] text-blue-100/58">
+                  {group.label}
+                </h2>
+                <div className="grid gap-3">
+                  {group.links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={footerLinkClass}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </nav>

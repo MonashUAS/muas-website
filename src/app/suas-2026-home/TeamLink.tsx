@@ -4,7 +4,7 @@ import { ImageIcon } from "lucide-react";
 // TeamLink introduces the Redback team journey with a large visual placeholder and CTA.
 export function TeamLink() {
   return (
-    <section className="bg-black-500 px-6 py-20 text-white">
+    <section id="redback-team-link" className="scroll-mt-20 bg-black-500 px-6 py-20 text-white">
       <div className="mx-auto flex w-full max-w-3xl flex-col items-center text-center">
         <h2 className="text-h5 uppercase leading-tight text-white">The Redback Team</h2>
         <p className="mt-4 max-w-2xl text-subtitle leading-7 text-white">

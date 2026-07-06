@@ -8,7 +8,10 @@ import { explorePanels, temporaryPanelImage } from "../data/explore-panels";
 // the homepage. Panel data is separated so labels/routes/images have one edit point.
 export function HomepageExplorePanels() {
   return (
-    <section className="bg-[linear-gradient(180deg,#02040a_0%,#001f49_46%,#02040a_100%)] px-4 py-5 text-white sm:px-6 lg:px-8 lg:py-8">
+    <section
+      id="homepage-explore-panels"
+      className="scroll-mt-20 bg-[linear-gradient(180deg,#02040a_0%,#001f49_46%,#02040a_100%)] px-4 py-5 text-white sm:px-6 lg:px-8 lg:py-8"
+    >
       <div className="mx-auto max-w-[1720px]">
         {/* Mobile uses stacked cards because hover expansion is unreliable on touch devices. */}
         <div className="flex flex-col gap-3 md:hidden">

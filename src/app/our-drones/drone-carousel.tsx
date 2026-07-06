@@ -43,8 +43,9 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
 
   return (
     <section
+      id="our-drones-page"
       ref={carouselRef}
-      className="relative flex min-h-[calc(100vh-5rem)] items-center justify-center overflow-hidden bg-gradient-to-b from-blue-100 via-blue-50 to-white px-4 py-12"
+      className="relative flex min-h-[calc(100vh-5rem)] scroll-mt-20 items-center justify-center overflow-hidden bg-gradient-to-b from-blue-100 via-blue-50 to-white px-4 py-12"
     >
       {/* header */}
       <div className="absolute top-8 text-center uppercase text-blue-900">

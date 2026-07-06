@@ -100,7 +100,10 @@ function ContentSections({ section }: { section: TeamSection }) {
 // Description renders the section overview and lead portraits over an interactive blue field.
 function Description({ section }: { section: TeamSection }) {
   return (
-    <section className="h-[calc(100vh-10rem)] mx-auto flex w-full max-w-5xl flex-col items-center justify-center py-20 text-center">
+    <section
+      id="team-overview"
+      className="mx-auto flex h-[calc(100vh-10rem)] w-full max-w-5xl scroll-mt-20 flex-col items-center justify-center py-20 text-center"
+    >
       <ParticleText text={section.description} />
       <h2 className="mt-14 text-subtitle font-black">
         {section.leads.length === 1 ? "Section Lead" : "Section Leads"}
@@ -162,8 +165,9 @@ function Projects({ section }: { section: TeamSection }) {
 
   return (
     <section
+      id="team-projects"
       ref={sectionRef}
-      className={`h-[calc(100vh)] flex flex-col items-center justify-center overflow-hidden py-20 transition duration-[1600ms] ease-out ${
+      className={`flex h-[calc(100vh)] scroll-mt-20 flex-col items-center justify-center overflow-hidden py-20 transition duration-[1600ms] ease-out ${
         isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >

@@ -1,63 +1,28 @@
 import { HomepageSponsorCarousel } from "@/app/home";
 import Image from "next/image";
 import Link from "next/link";
+import {
+  sponsorBenefitItems,
+  sponsorCarouselHeading,
+  sponsorCtaLabel,
+  sponsorHeroParagraph,
+  sponsorImpactStats,
+  sponsorWhyCopy,
+  sponsorWhyHeading,
+} from "./sponsor-page-data";
 
 // Hero image for the Sponsor Us page. Update this path when replacing the
 // sponsor-facing hero visual.
 const sponsorHeroImage = "/images/sponsor us page/our-sponsors-hero.jpg";
 
-// Sponsor benefit items and images are editable here when sponsor-facing
-// priorities or page photography changes.
-const sponsorBenefitItems = [
-  {
-    title: "Access Student Talent",
-    description:
-      "Connect with highly motivated students across engineering, computing, design, operations, and aerospace disciplines who are building real uncrewed aircraft systems.",
-    image: "/images/sponsor us page/IMG_7527.JPG",
-    alt: "MUAS students and industry visitors discussing an uncrewed aircraft in the workshop",
-  },
-  {
-    title: "Gain Meaningful Exposure",
-    description:
-      "Showcase your brand across MUAS events, competitions, team apparel, digital channels, and public engagement activities.",
-    image: "/images/sponsor us page/XT300347.JPG",
-    alt: "MUAS presentation screen at a public team event",
-  },
-  {
-    title: "Support Aerospace Innovation",
-    description:
-      "Help students design, manufacture, test, and fly autonomous aircraft for real-world engineering challenges and international competitions.",
-    image: "/images/sponsor us page/DSC00686.JPG",
-    alt: "MUAS student working on composite aerospace components in the workshop",
-  },
-];
-
-// MUAS sponsorship impact metrics. Update this array when future sponsor
-// reports or campaign metrics are ready to publish.
-const sponsorImpactStats = [
-  {
-    value: "230+",
-    label: "Recruitment applicants in 2025",
-  },
-  {
-    value: "700+",
-    label: "Event attendees in 2025",
-  },
-  {
-    value: "2nd",
-    label: "NFC 2025 design category",
-  },
-  {
-    value: "500K+",
-    label: "Total social media views",
-  },
-];
-
 export default function OurSponsorsPage() {
   return (
     <div>
       {/* Sponsor-focused hero shown at the top of the sponsors page. */}
-      <section className="relative isolate overflow-hidden bg-black-500 text-white">
+      <section
+        id="sponsor-hero"
+        className="relative isolate scroll-mt-20 overflow-hidden bg-black-500 text-white"
+      >
         <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_16%_10%,rgba(0,74,173,0.34),transparent_30%),radial-gradient(circle_at_86%_58%,rgba(84,134,200,0.2),transparent_34%),linear-gradient(145deg,#000000_0%,#001126_46%,#001f49_100%)]" />
         <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:84px_84px] opacity-24" />
         <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[linear-gradient(0deg,rgba(0,0,0,0.45),transparent)]" />
@@ -70,10 +35,7 @@ export default function OurSponsorsPage() {
               </h1>
 
               <p className="mt-6 max-w-3xl text-b1 leading-relaxed text-blue-50 sm:text-subtitle">
-                Join leading companies in supporting student-led aerospace
-                innovation, hands-on engineering, and the next generation of
-                drone technology. We sincerely thank our existing sponsors
-                whose support makes our work possible.
+                {sponsorHeroParagraph}
               </p>
 
               <div className="mt-9 grid max-w-2xl grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3 sm:gap-4 lg:mt-12">
@@ -121,30 +83,29 @@ export default function OurSponsorsPage() {
       </section>
 
       <HomepageSponsorCarousel
-        heading="Our 2026 Sponsors"
+        heading={sponsorCarouselHeading}
         headingId="thanks-to-heading"
       />
 
-      <section className="relative overflow-hidden bg-[linear-gradient(145deg,#02040a_0%,#001126_46%,#001f49_100%)] px-5 py-10 text-white sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+      <section className="relative scroll-mt-20 overflow-hidden bg-[linear-gradient(145deg,#02040a_0%,#001126_46%,#001f49_100%)] px-5 py-10 text-white sm:px-8 sm:py-16 lg:px-12 lg:py-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(84,134,200,0.18),transparent_30%),radial-gradient(circle_at_84%_64%,rgba(0,74,173,0.2),transparent_34%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:86px_86px] opacity-25" />
 
         <div className="relative mx-auto grid max-w-[1720px] gap-8 lg:grid-cols-[minmax(280px,0.7fr)_minmax(0,1fr)] lg:gap-14">
-          <div className="lg:sticky lg:top-28 lg:self-start">
+          <div id="why-sponsor-muas" className="scroll-mt-20 lg:sticky lg:top-28 lg:self-start">
             <h2 className="text-[clamp(2.8rem,7vw,6.4rem)] font-medium leading-[0.9] tracking-[-0.05em]">
-              Why Sponsor MUAS?
+              {sponsorWhyHeading}
             </h2>
 
             <p className="mt-4 max-w-xl text-b1 leading-relaxed text-blue-50 sm:mt-5 sm:text-subtitle">
-              Partner with MUAS to support student-led aerospace engineering
-              and the next generation of drone technology.
+              {sponsorWhyCopy}
             </p>
 
             <Link
               href="/contact-us"
               className="mt-6 inline-flex min-h-11 items-center justify-center rounded bg-white px-5 py-2.5 text-b1 font-bold text-blue-900 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:mt-8 sm:min-h-12 sm:px-6 sm:py-3"
             >
-              Become a Sponsor
+              {sponsorCtaLabel}
             </Link>
           </div>
 

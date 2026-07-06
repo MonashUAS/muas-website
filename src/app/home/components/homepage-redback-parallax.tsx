@@ -113,8 +113,9 @@ export function HomepageRedbackParallax() {
 
   return (
     <section
+      id="homepage-redback-teaser"
       ref={sectionRef}
-      className="relative h-[220svh] overflow-visible bg-black-500 text-white"
+      className="relative h-[220svh] scroll-mt-20 overflow-visible bg-black-500 text-white"
       aria-labelledby="redback-homepage-heading"
     >
       {/* The sticky viewport is the parallax stage while the outer section supplies scroll range. */}

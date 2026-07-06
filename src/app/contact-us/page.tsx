@@ -97,11 +97,11 @@ export default function ContactUsPage() {
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#02040a_0%,#001f49_44%,#02040a_100%)] text-white">
       {/* Heading and contact layout share one continuous section to avoid a harsh horizontal split. */}
-      <section className="relative overflow-hidden px-5 pb-10 pt-12 sm:px-8 sm:pb-14 sm:pt-20 lg:px-12 lg:pb-20 lg:pt-32">
+      <section className="relative scroll-mt-20 overflow-hidden px-5 pb-10 pt-12 sm:px-8 sm:pb-14 sm:pt-20 lg:px-12 lg:pb-20 lg:pt-32">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(84,134,200,0.24),transparent_36%),radial-gradient(circle_at_28%_70%,rgba(0,74,173,0.16),transparent_34%)]" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(0deg,rgba(2,4,10,0.24),transparent)]" />
 
-        <div className="relative mx-auto max-w-[1720px]">
+        <div id="contact-page" className="relative mx-auto max-w-[1720px] scroll-mt-20">
           <div className="max-w-4xl">
             <h1 className="text-[clamp(3.35rem,14vw,9rem)] font-medium leading-[0.86] tracking-[-0.06em] text-white">
               Get in Touch
@@ -190,8 +190,8 @@ export default function ContactUsPage() {
         </div>
       </section>
 
-      <section className="px-5 pb-24 pt-10 sm:px-8 sm:pb-28 sm:pt-12 lg:px-12 lg:pt-16">
-        <div className="mx-auto max-w-[1720px]">
+      <section className="scroll-mt-20 px-5 pb-24 pt-10 sm:px-8 sm:pb-28 sm:pt-12 lg:px-12 lg:pt-16">
+        <div id="find-us-online" className="mx-auto max-w-[1720px] scroll-mt-20">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="text-[clamp(2.6rem,6vw,5.4rem)] font-medium leading-[0.9] tracking-[-0.05em]">

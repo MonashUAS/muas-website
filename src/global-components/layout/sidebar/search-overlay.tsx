@@ -1,54 +1,136 @@
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { searchRegistry } from "@/lib/search-registry";
-import type { SearchResult } from "@/lib/search-registry";
+import { extractSearchSnippet } from "@/lib/search-snippet";
+import {
+  resolveSearchHref,
+  searchRegistry,
+} from "@/lib/search-registry";
+import type { SearchContent, SearchEntry, SearchSection } from "@/lib/search-registry";
 import { overlayContentClass, overlayInnerClass } from "./navbar-classes";
-import { SearchResults } from "./search-results";
+import { SearchResults, type SearchMatch } from "./search-results";
 
 type SearchOverlayProps = {
   searchId: string;
   closeOverlay: () => void;
 };
 
-// Selects readable result copy instead of exposing raw matched fields.
-function getSearchSnippet(result: SearchResult) {
-  return result.description;
+function containsQuery(value: string, query: string) {
+  return value.toLowerCase().includes(query);
+}
+
+function findTitleMatchTarget(entry: SearchEntry, query: string) {
+  for (const section of entry.sections) {
+    const matchingContent = section.content.find((item) =>
+      containsQuery(item.text, query),
+    );
+
+    if (matchingContent) {
+      return { section, content: matchingContent };
+    }
+  }
+
+  for (const section of entry.sections) {
+    if (section.content[0]) {
+      return { section, content: section.content[0] };
+    }
+  }
+
+  return {
+    section: entry.sections[0],
+    content: { text: entry.title } satisfies SearchContent,
+  };
+}
+
+function getSearchMatches(
+  entry: SearchEntry,
+  query: string,
+  displayQuery: string,
+): SearchMatch[] {
+  const matches: SearchMatch[] = [];
+  const seen = new Set<string>();
+
+  function addMatch(
+    href: string,
+    snippetSource: string,
+    section: SearchSection,
+  ) {
+    const snippet = extractSearchSnippet(snippetSource, displayQuery);
+    const dedupeKey = `${href}|${snippet.toLowerCase()}`;
+
+    if (seen.has(dedupeKey)) {
+      return;
+    }
+
+    seen.add(dedupeKey);
+    matches.push({
+      title: entry.title,
+      category: entry.category,
+      href,
+      snippet,
+      query: displayQuery,
+      sectionLabel: section.label,
+    });
+  }
+
+  for (const section of entry.sections) {
+    const matchingContent = section.content.find((item) =>
+      containsQuery(item.text, query),
+    );
+
+    if (matchingContent) {
+      addMatch(
+        resolveSearchHref(entry, section, matchingContent),
+        matchingContent.text,
+        section,
+      );
+      continue;
+    }
+
+    if (containsQuery(section.label, query)) {
+      const fallbackContent = section.content[0] ?? { text: section.label };
+
+      addMatch(
+        resolveSearchHref(entry, section, fallbackContent),
+        fallbackContent.text,
+        section,
+      );
+    }
+  }
+
+  if (containsQuery(entry.title, query)) {
+    const { section, content } = findTitleMatchTarget(entry, query);
+
+    addMatch(
+      resolveSearchHref(entry, section, content),
+      content.text,
+      section,
+    );
+  }
+
+  return matches;
 }
 
 // Owns search-specific state while Sidebar owns the shared overlay mode.
 export function SearchOverlay({ searchId, closeOverlay }: SearchOverlayProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const displaySearchQuery = searchQuery.trim();
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
 
   useEffect(() => {
     window.requestAnimationFrame(() => searchInputRef.current?.focus());
   }, []);
 
-  const searchResultsWithMatches = useMemo(() => {
+  const searchResults = useMemo(() => {
     // Hide results until typing so the overlay does not read as a sitemap.
     if (!normalizedSearchQuery) {
       return [];
     }
 
-    return searchRegistry
-      .filter((result) => {
-        const searchableText = [
-          result.title,
-          result.category,
-          result.description,
-          ...(result.keywords ?? []),
-        ]
-          .join(" ")
-          .toLowerCase();
-
-        return searchableText.includes(normalizedSearchQuery);
-      })
-      .map((result) => ({
-        result,
-        snippet: getSearchSnippet(result),
-      }));
-  }, [normalizedSearchQuery]);
+    return searchRegistry.flatMap((entry) =>
+      getSearchMatches(entry, normalizedSearchQuery, displaySearchQuery),
+    );
+  }, [displaySearchQuery, normalizedSearchQuery]);
 
   return (
     <section id={searchId} className={overlayContentClass}>
@@ -90,10 +172,7 @@ export function SearchOverlay({ searchId, closeOverlay }: SearchOverlayProps) {
 
         {normalizedSearchQuery ? (
           <div className="mt-9 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none">
-            <SearchResults
-              results={searchResultsWithMatches}
-              closeOverlay={closeOverlay}
-            />
+            <SearchResults results={searchResults} closeOverlay={closeOverlay} />
           </div>
         ) : null}
       </div>

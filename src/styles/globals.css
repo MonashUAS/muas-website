@@ -192,3 +192,40 @@
       16 16,
     e-resize;
 }
+
+@keyframes search-highlight-pulse {
+  0%,
+  100% {
+    background-color: rgb(176 199 230 / 0.45);
+    box-shadow: 0 0 0 0 rgb(0 74 173 / 0.2);
+  }
+
+  50% {
+    background-color: rgb(0 74 173 / 0.42);
+    box-shadow: 0 0 0 4px rgb(0 74 173 / 0.16);
+  }
+}
+
+.search-match-highlight {
+  border-radius: 0.2rem;
+  color: inherit;
+  padding-inline: 0.12rem;
+  background-color: rgb(176 199 230 / 0.45);
+  box-shadow: 0 0 0 0 rgb(0 74 173 / 0.2);
+  animation: search-highlight-pulse 0.9s ease-in-out 2;
+  transition:
+    background-color 0.7s ease,
+    box-shadow 0.7s ease;
+}
+
+.search-match-highlight-fading {
+  animation: none;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.search-match-highlight-reduced {
+  animation: none;
+  background-color: rgb(176 199 230 / 0.45);
+  box-shadow: none;
+}

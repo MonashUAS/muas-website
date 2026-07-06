@@ -1,85 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { scrollHeroCopy, type TextWindow } from "./scroll-hero-data";
 
 const FRAME_COUNT = 420;
 const FRAME_PATH = "/images/redback-animation/";
 
 // Increase this value to make the scroll animation slower, or reduce it to make it faster.
 const SCROLL_LENGTH_VH = 1200;
-
-// Text timing is controlled as scroll progress from 0 to 1 across the hero section.
-const TEXT_WINDOWS = {
-  suas: { fadeInStart: 0.005, fadeInEnd: 0.01, fadeOutStart: 0.03, fadeOutEnd: 0.07 },
-  presents: { fadeInStart: 0.08, fadeInEnd: 0.085, fadeOutStart: 0.105, fadeOutEnd: 0.13 },
-  redback: { fadeInStart: 0.15, fadeInEnd: 0.2, fadeOutStart: 0.175, fadeOutEnd: 0.35 },
-  rescue: { fadeInStart: 0.43, fadeInEnd: 0.5, fadeOutStart: 0.63, fadeOutEnd: 0.76 },
-  closing: { fadeInStart: 0.84, fadeInEnd: 0.94 },
-};
-
-type TextWindow =
-  | {
-      fadeInStart: number;
-      fadeInEnd: number;
-      fadeOutStart: number;
-      fadeOutEnd: number;
-    }
-  | {
-      fadeInStart: number;
-      fadeInEnd: number;
-      fadeOutStart?: never;
-      fadeOutEnd?: never;
-    };
-
-type OverlayCopy = {
-  key: string;
-  className: string;
-  lines: string[];
-  window: TextWindow;
-  position: string;
-};
-
-const overlayCopy: OverlayCopy[] = [
-  {
-    key: "suas",
-    className: "text-h5",
-    lines: ["SUAS 2026."],
-    window: TEXT_WINDOWS.suas,
-    position: "justify-start text-left"
-  },
-  {
-    key: "presents",
-    className: "text-h5",
-    lines: ["MUAS Presents"],
-    window: TEXT_WINDOWS.presents,
-    position: "justify-start text-left"
-  },
-  {
-    key: "redback",
-    className: "text-h3",
-    lines: ["Redback."],
-    window: TEXT_WINDOWS.redback,
-    position: "justify-center text-center"
-  },
-  {
-    key: "rescue",
-    className: "max-w-2xl text-h5",
-    lines: [
-      "Built for search and rescue.",
-      "Powered by innovation.",
-      "Inspired by nature.",
-    ],
-    window: TEXT_WINDOWS.rescue,
-    position: "justify-end text-right"
-  },
-  {
-    key: "closing",
-    className: "max-w-xl text-h5",
-    lines: ["Rapid deployment of relief where it is  needed most."],
-    window: TEXT_WINDOWS.closing,
-    position: "justify-center text-center"
-  },
-];
 
 // ScrollHero maps scroll progress to a frame sequence and timed copy overlays.
 export function ScrollHero() {
@@ -134,7 +62,7 @@ export function ScrollHero() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative bg-black-500" style={{ height: `${SCROLL_LENGTH_VH}vh` }}>
+    <section ref={sectionRef} id="suas-hero" className="relative scroll-mt-20 bg-black-500" style={{ height: `${SCROLL_LENGTH_VH}vh` }}>
       <div className="sticky top-0 h-screen overflow-hidden bg-black-500">
         <img
           alt="Redback aircraft animation"
@@ -143,7 +71,7 @@ export function ScrollHero() {
           src={getFramePath(frame)}
         />
 
-        {overlayCopy.map((copy) => {
+        {scrollHeroCopy.map((copy) => {
           const opacity = getTextOpacity(progress, copy.window);
 
           return (

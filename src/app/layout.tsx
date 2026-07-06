@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Footer } from "@/global-components/layout/footer";
 import NavBar from "@/global-components/layout/sidebar/Sidebar";
+import { SearchMatchHighlight } from "@/global-components/search-match-highlight";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -39,6 +41,9 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className="flex min-h-screen flex-col bg-background text-foreground antialiased">
         <NavBar />
+        <Suspense fallback={null}>
+          <SearchMatchHighlight />
+        </Suspense>
         {/* Offset page content below the fixed top navigation bar. */}
         <div className="flex min-h-screen flex-1 flex-col pt-20">
           <main className="flex w-full flex-1 flex-col">{children}</main>
