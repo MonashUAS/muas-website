@@ -24,6 +24,20 @@ bun dev
 
 Open http://localhost:3000 with your browser to see the result.
 
+## Recruitment Page Toggle
+
+Recruitment page content is controlled near the top of
+`src/app/recruitment/page.tsx`.
+
+Set `isRecruitmentOpen: true` to show the active recruitment state with the
+form link, `Apply Now` button, and rectangular recruitment image.
+
+Set `isRecruitmentOpen: false` to show the closed recruitment state with the
+"Check back soon..." message and circular recruitment image.
+
+The recruitment form URL and both recruitment image paths are configured in the
+same `recruitmentConfig` object.
+
 ## Contact Form / Resend Setup
 
 The Contact Us form sends messages through [Resend](https://resend.com/) using the `/api/contact` route.
@@ -89,7 +103,5 @@ CONTACT_FROM_EMAIL=
 ```
 
 After updating environment variables in production, redeploy the site.
-
-
 
 
