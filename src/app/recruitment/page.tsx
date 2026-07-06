@@ -6,7 +6,7 @@ import Link from "next/link";
 // changes. The open and closed images are configured separately because they
 // intentionally use different render styles.
 const recruitmentConfig = {
-  isRecruitmentOpen: true,
+  isRecruitmentOpen: false,
   recruitmentFormUrl:
     "https://docs.google.com/forms/d/e/1FAIpQLSfwcHf9qlp82zL6ozTGCwcedqiVyZPMbfV5QdVsvk-8K2bcWA/viewform?usp=dialog",
   openImage: {
