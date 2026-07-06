@@ -34,14 +34,6 @@ export const searchRegistry: SearchResult[] = [
     keywords: ["aircraft", "uav", "uas", "drones"],
   },
   {
-    title: "Newsletter",
-    category: "Discover",
-    url: "/newsletter",
-    description:
-      "Read updates from MUAS, including team news, project progress, and competition activity.",
-    keywords: ["updates", "news"],
-  },
-  {
     title: "Aerostructures",
     category: "Teams",
     url: "/sections/aerostructures",
@@ -82,24 +74,8 @@ export const searchRegistry: SearchResult[] = [
     keywords: ["motor", "battery", "powertrain"],
   },
   {
-    title: "Competitions",
-    category: "Competitions",
-    url: "/competitions",
-    description:
-      "Browse MUAS competition programs, mission challenges, and event participation.",
-    keywords: ["events", "missions"],
-  },
-  {
-    title: "NFC 2025",
-    category: "Competitions",
-    url: "/nfc-2025",
-    description:
-      "View MUAS work for the 2025 National Flying Challenge competition.",
-    keywords: ["national flying challenge"],
-  },
-  {
-    title: "SUAS 2026 Homepage",
-    category: "Competitions",
+    title: "Our Initiative",
+    category: "SUAS 2026",
     url: "/suas-2026-home",
     description:
       "Discover Redback, the MUAS aircraft platform developed for the SUAS 2026 mission.",
@@ -122,8 +98,8 @@ export const searchRegistry: SearchResult[] = [
     keywords: ["specifications", "specs", "redback"],
   },
   {
-    title: "SUAS 2026 Team",
-    category: "Competitions",
+    title: "The SUAS Team",
+    category: "SUAS 2026",
     url: "/suas-2026-team",
     description:
       "Meet the team developing Redback and coordinating the SUAS 2026 build.",

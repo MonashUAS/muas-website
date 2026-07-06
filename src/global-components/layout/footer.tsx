@@ -12,10 +12,14 @@ const footerLinks = [
   { href: "/", label: "Home" },
   { href: "/our-team", label: "Our Team" },
   { href: "/our-drones", label: "Our Drones" },
-  { href: "/competitions", label: "Competitions" },
   { href: "/our-sponsors", label: "Sponsor Us" },
   { href: "/recruitment", label: "Recruitment" },
   { href: "/contact-us", label: "Contact Us" },
+];
+
+const footerSuasLinks = [
+  { href: "/suas-2026-home", label: "Our Initiative" },
+  { href: "/suas-2026-team", label: "The SUAS Team" },
 ];
 
 const footerSocialLinks = [
@@ -78,6 +82,17 @@ export function Footer() {
           </h2>
           <div className="grid gap-3">
             {footerLinks.map((link) => (
+              <Link key={link.href} href={link.href} className={footerLinkClass}>
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-3 grid gap-3">
+            <h3 className="text-caption uppercase tracking-[0.2em] text-blue-100/58">
+              SUAS 2026
+            </h3>
+            {footerSuasLinks.map((link) => (
               <Link key={link.href} href={link.href} className={footerLinkClass}>
                 {link.label}
               </Link>

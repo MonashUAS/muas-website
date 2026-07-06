@@ -22,7 +22,6 @@ export const navigationGroups: NavGroup[] = [
     links: [
       { href: "/our-team", label: "Our Team" },
       { href: "/our-drones", label: "Our Drones" },
-      { href: "/newsletter", label: "Newsletter" },
     ],
   },
   {
@@ -36,16 +35,10 @@ export const navigationGroups: NavGroup[] = [
     ],
   },
   {
-    label: "Competitions",
+    label: "SUAS 2026",
     links: [
-      {
-        label: "SUAS 2026",
-        links: [
-          { href: "/suas-2026-home", label: "Homepage" },
-          { href: "/suas-2026-team", label: "Team" },
-        ],
-      },
-      { href: "/nfc-2025", label: "NFC 2025" },
+      { href: "/suas-2026-home", label: "Our Initiative" },
+      { href: "/suas-2026-team", label: "The SUAS Team" },
     ],
   },
   {
