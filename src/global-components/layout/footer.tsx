@@ -56,7 +56,7 @@ const footerLinkClass =
 
 export function Footer() {
   return (
-    <footer className="w-full shrink-0 bg-[linear-gradient(155deg,#001f49_0%,#02040a_48%,#05080d_100%)] text-white">
+    <footer className="relative z-20 w-full shrink-0 bg-[linear-gradient(155deg,#001f49_0%,#02040a_48%,#05080d_100%)] text-white">
       {/* Three-column footer: brand context, site navigation, and labelled socials. */}
       <div className="mx-auto grid w-full max-w-[1500px] gap-12 px-6 py-14 sm:px-8 lg:grid-cols-[minmax(320px,1.35fr)_minmax(180px,0.8fr)_minmax(260px,0.9fr)] lg:gap-24 lg:px-12 lg:py-16">
         <div className="flex max-w-lg flex-col items-start gap-5">

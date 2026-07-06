@@ -97,9 +97,9 @@ export function KeyFeatures() {
           <div className="flex flex-col gap-5">
             {features.map((feature) => {
               const isExpanded = expandedFeature === feature.title;
+              const panelId = getFeaturePanelId(feature.title);
 
               return (
-                // feature list (buttons and descriptions) is rendered in a 2-column grid, with the description spanning both columns when expanded
                 <div key={feature.title} className="grid grid-cols-[1fr_48px] gap-3">
                   
                   {/* feature title button */}
@@ -110,7 +110,7 @@ export function KeyFeatures() {
                     }`}
                     onClick={() => setExpandedFeature(isExpanded ? null : feature.title)}
                     aria-expanded={isExpanded}
-                    aria-controls={`${feature.title.replaceAll(" ", "-").toLowerCase()}-panel`}
+                    aria-controls={panelId}
                   >
                     {feature.title}
                   </button>
@@ -124,16 +124,20 @@ export function KeyFeatures() {
                   >
                     {isExpanded ? <Minus className="size-5" /> : <Plus className="size-5" />}
                   </button>
-                
-                  {isExpanded ? (
-                    // feature description, only rendered when the feature is expanded
-                    <div
-                      id={`${feature.title.replaceAll(" ", "-").toLowerCase()}-panel`}
-                      className="col-1 border border-b border-red-700 bg-[linear-gradient(180deg,rgba(214,28,28,0.2),rgba(0,0,0,0.95)_56%)] px-4 pb-5 pt-3 text-b1 leading-6 text-white"
-                    >
-                      {feature.body}
+
+                  {/* Description stays mounted so its height can animate open and closed. */}
+                  <div
+                    id={panelId}
+                    className={`col-span-2 grid overflow-hidden transition-[grid-template-rows,opacity] duration-500 ease-out ${
+                      isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                    }`}
+                  >
+                    <div className="min-h-0">
+                      <div className="border border-b border-red-700 bg-[linear-gradient(180deg,rgba(214,28,28,0.2),rgba(0,0,0,0.95)_56%)] px-4 pb-5 pt-3 text-b1 leading-6 text-white">
+                        {feature.body}
+                      </div>
                     </div>
-                  ) : null}
+                  </div>
                 </div>
               );
             })}
@@ -145,4 +149,9 @@ export function KeyFeatures() {
       </div>
     </section>
   );
+}
+
+// getFeaturePanelId creates a stable id shared by the feature button and panel.
+function getFeaturePanelId(title: string) {
+  return `${title.replaceAll(" ", "-").toLowerCase()}-panel`;
 }

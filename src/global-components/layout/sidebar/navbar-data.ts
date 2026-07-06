@@ -28,11 +28,11 @@ export const navigationGroups: NavGroup[] = [
   {
     label: "Teams",
     links: [
-      { href: "/aerostructures", label: "Aerostructures" },
-      { href: "/avionics", label: "Avionics" },
-      { href: "/flight-ops", label: "Flight Operations" },
-      { href: "/operations", label: "Operations" },
-      { href: "/propulsion", label: "Propulsion" },
+      { href: "/sections/aerostructures", label: "Aerostructures" },
+      { href: "/sections/avionics", label: "Avionics" },
+      { href: "/sections/flight-ops", label: "Flight Operations" },
+      { href: "/sections/operations", label: "Operations" },
+      { href: "/sections/propulsion", label: "Propulsion" },
     ],
   },
   {
