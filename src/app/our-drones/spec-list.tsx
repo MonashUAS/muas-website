@@ -16,7 +16,7 @@ export function SpecList({ title, specs }: SpecListProps) {
         {specs.map((spec) => (
           <div key={`${spec.label}-${spec.value}`} className="grid grid-cols-[1fr_auto_1fr] gap-5">
             <dt className="text-right text-black-500">{spec.label}</dt>
-            <dd className="text-black-500">{"//"}</dd>
+            <dd className="text-black-500">{" "}</dd>
             <dd className="text-left text-black-500">{spec.value}</dd>
           </div>
         ))}
