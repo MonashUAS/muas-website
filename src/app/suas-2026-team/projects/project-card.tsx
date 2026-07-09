@@ -1,6 +1,7 @@
 import { ProjectInfoPanel } from "./project-info";
 import type { Project } from "./project-data";
 import { placeholderImage } from "./project-data";
+import Image from "next/image";
 
 // ProjectCard displays the current project image area and expandable details panel.
 export function ProjectCard({
@@ -35,13 +36,16 @@ function ProjectImageBlock({
   return (
     <div className="relative h-[420px] overflow-hidden bg-blue-900 sm:h-[520px] lg:h-[560px]">
       {image ? (
-        <img
-          key={image}
-          alt={`${project.name} project`}
-          className="h-full w-full animate-[project-fade_420ms_ease] object-cover"
-          draggable={false}
-          src={image}
-        />
+        <div key={image} className="relative h-full w-full">
+          <Image
+            alt={`${project.name} project`}
+            src={image}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="animate-[project-fade_420ms_ease] object-cover"
+            draggable={false}
+          />
+</div>
       ) : (
         <div
           className="flex h-full w-full items-center justify-center p-8 text-center"
