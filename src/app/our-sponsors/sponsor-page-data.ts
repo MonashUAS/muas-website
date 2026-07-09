@@ -27,8 +27,8 @@ export const sponsorBenefitItems = [
 
 export const sponsorImpactStats = [
   {
-    value: "230+",
-    label: "Recruitment applicants in 2025",
+    value: "15+",
+    label: "Years of student expertise",
   },
   {
     value: "700+",
