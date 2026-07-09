@@ -38,13 +38,13 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-blue-100 via-blue-50 to-white px-4 py-8 backdrop-blur-sm transition-opacity duration-500 sm:px-8 ${
+      className={`fixed inset-0 z-50 overflow-y-auto px-4 py-8 backdrop-blur-sm transition-opacity duration-800 sm:px-8 ${
         isClosing ? "opacity-0" : "opacity-100"
       }`}
     >
       {/* modal content */}
       <article
-        className="relative mx-auto min-h-[calc(100vh-4rem)] max-w-6xl border-2 border-blue-500 bg-white px-6 py-14 text-center shadow-2xl transition-[clip-path,transform] duration-500 ease-out sm:px-12 lg:px-24"
+        className="relative mx-auto min-h-[calc(100vh-4rem)] max-w-6xl border-2 border-blue-500 bg-white px-6 py-14 text-center shadow-2xl transition-[clip-path,transform] duration-800 ease-out sm:px-12 lg:px-24"
         style={{
           clipPath: isOpen && !isClosing ? "inset(0 0 0 0)" : "inset(0 0 100% 0)",
           transform: isOpen && !isClosing ? "translateY(0)" : "translateY(-18px)",
@@ -63,7 +63,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
           {drone.name}.
         </h2>
 
-        <div className="mx-auto mt-8 max-w-2xl space-y-5 text-b2 font-bold text-black-500 sm:text-b1">
+        <div className="mx-auto mt-8 max-w-2xl space-y-5 text-b2 text-black-500 sm:text-b1">
           {drone.description.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
