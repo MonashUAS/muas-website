@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type TeamMember = {
   name: string;
@@ -27,7 +27,7 @@ const impactStats = [
 const teamSections: TeamSection[] = [
   {
     label: "Executive",
-    href: "/our-team#executive",
+    href: "/suas-2026-team",
     summary: "Team leadership, planning, sponsorship, and delivery.",
     members: [
       { name: "Ethan Liberman", role: "Team Lead" },
@@ -87,7 +87,7 @@ const teamSections: TeamSection[] = [
   },
   {
     label: "Lead Pilots",
-    href: "/our-team#lead-pilots",
+    href: "/sections/flight-ops",
     summary: "Leading flight readiness, pilot training, and field operations.",
     members: [
       { name: "Ethan Liberman", role: "Lead Pilot" },
@@ -102,122 +102,21 @@ const clamp = (value: number, min: number, max: number) => {
 };
 
 export default function OurTeamPage() {
-  const stickyTrackRef = useRef<HTMLElement | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [heroShade, setHeroShade] = useState(0.44);
-
-  const getScrollRange = useCallback(() => {
-    const track = stickyTrackRef.current;
-
-    if (!track) {
-      return null;
-    }
-
-    const trackTop = track.getBoundingClientRect().top + window.scrollY;
-    const scrollStart = trackTop - 80;
-    const progressStart = trackTop + window.innerHeight * 0.12;
-    const end = trackTop + track.offsetHeight - window.innerHeight;
-
-    return {
-      scrollStart,
-      progressStart,
-      distance: Math.max(1, end - progressStart),
-    };
-  }, []);
-
-  const scrollToTeamSection = useCallback(
-    (index: number) => {
-      const range = getScrollRange();
-
-      if (!range) {
-        return;
-      }
-
-      window.scrollTo({
-        top:
-          index === 0
-            ? range.scrollStart
-            : range.progressStart +
-              (range.distance * index) / Math.max(1, teamSections.length - 1),
-        behavior: "smooth",
-      });
-    },
-    [getScrollRange],
-  );
-
-  useEffect(() => {
-    const updatePageState = () => {
-      const foldProgress = clamp(window.scrollY / (window.innerHeight * 0.75), 0, 1);
-      const range = getScrollRange();
-
-      setHeroShade(0.44 + foldProgress * 0.36);
-
-      if (!range) {
-        return;
-      }
-
-      const sectionProgress =
-        (clamp(window.scrollY - range.progressStart, 0, range.distance) /
-          range.distance) *
-        (teamSections.length - 1);
-
-      setActiveIndex(clamp(Math.round(sectionProgress), 0, teamSections.length - 1));
-    };
-
-    const scheduleUpdate = () => {
-      if (animationFrameRef.current !== null) {
-        return;
-      }
-
-      animationFrameRef.current = window.requestAnimationFrame(() => {
-        animationFrameRef.current = null;
-        updatePageState();
-      });
-    };
-
-    updatePageState();
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleUpdate);
-
-    return () => {
-      window.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", scheduleUpdate);
-
-      if (animationFrameRef.current !== null) {
-        window.cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [getScrollRange]);
-
-  const activeSection = teamSections[activeIndex];
-
   return (
     <div className="relative bg-blue-900 text-white">
-      <Hero onViewMembers={() => scrollToTeamSection(0)} shade={heroShade} />
+      <Hero />
       <section className="min-h-[calc(100vh-5rem)]" />
 
       <main className="relative z-10 overflow-x-clip bg-[linear-gradient(180deg,#000000_0%,#001f49_100%)] px-6">
         <Overview />
-        <ManagementTeam
-          activeIndex={activeIndex}
-          activeSection={activeSection}
-          scrollToTeamSection={scrollToTeamSection}
-          stickyTrackRef={stickyTrackRef}
-        />
+        <ManagementTeam />
         <JoinTeamCallout />
       </main>
     </div>
   );
 }
 
-function Hero({
-  onViewMembers,
-  shade,
-}: {
-  onViewMembers: () => void;
-  shade: number;
-}) {
+function Hero() {
   return (
     <section
       id="our-team-page"
@@ -231,27 +130,23 @@ function Hero({
         sizes="100vw"
         className="object-cover object-center"
       />
-      <div
-        className="absolute inset-0 bg-black transition-colors duration-200"
-        style={{ opacity: shade }}
-      />
+      <div className="absolute inset-0 bg-black/52" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-6 text-center uppercase">
+      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-6 text-center">
         <h1 className="text-h4 font-black leading-none tracking-[-0.05em] sm:text-h2">
           Our Team
         </h1>
-        <p className="mx-auto mt-5 max-w-3xl text-b2 font-black leading-relaxed text-blue-50 sm:text-b1">
+        <p className="mx-auto mt-5 max-w-3xl text-b2 font-medium leading-relaxed text-blue-50 sm:text-b1">
           Meet the people designing, building, testing, and flying Monash UAS
           aircraft.
         </p>
         <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
-          <button
-            type="button"
-            onClick={onViewMembers}
+          <Link
+            href="#management-team"
             className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-b1 text-blue-900 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
           >
             View members
-          </button>
+          </Link>
           <Link
             href="/recruitment"
             className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/28 bg-white/[0.06] px-6 text-b1 text-white backdrop-blur-md transition-colors duration-300 hover:bg-white/[0.12] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
@@ -266,20 +161,25 @@ function Hero({
 
 function Overview() {
   return (
-    <section className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-5xl flex-col items-center justify-center py-16 text-center sm:py-20">
-      <p className="max-w-3xl text-b2 leading-relaxed text-blue-50 sm:text-b1">
-        Monash Uncrewed Aerial Systems brings together students across engineering,
-        operations, software, manufacturing, and flight testing. Each section owns a
-        focused part of the aircraft lifecycle while working toward the same mission:
-        building capable autonomous aircraft and the people who can deliver them.
-      </p>
+    <section className="mx-auto grid w-full max-w-5xl gap-10 py-16 sm:py-20 lg:grid-cols-[minmax(0,1fr)_minmax(24rem,0.82fr)] lg:items-center">
+      <div>
+        <p className="text-b1 leading-relaxed text-blue-50 sm:text-subtitle">
+          Monash Uncrewed Aerial Systems brings together students across engineering,
+          operations, software, manufacturing, and flight testing. Each section owns a
+          focused part of the aircraft lifecycle while working toward the same mission:
+          building capable autonomous aircraft and the people who can deliver them.
+        </p>
+      </div>
 
-      <div className="mt-12 grid w-full max-w-3xl grid-cols-3 gap-6 border-y border-white/12 py-8">
+      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
         {impactStats.map(({ label, suffix, value }) => {
           return (
-            <div key={label} className="text-center">
+            <div
+              key={label}
+              className="rounded-[1.25rem] border border-white/12 bg-white/[0.07] px-5 py-5 text-center backdrop-blur-md sm:text-left"
+            >
               <AnimatedStat suffix={suffix} value={value} />
-              <p className="mt-2 text-caption uppercase text-blue-100 sm:text-b2">
+              <p className="mt-2 text-caption uppercase text-blue-100">
                 {label}
               </p>
             </div>
@@ -290,94 +190,75 @@ function Overview() {
   );
 }
 
-function ManagementTeam({
-  activeIndex,
-  activeSection,
-  scrollToTeamSection,
-  stickyTrackRef,
-}: {
-  activeIndex: number;
-  activeSection: TeamSection;
-  scrollToTeamSection: (index: number) => void;
-  stickyTrackRef: React.RefObject<HTMLElement | null>;
-}) {
+function ManagementTeam() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeSection = teamSections[activeIndex];
+
   return (
     <section
       id="management-team"
-      ref={stickyTrackRef}
-      className="relative scroll-mt-20"
-      style={{ height: `${teamSections.length * 96}vh` }}
+      className="mx-auto w-full max-w-5xl scroll-mt-20 py-16 sm:py-20"
     >
-      <div className="sticky top-20 flex h-[calc(100vh-5rem)] items-center justify-center">
-        <div className="mx-auto flex h-full w-full max-w-5xl flex-col justify-center py-10 sm:py-12">
-          <div className="text-center">
-            <h2 className="text-h6 font-black uppercase leading-tight tracking-[-0.05em] sm:text-h5">
-              2026 Management Team
-            </h2>
-            <p className="mt-3 text-b2 font-black uppercase text-blue-100 sm:text-b1">
-              Explore by section
-            </p>
-          </div>
+      <div className="text-center">
+        <h2 className="text-h6 font-black uppercase leading-tight tracking-[-0.05em] sm:text-h5">
+          2026 Management Team
+        </h2>
+        <p className="mt-3 text-b2 font-medium text-blue-100 sm:text-b1">
+          Explore by section
+        </p>
+      </div>
 
-          <nav
-            aria-label="Explore team sections"
-            className="mx-auto mt-7 flex max-w-full justify-start gap-7 overflow-x-auto border-y border-white/12 py-4 text-b2 font-black text-blue-50 sm:mt-8 sm:justify-center sm:text-b1"
-          >
-            {teamSections.map((section, index) => {
-              const isActive = activeIndex === index;
+      <nav
+        aria-label="Explore team sections"
+        className="mx-auto mt-8 flex max-w-full justify-start gap-3 overflow-x-auto pb-2 text-b2 font-medium text-blue-50 sm:justify-center sm:text-b1"
+      >
+        {teamSections.map((section, index) => {
+          const isActive = activeIndex === index;
 
-              return (
-                <button
-                  key={section.label}
-                  type="button"
-                  onClick={() => scrollToTeamSection(index)}
-                  className={`relative shrink-0 pb-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white ${
-                    isActive ? "text-white" : "text-blue-100 hover:text-white"
-                  }`}
-                  aria-current={isActive ? "true" : undefined}
-                >
-                  {section.label}
-                  <span
-                    className={`absolute inset-x-0 bottom-0 h-0.5 bg-blue-300 transition-transform duration-300 ${
-                      isActive ? "scale-x-100" : "scale-x-0"
-                    }`}
-                  />
-                </button>
-              );
-            })}
-          </nav>
-
-          <div className="mx-auto mt-7 flex max-w-3xl flex-col items-center text-center sm:mt-8">
-            <p className="text-b2 leading-relaxed text-blue-50 sm:text-b1">
-              {activeSection.summary}
-            </p>
-            <Link
-              href={activeSection.href}
-              className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-blue-500 px-6 text-b1 text-white transition-colors duration-300 hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
+          return (
+            <button
+              key={section.label}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              className={`shrink-0 rounded-full border px-4 py-2 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none ${
+                isActive
+                  ? "border-white bg-white text-blue-900"
+                  : "border-white/20 bg-white/[0.05] text-blue-100 backdrop-blur-md hover:bg-white/[0.1] hover:text-white"
+              }`}
+              aria-current={isActive ? "true" : undefined}
             >
-              See More
-            </Link>
-          </div>
+              {section.label}
+            </button>
+          );
+        })}
+      </nav>
 
-          <div className="mt-8 grid gap-7 sm:mt-9 sm:grid-cols-3">
-            {activeSection.members.slice(0, 3).map((member, index) => {
-              return <MemberCard key={member.role} member={member} index={index} />;
-            })}
-          </div>
-        </div>
+      <p className="mx-auto mt-8 max-w-3xl text-center text-b2 leading-relaxed text-blue-50 sm:text-b1">
+        {activeSection.summary}
+      </p>
+
+      <div className="mt-9 grid gap-7 sm:grid-cols-3">
+        {activeSection.members.slice(0, 3).map((member) => {
+          return <MemberCard key={member.role} member={member} />;
+        })}
+      </div>
+
+      <div className="mt-8 flex justify-center">
+        <Link
+          href={activeSection.href}
+          className="inline-flex min-h-11 items-center justify-center rounded-full bg-blue-500 px-6 text-b1 text-white transition-colors duration-300 hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
+        >
+          Learn More
+        </Link>
       </div>
     </section>
   );
 }
 
-function MemberCard({ member, index }: { member: TeamMember; index: number }) {
+function MemberCard({ member }: { member: TeamMember }) {
   return (
-    <article
-      className={`mx-auto w-full max-w-[16rem] flex-col items-center text-center sm:flex sm:max-w-none ${
-        index === 1 ? "flex" : "hidden"
-      }`}
-    >
-      <div className="relative h-24 w-24 overflow-hidden rounded-full bg-blue-900 ring-1 ring-white/15 sm:h-32 sm:w-32">
+    <article className="mx-auto flex w-full max-w-[16rem] flex-col items-center text-center sm:max-w-none">
+      <div className="relative h-28 w-28 overflow-hidden rounded-full bg-blue-900 ring-1 ring-white/15 sm:h-36 sm:w-36">
         <Image
           src={placeholderImage}
           alt={`${member.name}, ${member.role}`}
@@ -394,19 +275,31 @@ function MemberCard({ member, index }: { member: TeamMember; index: number }) {
 
 function JoinTeamCallout() {
   return (
-    <section className="mx-auto flex min-h-[60vh] w-full max-w-5xl flex-col items-center justify-center py-20 text-center">
-      <h2 className="text-h6 font-black leading-tight tracking-[-0.05em] sm:text-h5">
-        Want to be part of the team?
-      </h2>
-      <p className="mt-4 max-w-2xl text-b2 leading-relaxed text-blue-50 sm:text-b1">
-        Join MUAS and help build the next generation of autonomous aircraft.
-      </p>
-      <Link
-        href="/recruitment"
-        className="mt-8 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-b1 text-blue-900 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
-      >
-        Apply Now
-      </Link>
+    <section className="mx-auto grid w-full max-w-5xl gap-8 py-16 sm:py-20 lg:grid-cols-[0.95fr_minmax(0,1fr)] lg:items-center">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] bg-blue-900 ring-1 ring-white/12">
+        <Image
+          src="/images/homepage/flight-day.jpg"
+          alt="MUAS members preparing aircraft on a flight day"
+          fill
+          sizes="(min-width: 1024px) 30rem, 100vw"
+          className="object-cover"
+        />
+      </div>
+
+      <div className="text-center lg:text-left">
+        <h2 className="text-h6 font-black leading-tight tracking-[-0.05em] sm:text-h5">
+          Want to be part of the team?
+        </h2>
+        <p className="mt-4 text-b2 leading-relaxed text-blue-50 sm:text-b1">
+          Join MUAS and help build the next generation of autonomous aircraft.
+        </p>
+        <Link
+          href="/recruitment"
+          className="mt-8 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-b1 text-blue-900 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
+        >
+          Apply Now
+        </Link>
+      </div>
     </section>
   );
 }
