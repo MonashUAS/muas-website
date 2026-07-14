@@ -5,6 +5,7 @@ import type { Drone } from "./drone-data";
 import { DroneDetailsModal } from "./drone-details-modal";
 import { DroneVisual } from "./drone-visual";
 import { useWheelNavigation } from "./useWheelNavigation";
+import Image from "next/image";
 
 type DroneCarouselProps = {
   drones: Drone[];
@@ -45,12 +46,24 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
     <section
       id="our-drones-page"
       ref={carouselRef}
-      className="relative flex min-h-[calc(100vh-5rem)] scroll-mt-20 items-center justify-center overflow-hidden bg-gradient-to-b from-blue-100 via-blue-50 to-white px-4 py-12"
+      className="relative flex min-h-[calc(100vh-5rem)] scroll-mt-20 items-center justify-center overflow-hidden px-4 py-12"
     >
+      {/* Background Cloud Image */}
+      <div className="absolute inset-0 z-0 opacity-40 select-none">
+        <Image
+          src="/images/drones/clouds.jpg" 
+          alt="Sky background with clouds"
+          fill
+          sizes="100vw"
+          className="object-cover"
+          priority
+        />
+      </div>
+
       {/* header */}
       <div className="absolute top-8 text-center uppercase text-blue-900">
-        <p className="text-caption font-black leading-none">Explore</p>
-        <h1 className="mt-1 text-h7 font-black leading-none sm:text-h6 tracking-[-0.05em]">Our Drones</h1>
+        <p className="text-subtitle font-black leading-none">Explore</p>
+        <h1 className="mt-1 text-h6 font-black leading-none sm:text-h5 tracking-[-0.05em]">Our Drones</h1>
       </div>
 
     {/* carousel */}
@@ -71,8 +84,8 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
                 height: isActive ? "46vh" : "22vh",
                 maxHeight: isActive ? "390px" : "180px",
                 maxWidth: isActive ? "720px" : "240px",
-                opacity: isActive ? 1 : 0.92,
-                transform: `translateX(${offset * 205}%) translateY(${isActive ? 10 : -78}px) scale(${isActive ? 1 : 0.88})`,
+                opacity: isActive ? 1 : 0.7,
+                transform: `translateX(${offset * 205}%) translateY(${isActive ? 10 : -78}px) scale(${isActive ? (isActiveHovered ? 1.1 : 1) : 0.88})`,
                 width: isActive ? "64vw" : "22vw",
                 zIndex: isActive ? 2 : 1,
               }}
@@ -86,7 +99,7 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
 
       {/* active drone name - button */}
       <button
-        className={`absolute bottom-14 max-w-[92vw] cursor-pointer text-h4 font-black uppercase leading-none transition sm:text-h2 tracking-[-0.05em] ${
+        className={`absolute bottom-14 max-w-[92vw] cursor-pointer text-h3 font-black uppercase leading-none transition sm:text-h1 tracking-[-0.05em] ${
           isActiveHovered ? "text-blue-500" : "text-blue-900 hover:text-blue-500"
         }`}
         onClick={() => setSelectedDrone(drones[activeIndex])}

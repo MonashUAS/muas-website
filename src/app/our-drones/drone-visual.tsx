@@ -1,4 +1,5 @@
 import type { Drone } from "./drone-data";
+import Image from "next/image";
 
 type DroneVisualProps = {
   drone: Pick<Drone, "name" | "heroImage">;
@@ -6,16 +7,20 @@ type DroneVisualProps = {
 };
 
 // DroneVisual renders a real drone image when available, otherwise a branded placeholder. 
-//TODO: REMOVE THIS ONCE ALL PLACEHOLDERS ARE REPLACED WITH REAL DRONE IMAGES.
 export function DroneVisual({ drone, className = "" }: DroneVisualProps) {
   if (drone.heroImage) {
     return (
-      <img
-        alt={`${drone.name} drone`}
-        className={`h-full w-full object-contain drop-shadow-2xl ${className}`}
-        draggable={false}
-        src={drone.heroImage}
-      />
+      <div className={`relative h-full w-full ${className}`}>
+        <Image
+          alt={`${drone.name} drone`}
+          src={drone.heroImage}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-contain drop-shadow-2xl"
+          draggable={false}
+          priority
+        />
+      </div>
     );
   }
 
