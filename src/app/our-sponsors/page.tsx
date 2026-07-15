@@ -28,7 +28,7 @@ export default function OurSponsorsPage() {
         <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[linear-gradient(0deg,rgba(0,0,0,0.45),transparent)]" />
 
         <div className="mx-auto w-full max-w-[1720px] px-5 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
-          <div className="grid gap-10 lg:min-h-[660px] lg:grid-cols-[minmax(0,0.9fr)_minmax(520px,1fr)] lg:items-center lg:gap-14">
+          <div className="grid gap-10 lg:min-h-[705px] lg:grid-cols-[minmax(0,0.9fr)_minmax(520px,1fr)] lg:items-center lg:gap-14">
             <div className="max-w-3xl">
               <h1 className="max-w-full break-words text-[clamp(3.75rem,12vw,9rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
                 Sponsor Us

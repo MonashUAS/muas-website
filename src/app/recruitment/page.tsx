@@ -22,7 +22,7 @@ const recruitmentConfig = {
 export default function RecruitmentPage() {
   const isRecruitmentOpen = recruitmentConfig.isRecruitmentOpen;
 
-  const statusContent = recruitmentConfig.isRecruitmentOpen
+  const statusContent = isRecruitmentOpen
     ? {
         heading: "Recruitment is Now Open",
         copy: "Join MUAS and help shape the next generation of drone technology.",
@@ -38,13 +38,18 @@ export default function RecruitmentPage() {
     <main className="min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#02040a_0%,#001f49_48%,#02040a_100%)] text-white">
       <section
         id="recruitment-page"
-        className="relative isolate scroll-mt-20 overflow-hidden px-5 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20"
+        className="relative isolate flex min-h-[calc(100svh-5rem)] scroll-mt-20 items-center overflow-hidden py-8 sm:py-10 lg:py-12"
       >
+        {/* Background gradient */}
         <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_16%_10%,rgba(0,74,173,0.34),transparent_30%),radial-gradient(circle_at_86%_58%,rgba(84,134,200,0.18),transparent_34%)]" />
+
+        {/* Background grid */}
         <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:84px_84px] opacity-25" />
 
-        <div className="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-[calc(100vw-2.5rem)] min-w-0 flex-col justify-center overflow-hidden sm:max-w-[calc(100vw-4rem)] lg:max-w-[1720px]">
-          <div className="grid w-full min-w-0 max-w-full grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,0.68fr)_minmax(680px,1.32fr)] lg:items-center lg:gap-16">
+        {/* Shared page container aligned with the navbar controls */}
+        <div className="mx-auto flex w-full max-w-[1720px] min-w-0 flex-col justify-center px-5 sm:px-8 lg:px-12">
+          <div className="grid w-full min-w-0 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,0.68fr)_minmax(680px,1.32fr)] lg:items-center lg:gap-16">
+            {/* Recruitment text */}
             <div className="min-w-0 max-w-4xl">
               <h1 className="max-w-full text-[clamp(3rem,8vw,7rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
                 Recruitment
@@ -78,11 +83,10 @@ export default function RecruitmentPage() {
               </div>
             </div>
 
-            {/* The recruitment image belongs to the hero visual area, not the
-                recruitment status content. */}
-            <div className="relative flex min-w-0 max-w-full items-center justify-center lg:min-h-[660px]">
+            {/* Recruitment visual aligned to the right container edge */}
+            <div className="relative flex min-w-0 items-center justify-center lg:justify-end">
               {isRecruitmentOpen ? (
-                <div className="relative h-[300px] w-full overflow-hidden border border-blue-100/20 bg-blue-900 shadow-[0_34px_110px_rgba(0,0,0,0.46)] [clip-path:polygon(7%_0,100%_0,100%_100%,0_100%)] sm:h-[430px] lg:h-full lg:min-h-[660px]">
+                <div className="relative h-[300px] w-full overflow-hidden border border-blue-100/20 bg-blue-900 shadow-[0_34px_110px_rgba(0,0,0,0.46)] [clip-path:polygon(7%_0,100%_0,100%_100%,0_100%)] sm:h-[430px] lg:h-[min(560px,calc(100svh-10rem))]">
                   <div className="absolute -inset-8 bg-blue-500/18 blur-3xl" />
 
                   <Image
@@ -95,21 +99,26 @@ export default function RecruitmentPage() {
                   />
 
                   <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.32)_0%,rgba(0,31,73,0.06)_48%,rgba(0,0,0,0.22)_100%),linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,31,73,0.38)_100%)]" />
+
                   <div className="absolute inset-x-6 top-5 h-px bg-blue-100/35" />
+
                   <div className="absolute bottom-5 right-7 h-10 w-28 border-b border-r border-blue-100/30" />
                 </div>
               ) : (
-                <div className="relative flex aspect-square w-[min(100%,18rem)] items-center justify-center rounded-full bg-blue-500/12 shadow-[0_30px_110px_rgba(0,74,173,0.36)] ring-1 ring-blue-100/20 sm:w-[24rem] lg:w-[34rem]">
-                  <div className="absolute inset-5 rounded-full bg-blue-500/10 blur-2xl" />
+                <div className="relative aspect-square w-[min(100%,20rem)] rounded-full shadow-[0_30px_110px_rgba(0,74,173,0.36)] ring-1 ring-blue-100/20 sm:w-[28rem] lg:w-[40rem] xl:w-[44rem]">
+                  {/* Clips the square PNG while keeping the outer shadow visible. */}
+                  <div className="absolute inset-0 overflow-hidden rounded-full bg-blue-500/12">
+                    <div className="absolute inset-5 rounded-full bg-blue-500/10 blur-2xl" />
 
-                  <Image
-                    src={statusContent.image.src}
-                    alt={statusContent.image.alt}
-                    fill
-                    priority
-                    sizes="(min-width: 1024px) 34rem, 24rem"
-                    className="object-contain p-2"
-                  />
+                    <Image
+                      src={statusContent.image.src}
+                      alt={statusContent.image.alt}
+                      fill
+                      priority
+                      sizes="(min-width: 1280px) 44rem, (min-width: 1024px) 40rem, (min-width: 640px) 28rem, 20rem"
+                      className="object-contain p-2"
+                    />
+                  </div>
                 </div>
               )}
             </div>
