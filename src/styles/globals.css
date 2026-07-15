@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #ffffff;
-  --color-foreground: #000000;
+  --color-background: #02040a;
+  --color-foreground: #ffffff;
+
+  --header-height: 5rem;
 
   --color-blue-50: #e6edf7;
   --color-blue-100: #b0c7e6;
@@ -122,6 +124,11 @@
   p {
     margin: 0;
   }
+}
+
+/* Opening section fills the viewport below the fixed header (h-20 / pt-20). */
+@utility viewport-fold {
+  min-height: calc(100svh - var(--header-height));
 }
 
 @keyframes project-fade {

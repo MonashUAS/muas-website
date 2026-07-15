@@ -35,10 +35,10 @@ export default function RecruitmentPage() {
       };
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#02040a_0%,#001f49_48%,#02040a_100%)] text-white">
+    <main className="min-h-dvh overflow-x-hidden bg-[linear-gradient(180deg,#02040a_0%,#001f49_48%,#02040a_100%)] text-white">
       <section
         id="recruitment-page"
-        className="relative isolate flex min-h-[calc(100svh-5rem)] scroll-mt-20 items-center overflow-hidden py-8 sm:py-10 lg:py-12"
+        className="relative isolate flex viewport-fold scroll-mt-20 items-center overflow-hidden py-8 sm:py-10 lg:py-12"
       >
         {/* Background gradient */}
         <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_16%_10%,rgba(0,74,173,0.34),transparent_30%),radial-gradient(circle_at_86%_58%,rgba(84,134,200,0.18),transparent_34%)]" />

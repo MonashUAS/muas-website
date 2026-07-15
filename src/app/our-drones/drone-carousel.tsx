@@ -46,7 +46,7 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
     <section
       id="our-drones-page"
       ref={carouselRef}
-      className="relative flex min-h-[calc(100vh-5rem)] scroll-mt-20 items-center justify-center overflow-hidden px-4 py-12"
+      className="relative flex viewport-fold scroll-mt-20 items-center justify-center overflow-hidden bg-blue-100 px-4 py-12"
     >
       {/* Background Cloud Image */}
       <div className="absolute inset-0 z-0 opacity-40 select-none">

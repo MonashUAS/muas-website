@@ -17,18 +17,18 @@ const sponsorHeroImage = "/images/sponsor us page/our-sponsors-hero.jpg";
 
 export default function OurSponsorsPage() {
   return (
-    <div>
+    <div className="min-h-full bg-background">
       {/* Sponsor-focused hero shown at the top of the sponsors page. */}
       <section
         id="sponsor-hero"
-        className="relative isolate scroll-mt-20 overflow-hidden bg-black-500 text-white"
+        className="relative isolate flex viewport-fold scroll-mt-20 items-center overflow-hidden bg-black-500 text-white"
       >
         <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_16%_10%,rgba(0,74,173,0.34),transparent_30%),radial-gradient(circle_at_86%_58%,rgba(84,134,200,0.2),transparent_34%),linear-gradient(145deg,#000000_0%,#001126_46%,#001f49_100%)]" />
         <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:84px_84px] opacity-24" />
         <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[linear-gradient(0deg,rgba(0,0,0,0.45),transparent)]" />
 
-        <div className="mx-auto w-full max-w-[1720px] px-5 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
-          <div className="grid gap-10 lg:min-h-[705px] lg:grid-cols-[minmax(0,0.9fr)_minmax(520px,1fr)] lg:items-center lg:gap-14">
+        <div className="mx-auto flex w-full max-w-[1720px] flex-1 items-center px-5 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+          <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(520px,1fr)] lg:items-center lg:gap-14">
             <div className="max-w-3xl">
               <h1 className="max-w-full break-words text-[clamp(3.75rem,12vw,9rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
                 Sponsor Us
@@ -61,7 +61,7 @@ export default function OurSponsorsPage() {
             <div className="relative min-w-0 lg:self-stretch">
               <div className="absolute -inset-8 bg-blue-500/18 blur-3xl" />
 
-              <div className="relative h-full min-h-[230px] border border-blue-200/25 bg-blue-900/20 shadow-[0_32px_100px_rgba(0,0,0,0.5)] [clip-path:polygon(8%_0,100%_0,100%_100%,0_100%)] sm:min-h-[300px] lg:min-h-full">
+              <div className="relative h-full min-h-[230px] border border-blue-200/25 bg-blue-900/20 shadow-[0_32px_100px_rgba(0,0,0,0.5)] [clip-path:polygon(8%_0,100%_0,100%_100%,0_100%)] sm:min-h-[300px] lg:min-h-[min(520px,calc(100svh-var(--header-height)-8rem))]">
                 <div className="relative h-[230px] overflow-hidden bg-blue-900 sm:h-[300px] lg:h-full [clip-path:polygon(8%_0,100%_0,100%_100%,0_100%)]">
                   <Image
                     src={sponsorHeroImage}

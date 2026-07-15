@@ -96,17 +96,17 @@ export default function ContactUsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#02040a_0%,#001f49_44%,#02040a_100%)] text-white">
+    <main className="min-h-dvh bg-[linear-gradient(180deg,#02040a_0%,#001f49_44%,#02040a_100%)] text-white">
       {/* Initial viewport: heading, form and map */}
       <section
         id="contact-page"
-        className="relative isolate scroll-mt-20 overflow-hidden py-8 sm:py-10 lg:h-[calc(100svh-5rem)] lg:min-h-[640px] lg:py-5"
+        className="relative isolate flex viewport-fold flex-col scroll-mt-20 overflow-hidden py-8 sm:py-10 lg:py-5"
       >
         <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_72%_18%,rgba(84,134,200,0.24),transparent_36%),radial-gradient(circle_at_28%_70%,rgba(0,74,173,0.16),transparent_34%)]" />
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[linear-gradient(0deg,rgba(2,4,10,0.24),transparent)]" />
 
-        <div className="relative mx-auto flex h-full w-full max-w-[1720px] flex-col px-5 sm:px-8 lg:px-12">
+        <div className="relative mx-auto flex w-full max-w-[1720px] flex-1 flex-col px-5 sm:px-8 lg:px-12">
           <div className="shrink-0">
             <h1 className="text-[clamp(3.35rem,9vw,6.5rem)] font-medium leading-[0.86] tracking-[-0.06em] text-white">
               Get in Touch

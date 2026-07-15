@@ -38,15 +38,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
-      <body className="flex min-h-screen flex-col bg-background text-foreground antialiased">
+    <html lang="en" className="h-full bg-background">
+      <body className="flex min-h-dvh flex-col bg-background text-foreground antialiased">
         <NavBar />
         <Suspense fallback={null}>
           <SearchMatchHighlight />
         </Suspense>
         {/* Offset page content below the fixed top navigation bar. */}
-        <div className="flex min-h-screen flex-1 flex-col pt-20">
-          <main className="flex w-full flex-1 flex-col">{children}</main>
+        <div className="flex min-h-dvh flex-1 flex-col bg-background pt-20">
+          <main className="flex w-full flex-1 flex-col bg-background">{children}</main>
           <Footer />
         </div>
       </body>

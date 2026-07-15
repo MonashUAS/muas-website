@@ -63,7 +63,7 @@ export function ScrollHero() {
 
   return (
     <section ref={sectionRef} id="suas-hero" className="relative scroll-mt-20 bg-black-500" style={{ height: `${SCROLL_LENGTH_VH}vh` }}>
-      <div className="sticky top-0 h-screen overflow-hidden bg-black-500">
+      <div className="sticky top-0 h-svh overflow-hidden bg-black-500">
         <img
           alt="Redback aircraft animation"
           className="h-full w-full object-cover"

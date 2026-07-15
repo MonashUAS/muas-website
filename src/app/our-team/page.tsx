@@ -105,7 +105,7 @@ export default function OurTeamPage() {
   return (
     <div className="relative bg-blue-900 text-white">
       <Hero />
-      <section className="min-h-[calc(100vh-5rem)]" />
+      <section className="viewport-fold" />
 
       <main className="relative z-10 overflow-x-clip bg-[linear-gradient(180deg,#000000_0%,#001f49_100%)] px-6">
         <Overview />
@@ -120,7 +120,7 @@ function Hero() {
   return (
     <section
       id="our-team-page"
-      className="fixed inset-x-0 top-20 z-0 flex h-[calc(100vh-5rem)] items-center justify-center overflow-hidden bg-blue-900 text-white"
+      className="fixed inset-x-0 top-20 z-0 flex h-[calc(100svh-var(--header-height))] items-center justify-center overflow-hidden bg-blue-900 text-white"
     >
       <Image
         src="/images/homepage/full-team-photo.jpg"

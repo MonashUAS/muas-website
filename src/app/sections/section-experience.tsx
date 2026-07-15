@@ -54,7 +54,7 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
   return (
     <div className="relative bg-blue-900 text-white">
       <HeroVideo section={section} shade={videoShade} />
-      <section className="min-h-[calc(100vh-5rem)]" />
+      <section className="viewport-fold" />
       <main className="relative z-10">
         <ContentSections section={section} />
         <NextSection section={nextSection} />
@@ -66,7 +66,7 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
 // HeroVideo renders the fixed autoplaying section video behind the folding content.
 function HeroVideo({ section, shade }: { section: TeamSection; shade: number }) {
   return (
-    <section className="fixed inset-x-0 top-20 z-0 flex h-[calc(100vh-5rem)] items-center justify-center overflow-hidden ">
+    <section className="fixed inset-x-0 top-20 z-0 flex h-[calc(100svh-var(--header-height))] items-center justify-center overflow-hidden ">
       <video
         aria-label={`${section.name} hero video`}
         autoPlay
@@ -102,7 +102,7 @@ function Description({ section }: { section: TeamSection }) {
   return (
     <section
       id="team-overview"
-      className="mx-auto flex h-[calc(100vh-10rem)] w-full max-w-5xl scroll-mt-20 flex-col items-center justify-center py-20 text-center"
+      className="mx-auto flex h-[calc(100svh-(var(--header-height)*2))] w-full max-w-5xl scroll-mt-20 flex-col items-center justify-center py-20 text-center"
     >
       <ParticleText text={section.description} />
       <h2 className="mt-14 text-subtitle font-black">
@@ -167,7 +167,7 @@ function Projects({ section }: { section: TeamSection }) {
     <section
       id="team-projects"
       ref={sectionRef}
-      className={`flex h-[calc(100vh)] scroll-mt-20 flex-col items-center justify-center overflow-hidden py-20 transition duration-[1600ms] ease-out ${
+      className={`flex h-svh scroll-mt-20 flex-col items-center justify-center overflow-hidden py-20 transition duration-[1600ms] ease-out ${
         isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >
@@ -212,7 +212,7 @@ function NextSection({ section }: { section: TeamSection }) {
   };
 
   return (
-    <section className="relative z-10 flex h-[calc(100vh-8rem)] items-center justify-center bg-white px-6 py-20 text-blue-900">
+    <section className="relative z-10 flex h-[calc(100svh-(var(--header-height)*1.6))] items-center justify-center bg-white px-6 py-20 text-blue-900">
       <Link
         aria-label={`Learn about ${section.name}`}
         className="group flex max-w-4xl flex-col items-center text-center"
@@ -258,7 +258,7 @@ function TransitionPreview({
 }) {
   const transitionStyle: CSSProperties = isFullScreen
     ? {
-        height: "100vh",
+        height: "100svh",
         left: 0,
         top: 0,
         width: "100vw",

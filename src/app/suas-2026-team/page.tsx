@@ -335,7 +335,7 @@ export default function SUAS2026TeamPage() {
       <div className="relative isolate overflow-hidden">
         <section
           id="suas-team-page"
-          className="relative -mt-20 flex min-h-screen scroll-mt-20 items-end overflow-hidden"
+          className="relative -mt-20 flex min-h-dvh scroll-mt-20 items-end overflow-hidden"
         >
           <Image
             src={teamHeroImage}
@@ -351,7 +351,7 @@ export default function SUAS2026TeamPage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_52%_38%,transparent_0%,rgba(0,0,0,0.1)_38%,rgba(0,0,0,0.72)_100%)]" />
           <div className="absolute inset-x-0 bottom-0 h-44 bg-[linear-gradient(180deg,transparent,#000000)]" />
 
-          <div className="relative mx-auto flex min-h-screen w-full max-w-[1720px] items-center justify-center px-5 pt-20 sm:px-8 lg:px-12">
+          <div className="relative mx-auto flex min-h-dvh w-full max-w-[1720px] items-center justify-center px-5 pt-20 sm:px-8 lg:px-12">
             <h1 className="max-w-[11ch] text-center text-[clamp(4rem,13vw,13.5rem)] font-bold uppercase leading-[0.86] text-white drop-shadow-[0_18px_60px_rgba(0,0,0,0.7)]">
               The{" "}
               <span className="text-white">
