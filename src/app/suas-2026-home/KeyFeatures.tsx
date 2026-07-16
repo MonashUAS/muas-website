@@ -26,8 +26,8 @@ export function ModelViewer({ model }: { model: string }) {
     <div className="relative h-[420px] min-h-[42vh] w-full lg:h-[620px]">
       <Canvas camera={{ position: [4, 2.2, 5], fov: 38 }} dpr={[1, 2]}>
         <color attach="background" args={["#000000"]} />
-        <ambientLight intensity={1.5} />
-        <directionalLight position={[5, 6, 4]} intensity={2.4} />
+        <ambientLight intensity={0.1} />
+        <directionalLight position={[5, 6, 4]} intensity={0.5} />
         <directionalLight position={[-4, 1, -5]} intensity={0.9} color="#d61c1c" />
         <Suspense fallback={null}>
           <FeatureModel key={model} src={model} />
@@ -55,10 +55,10 @@ export function KeyFeatures() {
 
   return (
     <section id="key-features" className="scroll-mt-10 bg-black-500 px-6 py-20 text-white lg:px-14">
+      <p className="text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-none tracking-tighter text-white">Key Features</p>
       <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[minmax(360px,0.9fr)_minmax(420px,1.2fr)] lg:items-center">
         {/* Left column with feature list and descriptions */}
         <div>
-          <p className="mb-4 text-subtitle text-white">KEY FEATURES</p>
           <div className="flex flex-col gap-5">
             {keyFeatures.map((feature) => {
               const isExpanded = expandedFeature === feature.title;
