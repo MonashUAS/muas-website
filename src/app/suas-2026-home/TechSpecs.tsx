@@ -1,25 +1,84 @@
-import { techSpecCards, techSpecSystemGroups } from "./tech-specs-data";
-import type { TechSpecCard, TechSpecSystemGroup, TechSpecSystemRow } from "./tech-specs-data";
+"use client";
 
-// TechSpecs renders Redback metrics and systems in the supplied dark technical layout.
+import Image from "next/image";
+import { useState } from "react";
+
+import { techSpecPanels } from "./tech-specs-data";
+import type { TechSpecPanelMetric } from "./tech-specs-data";
+
+const deployedPanelIndex = techSpecPanels.findIndex(
+  (panel) => panel.navTitle === "deployed",
+);
+
+// TechSpecs renders Redback metrics as selectable technical panels.
 export function TechSpecs() {
+  const [activeIndex, setActiveIndex] = useState(
+    deployedPanelIndex >= 0 ? deployedPanelIndex : 0,
+  );
+  const activePanel = techSpecPanels[activeIndex];
+
   return (
-    <section id="technical-specifications" className="scroll-mt-10 bg-black-500 px-6 py-20 text-white lg:px-14">
+    <section
+      id="technical-specifications"
+      className="scroll-mt-10 bg-black-500 px-6 py-20 text-white lg:px-14"
+    >
       <div className="mx-auto w-full max-w-7xl">
-        <h2 className="text-h5 uppercase leading-tight text-white">Technical Specifications</h2>
+        <h2 className="text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-none tracking-tighter text-white">
+          Technical Specifications
+        </h2>
 
-        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {techSpecCards.map((spec) => (
-            <SpecMetric key={`${spec.label}-${spec.caption}`} spec={spec} />
-          ))}
-        </div>
+        <nav
+          aria-label="Explore technical specifications"
+          className="mt-8 flex max-w-full justify-start gap-3 overflow-x-auto pb-2 text-b2 font-medium text-red-50 sm:text-b1 lg:justify-center"
+        >
+          {techSpecPanels.map((panel, index) => {
+            const isActive = activeIndex === index;
 
-        <div className="mt-14">
-          <h3 className="text-subtitle uppercase text-white">Systems</h3>
-          <div className="mt-6 border-t border-white/80">
-            {techSpecSystemGroups.map((group) => (
-              <SystemTableGroup key={group.title} group={group} />
-            ))}
+            return (
+              <button
+                key={panel.navTitle}
+                type="button"
+                onClick={() => setActiveIndex(index)}
+                className={`shrink-0 rounded-full border px-4 py-2 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none ${
+                  isActive
+                    ? "border-white bg-white text-black-500"
+                    : "border-white/20 bg-white/[0.05] text-white/75 backdrop-blur-md hover:bg-white/[0.1] hover:text-white"
+                }`}
+                aria-current={isActive ? "true" : undefined}
+              >
+                {panel.navTitle}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="mt-12 grid min-h-[34rem] overflow-hidden bg-black-500 lg:grid-cols-[minmax(20rem,0.78fr)_minmax(0,1fr)] lg:items-stretch">
+          <div className="relative z-10 flex flex-col justify-center pb-10 lg:py-8 lg:pr-10">
+            <h3 className="font-medium leading-tight tracking-tighter text-white text-h5 sm:text-h4">
+              {activePanel.title}
+            </h3>
+
+            <div className="mt-4 space-y-1 leading-tight text-white/68 text-h7">
+              {activePanel.kicker ? <p>{activePanel.kicker}</p> : null}
+              <p>{activePanel.subtitle}</p>
+            </div>
+
+            <div className="mt-10 space-y-9">
+              {activePanel.metrics.map((metric) => (
+                <SpecPanelMetric key={metric.label} metric={metric} />
+              ))}
+            </div>
+          </div>
+
+          <div className="relative min-h-[18rem] overflow-hidden lg:min-h-[34rem]">
+            <Image
+              key={activePanel.image.src}
+              src={activePanel.image.src}
+              alt={activePanel.image.alt}
+              fill
+              sizes="(min-width: 1024px) 58vw, 100vw"
+              className="object-contain object-center lg:object-right"
+            />
           </div>
         </div>
       </div>
@@ -27,43 +86,18 @@ export function TechSpecs() {
   );
 }
 
-// SpecMetric swaps imperial/metric hover text and applies the red gradient hover state.
-function SpecMetric({ spec }: { spec: TechSpecCard }) {
+function SpecPanelMetric({ metric }: { metric: TechSpecPanelMetric }) {
   return (
-    <div className="group min-h-36 border border-red-800 bg-black-500 p-5 transition-colors hover:bg-[linear-gradient(180deg,rgba(118,15,15,0.95),rgb(0,0,0))]">
-      <p className="text-caption uppercase leading-4 text-white/70">{spec.label}</p>
-      <div className="relative mt-1 min-h-8">
-        <p className="absolute text-subtitle leading-7 text-white transition-opacity group-hover:opacity-0">{spec.value}</p>
-        <p className="absolute text-subtitle leading-7 text-white opacity-0 transition-opacity group-hover:opacity-100">
-          {spec.hoverValue}
-        </p>
-      </div>
-      <p className="mt-8 max-w-32 text-caption leading-5 text-white/75">{spec.caption}</p>
-    </div>
-  );
-}
-
-// SystemTableGroup renders one bordered table segment for a Redback subsystem.
-function SystemTableGroup({ group }: { group: TechSpecSystemGroup }) {
-  return (
-    <div className="border-b border-white/70 py-4">
-      <h4 className="text-center text-b1 text-white">{group.title}</h4>
-      <div className="mt-4 grid gap-4">
-        {group.rows.map((row) => (
-          <SystemTableRow key={row.label} row={row} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// SystemTableRow keeps each system value aligned with the visual divider mark.
-function SystemTableRow({ row }: { row: TechSpecSystemRow }) {
-  return (
-    <div className="grid grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)] items-center gap-6 text-b1 text-white">
-      <p className="text-right">{row.label}</p>
-      <p className="text-center">{`//`}</p>
-      <p>{row.value}</p>
+    <div>
+      <p className="max-w-xl break-words text-h5 font-black leading-tight tracking-tight text-red-500 sm:text-h4">
+        <span>{metric.value}</span>
+        {metric.metricValue ? (
+          <span className="text-violet-400"> {`(${metric.metricValue})`}</span>
+        ) : null}
+      </p>
+      <p className="mt-4 space-y-1 leading-tight text-white/68 text-subtitle">
+        {metric.label}
+      </p>
     </div>
   );
 }
