@@ -9,8 +9,8 @@ export default function SUAS2026HomePage() {
   return (
     <div className="bg-black-500">
       <ScrollHero />
-      <Video />
       <KeyFeatures />
+      <Video />
       <TechSpecs />
       <TeamLink />
     </div>
