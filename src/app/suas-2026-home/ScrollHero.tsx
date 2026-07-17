@@ -5,6 +5,7 @@ import { scrollHeroCopy, type TextWindow } from "./scroll-hero-data";
 
 const FRAME_COUNT = 420;
 const FRAME_PATH = "/images/redback-animation/";
+const PRELOAD_CONCURRENCY = 12;
 
 // Increase this value to make the scroll animation slower, or reduce it to make it faster.
 const SCROLL_LENGTH_VH = 1200;
@@ -13,6 +14,8 @@ const SCROLL_LENGTH_VH = 1200;
 export function ScrollHero() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [frame, setFrame] = useState(1);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [loadedFrameCount, setLoadedFrameCount] = useState(0);
   const [progress, setProgress] = useState(0);
 
   // Tracks the section's scroll position and converts it into frame/progress state.
@@ -51,53 +54,129 @@ export function ScrollHero() {
     };
   }, []);
 
-  // Warms representative frames so the sequence responds quickly as scrolling begins.
+  // Preloads the full sequence so scroll position can map directly to cached frames.
   useEffect(() => {
-    const warmFrames = [1, 2, 3, 4, 5, 6, 24, 48, 96, 144, 192, 240, 288, 336, 384, 420];
+    let isCancelled = false;
 
-    warmFrames.forEach((warmFrame) => {
-      const image = new Image();
-      image.src = getFramePath(warmFrame);
+    preloadFrames((loadedCount) => {
+      if (isCancelled) {
+        return;
+      }
+
+      setLoadedFrameCount(loadedCount);
+
+      if (loadedCount === FRAME_COUNT) {
+        setIsLoaded(true);
+      }
     });
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   return (
     <section ref={sectionRef} id="suas-hero" className="relative scroll-mt-20 bg-black-500" style={{ height: `${SCROLL_LENGTH_VH}vh` }}>
       <div className="sticky top-0 h-screen overflow-hidden bg-black-500">
+        {scrollHeroCopy
+          .filter((copy) => copy.layer === "behind-frame")
+          .map((copy) => {
+            const opacity = getTextOpacity(progress, copy.window);
+
+            return <ScrollHeroText copy={copy} key={copy.key} opacity={opacity} />;
+          })}
+
         <img
           alt="Redback aircraft animation"
-          className="h-full w-full object-cover"
+          className="relative z-10 h-full w-full object-cover"
           draggable={false}
           src={getFramePath(frame)}
         />
 
-        {scrollHeroCopy.map((copy) => {
-          const opacity = getTextOpacity(progress, copy.window);
+        {scrollHeroCopy
+          .filter((copy) => copy.layer !== "behind-frame")
+          .map((copy) => {
+            const opacity = getTextOpacity(progress, copy.window);
 
-          return (
-            <div
-              key={copy.key}
-              aria-hidden={opacity < 0.05}
-              className={`pointer-events-none absolute inset-0 flex items-center px-6 sm:px-10 lg:px-16 ${copy.position}`}
-              style={{
-                opacity,
-                transform: `translateY(${24 - opacity * 24}px)`,
-                transition: "opacity 140ms linear, transform 140ms linear",
-              }}
-            >
-              <h1 className={`${copy.className} font-medium leading-[1.05] text-white`}>
-                {copy.lines.map((line) => (
-                  <span key={line} className="block">
-                    {line}
-                  </span>
-                ))}
-              </h1>
+            return <ScrollHeroText copy={copy} key={copy.key} opacity={opacity} />;
+          })}
+
+        {!isLoaded ? (
+          <div className="absolute inset-0 z-30 grid place-items-center bg-black-500 text-center text-white">
+            <div>
+              <p className="text-b1 uppercase tracking-[0.22em] text-white/70">
+                Loading Redback
+              </p>
+              <p className="mt-3 text-h7">
+                {Math.round((loadedFrameCount / FRAME_COUNT) * 100)}%
+              </p>
             </div>
-          );
-        })}
+          </div>
+        ) : null}
       </div>
     </section>
   );
+}
+
+// ScrollHeroText renders one timed copy overlay in either the foreground or background layer.
+function ScrollHeroText({
+  copy,
+  opacity,
+}: {
+  copy: (typeof scrollHeroCopy)[number];
+  opacity: number;
+}) {
+  const zIndexClass = copy.layer === "behind-frame" ? "z-0" : "z-20";
+
+  return (
+    <div
+      aria-hidden={opacity < 0.05}
+      className={`pointer-events-none absolute inset-0 flex items-center px-6 sm:px-10 lg:px-16 ${zIndexClass} ${copy.position}`}
+      style={{
+        opacity,
+        transform: `translateY(${24 - opacity * 24}px)`,
+        transition: "opacity 80ms linear, transform 80ms linear",
+      }}
+    >
+      <h1 className={`${copy.className} font-medium leading-tight tracking-tighter text-white`}>
+        {copy.lines.map((line) => (
+          <span key={line} className="block">
+            {line}
+          </span>
+        ))}
+      </h1>
+    </div>
+  );
+}
+
+// preloadFrames fills the browser cache with the complete frame sequence at a controlled pace.
+function preloadFrames(onProgress: (loadedCount: number) => void) {
+  let loadedCount = 0;
+  let nextFrame = 1;
+
+  const loadNext = () => {
+    if (nextFrame > FRAME_COUNT) {
+      return;
+    }
+
+    const frameToLoad = nextFrame;
+    nextFrame += 1;
+    const image = new Image();
+
+    const completeFrame = () => {
+      loadedCount += 1;
+      onProgress(loadedCount);
+      loadNext();
+    };
+
+    image.onload = completeFrame;
+    image.onerror = completeFrame;
+    image.src = getFramePath(frameToLoad);
+  };
+
+  for (let worker = 0; worker < PRELOAD_CONCURRENCY; worker += 1) {
+    loadNext();
+  }
 }
 
 // getFramePath formats the current frame number into the matching public image URL.

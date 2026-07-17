@@ -23,6 +23,7 @@ export type TextWindow =
 export type ScrollHeroCopy = {
   key: string;
   className: string;
+  layer?: "behind-frame";
   lines: string[];
   window: TextWindow;
   position: string;
@@ -32,21 +33,21 @@ export const scrollHeroCopy: ScrollHeroCopy[] = [
   {
     key: "suas",
     className: "text-h5",
-    lines: ["SUAS 2026."],
+    lines: ["SUAS 2026"],
     window: TEXT_WINDOWS.suas,
     position: "justify-start text-left",
   },
   {
     key: "presents",
     className: "text-h5",
-    lines: ["MUAS Presents"],
+    lines: ["MUAS Presents..."],
     window: TEXT_WINDOWS.presents,
     position: "justify-start text-left",
   },
   {
     key: "redback",
-    className: "text-h3",
-    lines: ["Redback."],
+    className: "text-h3 sm:text-h1",
+    lines: ["Redback"],
     window: TEXT_WINDOWS.redback,
     position: "justify-center text-center",
   },
@@ -54,9 +55,9 @@ export const scrollHeroCopy: ScrollHeroCopy[] = [
     key: "rescue",
     className: "max-w-2xl text-h5",
     lines: [
-      "Built for search and rescue.",
-      "Powered by innovation.",
-      "Inspired by nature.",
+      "Built for search and rescue",
+      "Powered by innovation",
+      "Inspired by nature",
     ],
     window: TEXT_WINDOWS.rescue,
     position: "justify-end text-right",
@@ -64,6 +65,7 @@ export const scrollHeroCopy: ScrollHeroCopy[] = [
   {
     key: "closing",
     className: "max-w-xl text-h5",
+    layer: "behind-frame",
     lines: ["Rapid deployment of relief where it is  needed most."],
     window: TEXT_WINDOWS.closing,
     position: "justify-center text-center",
