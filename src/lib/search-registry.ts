@@ -12,7 +12,7 @@ import {
 import { sections } from "@/app/sections/section-data";
 import { keyFeatures } from "@/app/suas-2026-home/key-features-data";
 import { scrollHeroCopy } from "@/app/suas-2026-home/scroll-hero-data";
-import { techSpecCards, techSpecSystemGroups } from "@/app/suas-2026-home/tech-specs-data";
+import { techSpecPanels } from "@/app/suas-2026-home/tech-specs-data";
 import { projects } from "@/app/suas-2026-team/projects/project-data";
 import { sponsorRows } from "@/global-components/modules/sponsor-grid";
 
@@ -171,16 +171,14 @@ function buildOurInitiativeEntry(): SearchEntry {
         anchor: "technical-specifications",
         content: [
           t("Technical Specifications"),
-          t("Systems"),
-          ...techSpecCards.flatMap((spec) => [
-            t(spec.label),
-            t(spec.value),
-            t(spec.hoverValue),
-            t(spec.caption),
-          ]),
-          ...techSpecSystemGroups.flatMap((group) => [
-            t(group.title),
-            ...group.rows.flatMap((row) => [t(row.label), t(row.value)]),
+          ...techSpecPanels.flatMap((panel) => [
+            t(panel.navTitle),
+            t(panel.title),
+            t(panel.subtitle),
+            ...panel.metrics.flatMap((metric) => [
+              t(metric.label),
+              t(metric.value),
+            ]),
           ]),
         ],
       },

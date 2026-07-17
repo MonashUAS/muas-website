@@ -9,20 +9,32 @@ import type { TechSpecPanelMetric } from "./tech-specs-data";
 const deployedPanelIndex = techSpecPanels.findIndex(
   (panel) => panel.navTitle === "deployed",
 );
+const fallbackTechSpecImage = "/images/redback-tech-specs/deployed.png";
 
-// TechSpecs renders Redback metrics as selectable technical panels.
+// Left-to-right gradient option:
+// const metricGradientClass =
+//   "bg-gradient-to-r from-red-500 to-blue-500 bg-clip-text text-transparent";
+// Top-to-bottom gradient option:
+const metricGradientClass =
+  "bg-gradient-to-b from-red-500 to-red-200 bg-clip-text text-transparent";
+
+// Renders the selectable Redback technical specification panels.
 export function TechSpecs() {
   const [activeIndex, setActiveIndex] = useState(
     deployedPanelIndex >= 0 ? deployedPanelIndex : 0,
   );
   const activePanel = techSpecPanels[activeIndex];
+  const [failedImageSources, setFailedImageSources] = useState<string[]>([]);
+  const imageSrc = failedImageSources.includes(activePanel.image.src)
+    ? fallbackTechSpecImage
+    : activePanel.image.src;
 
   return (
     <section
       id="technical-specifications"
       className="scroll-mt-10 bg-black-500 px-6 py-20 text-white lg:px-14"
     >
-      <div className="mx-auto w-full max-w-7xl">
+      <div className="mx-auto w-full max-w-7xl pt-10">
         <h2 className="text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-none tracking-tighter text-white">
           Technical Specifications
         </h2>
@@ -54,7 +66,7 @@ export function TechSpecs() {
 
         <div className="mt-12 grid min-h-[34rem] overflow-hidden bg-black-500 lg:grid-cols-[minmax(20rem,0.78fr)_minmax(0,1fr)] lg:items-stretch">
           <div className="relative z-10 flex flex-col justify-center pb-10 lg:py-8 lg:pr-10">
-            <h3 className="font-medium leading-tight tracking-tighter text-white text-h5 sm:text-h4">
+            <h3 className="font-medium leading-tight tracking-tighter text-white text-[clamp(1.5rem,3vw,3rem)]">
               {activePanel.title}
             </h3>
 
@@ -73,11 +85,18 @@ export function TechSpecs() {
           <div className="relative min-h-[18rem] overflow-hidden lg:min-h-[34rem]">
             <Image
               key={activePanel.image.src}
-              src={activePanel.image.src}
+              src={imageSrc}
               alt={activePanel.image.alt}
               fill
               sizes="(min-width: 1024px) 58vw, 100vw"
               className="object-contain object-center lg:object-right"
+              onError={() =>
+                setFailedImageSources((sources) =>
+                  sources.includes(activePanel.image.src)
+                    ? sources
+                    : [...sources, activePanel.image.src],
+                )
+              }
             />
           </div>
         </div>
@@ -86,14 +105,14 @@ export function TechSpecs() {
   );
 }
 
+// Displays one metric value and label inside the active spec panel.
 function SpecPanelMetric({ metric }: { metric: TechSpecPanelMetric }) {
   return (
     <div>
-      <p className="max-w-xl break-words text-h5 font-black leading-tight tracking-tight text-red-500 sm:text-h4">
-        <span>{metric.value}</span>
-        {metric.metricValue ? (
-          <span className="text-violet-400"> {`(${metric.metricValue})`}</span>
-        ) : null}
+      <p
+        className={`max-w-xl break-words text-h5 font-black leading-tight tracking-tight sm:text-h4 ${metricGradientClass}`}
+      >
+        {metric.value}
       </p>
       <p className="mt-4 space-y-1 leading-tight text-white/68 text-subtitle">
         {metric.label}
