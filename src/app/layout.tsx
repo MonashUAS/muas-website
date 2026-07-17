@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Footer } from "@/global-components/layout/footer";
 import NavBar from "@/global-components/layout/sidebar/Sidebar";
 import { SearchMatchHighlight } from "@/global-components/search-match-highlight";
+import { PageDissolveTransition } from "@/global-components/transitions/page-dissolve-transition";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -46,7 +47,9 @@ export default function RootLayout({
         </Suspense>
         {/* Offset page content below the fixed top navigation bar. */}
         <div className="flex min-h-dvh flex-1 flex-col bg-background pt-20">
-          <main className="flex w-full flex-1 flex-col bg-background">{children}</main>
+          <main className="flex w-full flex-1 flex-col bg-background">
+            <PageDissolveTransition>{children}</PageDissolveTransition>
+          </main>
           <Footer />
         </div>
       </body>
