@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { scrollHeroCopy, type TextWindow } from "./scroll-hero-data";
+import {
+  scrollHeroCopy,
+  type ScrollHeroLine,
+  type TextWindow,
+} from "./scroll-hero-data";
 
 const FRAME_COUNT = 420;
 const FRAME_PATH = "/images/redback-animation/";
@@ -127,6 +131,12 @@ function ScrollHeroText({
   opacity: number;
 }) {
   const zIndexClass = copy.layer === "behind-frame" ? "z-0" : "z-20";
+  const textColorClass = copy.className.includes("text-transparent")
+    ? ""
+    : "text-white";
+  const gradientGuardClass = copy.className.includes("text-transparent")
+    ? "inline-block overflow-visible pr-[0.08em] pb-[0.06em]"
+    : "";
 
   return (
     <div
@@ -138,15 +148,37 @@ function ScrollHeroText({
         transition: "opacity 80ms linear, transform 80ms linear",
       }}
     >
-      <h1 className={`${copy.className} font-medium leading-tight tracking-tighter text-white`}>
-        {copy.lines.map((line) => (
-          <span key={line} className="block">
-            {line}
+      <h1
+        className={`${copy.className} ${gradientGuardClass} font-medium leading-tight tracking-tighter ${textColorClass}`}
+      >
+        {copy.lines.map((line, index) => (
+          <span key={index} className="block">
+            <ScrollHeroLineText line={line} />
           </span>
         ))}
       </h1>
     </div>
   );
+}
+
+// ScrollHeroLineText renders either a plain line or a line with styled word spans.
+function ScrollHeroLineText({ line }: { line: ScrollHeroLine }) {
+  if (typeof line === "string") {
+    return line;
+  }
+
+  return line.segments.map((segment, index) => (
+    <span
+      className={`${segment.className ?? ""} ${
+        segment.className?.includes("text-transparent")
+          ? "inline-block overflow-visible pr-[0.08em] pb-[0.04em]"
+          : ""
+      }`}
+      key={`${segment.text}-${index}`}
+    >
+      {segment.text}
+    </span>
+  ));
 }
 
 // preloadFrames fills the browser cache with the complete frame sequence at a controlled pace.

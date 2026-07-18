@@ -110,7 +110,7 @@ function SpecPanelMetric({ metric }: { metric: TechSpecPanelMetric }) {
   return (
     <div>
       <p
-        className={`max-w-xl break-words text-h5 font-black leading-tight tracking-tight sm:text-h4 ${metricGradientClass}`}
+        className={`inline-block max-w-xl break-words pb-[0.06em] pr-[0.08em] text-h5 font-black leading-[1.08] tracking-tight sm:text-h4 ${metricGradientClass}`}
       >
         {metric.value}
       </p>
