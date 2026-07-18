@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Script from "next/script";
-import type { CSSProperties } from "react";
+import { HomepageSponsorCarousel } from "@/app/home";
 import { Projects } from "./projects/Projects";
 import { TimelineRevealItem } from "./timeline-reveal";
 import { TimelineWebField } from "./timeline-web-field";
@@ -19,8 +19,6 @@ const timelineWebImages = {
 const scrollRevealScript = `
 (() => {
   const revealTargets = () => {
-    document.documentElement.dataset.suasReveal = "ready";
-
     const targets = document.querySelectorAll("[data-suas-reveal]");
     if (!targets.length) return;
 
@@ -44,7 +42,20 @@ const scrollRevealScript = `
       },
     );
 
-    targets.forEach((target) => observer.observe(target));
+    targets.forEach((target) => {
+      const rect = target.getBoundingClientRect();
+      const isAlreadyInView =
+        rect.top < window.innerHeight * 0.88 && rect.bottom > 0;
+
+      if (isAlreadyInView) {
+        target.classList.add("is-visible");
+        return;
+      }
+
+      observer.observe(target);
+    });
+
+    document.documentElement.dataset.suasReveal = "ready";
   };
 
   if (document.readyState === "loading") {
@@ -64,17 +75,6 @@ type TimelineItemContent = {
   alt: string;
 };
 
-type TeamSponsor = {
-  name: string;
-  src: string;
-  frameClassName: string;
-};
-
-type TeamSponsorRow = {
-  desktopColumns: 1 | 2 | 3;
-  sponsors: TeamSponsor[];
-};
-
 const redbackBuildNotes = [
   {
     label: "The Challenge",
@@ -87,114 +87,6 @@ const redbackBuildNotes = [
   {
     label: "The Outcome",
     copy: "The program gives MUAS a common testbed where CAD, avionics, autonomy, payloads, and flight operations mature together before competition.",
-  },
-];
-
-const teamSponsorRows: TeamSponsorRow[] = [
-  {
-    desktopColumns: 2,
-    sponsors: [
-      {
-        name: "Monash University",
-        src: "/images/suas-2026-team/sponsors/monash-university-white.png",
-        frameClassName: "h-32 w-full max-w-[26rem] sm:h-40 lg:h-44",
-      },
-      {
-        name: "CubePilot",
-        src: "/images/suas-2026-team/sponsors/cube-pilot-white.png",
-        frameClassName: "h-40 w-full max-w-[24rem] sm:h-48 lg:h-52",
-      },
-    ],
-  },
-  {
-    desktopColumns: 3,
-    sponsors: [
-      {
-        name: "Stahl Metall Engineering",
-        src: "/images/suas-2026-team/sponsors/stahl-metall-white.png",
-        frameClassName: "h-24 w-full max-w-[18rem]",
-      },
-      {
-        name: "SUAS-ROV",
-        src: "/images/suas-2026-team/sponsors/suas-rov-white.png",
-        frameClassName: "h-32 w-full max-w-[10rem]",
-      },
-      {
-        name: "Altium",
-        src: "/images/suas-2026-team/sponsors/altium-white.png",
-        frameClassName: "h-20 w-full max-w-[18rem]",
-      },
-    ],
-  },
-  {
-    desktopColumns: 3,
-    sponsors: [
-      {
-        name: "Leap Australia",
-        src: "/images/suas-2026-team/sponsors/leap-white.png",
-        frameClassName: "h-28 w-full max-w-[13rem]",
-      },
-      {
-        name: "Milliamp Diode",
-        src: "/images/suas-2026-team/sponsors/milliamp-diode-white.png",
-        frameClassName: "h-28 w-full max-w-[17rem]",
-      },
-      {
-        name: "Ironbark Composites",
-        src: "/images/suas-2026-team/sponsors/ironbark-composites-white.png",
-        frameClassName: "h-24 w-full max-w-[20rem]",
-      },
-    ],
-  },
-  {
-    desktopColumns: 3,
-    sponsors: [
-      {
-        name: "Ansys",
-        src: "/images/suas-2026-team/sponsors/ansys-white.png",
-        frameClassName: "h-24 w-full max-w-[18rem]",
-      },
-      {
-        name: "Monash University PEARL",
-        src: "/images/suas-2026-team/sponsors/pearl-logo---copy-white.png",
-        frameClassName: "h-28 w-full max-w-[20rem]",
-      },
-      {
-        name: "SAGE",
-        src: "/images/suas-2026-team/sponsors/sage-white.png",
-        frameClassName: "h-24 w-full max-w-[18rem]",
-      },
-    ],
-  },
-  {
-    desktopColumns: 3,
-    sponsors: [
-      {
-        name: "PTC",
-        src: "/images/suas-2026-team/sponsors/ptc-2-white.png",
-        frameClassName: "h-28 w-full max-w-[17rem]",
-      },
-      {
-        name: "freedcamp",
-        src: "/images/suas-2026-team/sponsors/freedcamp-white.png",
-        frameClassName: "h-24 w-full max-w-[18rem]",
-      },
-      {
-        name: "SIYI",
-        src: "/images/suas-2026-team/sponsors/siyi-white.png",
-        frameClassName: "h-28 w-full max-w-[17rem]",
-      },
-    ],
-  },
-  {
-    desktopColumns: 1,
-    sponsors: [
-      {
-        name: "Kiteaero",
-        src: "/images/suas-2026-team/sponsors/copy-of-kiteaerologo-black-white.png",
-        frameClassName: "h-14 w-full max-w-[18rem]",
-      },
-    ],
   },
 ];
 
@@ -428,7 +320,7 @@ export default function SUAS2026TeamPage() {
         >
           <style>
             {`
-              [data-suas-reveal] {
+              html[data-suas-reveal="ready"] [data-suas-reveal] {
                 opacity: 0;
                 transform: translate3d(0, 4.5rem, 0) scale(0.96);
                 transition:
@@ -438,13 +330,13 @@ export default function SUAS2026TeamPage() {
                 will-change: opacity, transform;
               }
 
-              [data-suas-reveal].is-visible {
+              html[data-suas-reveal="ready"] [data-suas-reveal].is-visible {
                 opacity: 1;
                 transform: translate3d(0, 0, 0) scale(1);
               }
 
               @media (prefers-reduced-motion: reduce) {
-                [data-suas-reveal] {
+                html[data-suas-reveal="ready"] [data-suas-reveal] {
                   opacity: 1;
                   transform: none;
                   transition: none;
@@ -480,24 +372,12 @@ export default function SUAS2026TeamPage() {
 
       <Projects />
 
-      <section
-        id="suas-sponsors"
-        className="scroll-mt-20 bg-black-500 px-5 pb-20 pt-12 text-white sm:px-8 sm:pb-28 sm:pt-16 lg:px-12"
-      >
-        <div className="mx-auto w-full max-w-5xl text-center">
-          <p className="text-b2 uppercase text-blue-100">Thank You To Our</p>
-          <h2 className="mt-1 text-h6 font-bold uppercase leading-tight sm:text-h5">
-            Sponsors
-          </h2>
-          <p className="mt-3 text-b2 text-blue-50/78 sm:text-b1">
-            For making the Redback journey possible.
-          </p>
-
-          <div className="mt-8 px-5 py-7 sm:px-8 sm:py-10">
-            <TeamSponsorGrid />
-          </div>
-        </div>
-      </section>
+      <div id="suas-sponsors" className="scroll-mt-20">
+        <HomepageSponsorCarousel
+          heading="Thank You To Our Sponsors"
+          headingId="suas-sponsors-heading"
+        />
+      </div>
       <Script
         id="suas-team-scroll-reveal"
         strategy="afterInteractive"
@@ -513,79 +393,6 @@ export default function SUAS2026TeamPage() {
           `}
         </style>
       </noscript>
-    </div>
-  );
-}
-
-function TeamSponsorGrid() {
-  return (
-    <div>
-      {teamSponsorRows.map((row, rowIndex) => {
-        const rowSpacingClass =
-          rowIndex === 0
-            ? ""
-            : rowIndex === teamSponsorRows.length - 1
-              ? "mt-1 sm:mt-3 lg:mt-4"
-              : "mt-3 sm:mt-6 lg:mt-10";
-
-        return (
-          <div
-            key={row.sponsors.map((sponsor) => sponsor.name).join("-")}
-            className={`grid grid-cols-12 gap-y-2 sm:gap-x-8 sm:gap-y-4 ${rowSpacingClass}`}
-          >
-            {row.sponsors.map((sponsor, sponsorIndex) => {
-              const isTabletOrphan =
-                row.desktopColumns === 3 && sponsorIndex === 2;
-              const isTabletCentered =
-                row.desktopColumns === 1 || isTabletOrphan;
-
-              const desktopColumnClass =
-                row.desktopColumns === 1
-                  ? "lg:col-span-12"
-                  : row.desktopColumns === 2
-                    ? "lg:col-span-6"
-                    : "lg:col-span-4";
-
-              return (
-                <div
-                  key={sponsor.name}
-                  data-suas-reveal=""
-                  style={{
-                    "--suas-reveal-delay": `${Math.min(rowIndex, 4) * 70}ms`,
-                  } as CSSProperties}
-                  className={`col-span-12 flex items-center justify-center sm:col-span-6 ${
-                    row.desktopColumns === 2
-                      ? "h-36 sm:h-44 lg:h-56"
-                      : "h-28 sm:h-36 lg:h-44"
-                  } ${desktopColumnClass} ${
-                    isTabletCentered
-                      ? "sm:col-start-4 lg:col-start-auto"
-                      : ""
-                  }`}
-                >
-                  <div
-                    className={`relative max-h-full drop-shadow-[0_0_24px_rgba(255,255,255,0.16)] ${sponsor.frameClassName}`}
-                  >
-                    <Image
-                      src={sponsor.src}
-                      alt={`${sponsor.name} logo`}
-                      fill
-                      sizes={
-                        row.desktopColumns === 1
-                          ? "(min-width: 1024px) 18rem, (min-width: 640px) 18rem, calc(100vw - 116px)"
-                          : row.desktopColumns === 2
-                            ? "(min-width: 1024px) 26rem, (min-width: 640px) calc(50vw - 74px), calc(100vw - 116px)"
-                            : "(min-width: 1024px) 20rem, (min-width: 640px) calc(50vw - 74px), calc(100vw - 116px)"
-                      }
-                      className="object-contain"
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
     </div>
   );
 }
