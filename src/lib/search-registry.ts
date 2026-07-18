@@ -11,7 +11,10 @@ import {
 } from "@/app/our-sponsors/sponsor-page-data";
 import { sections } from "@/app/sections/section-data";
 import { keyFeatures } from "@/app/suas-2026-home/key-features-data";
-import { scrollHeroCopy } from "@/app/suas-2026-home/scroll-hero-data";
+import {
+  scrollHeroCopy,
+  type ScrollHeroLine,
+} from "@/app/suas-2026-home/scroll-hero-data";
 import { techSpecPanels } from "@/app/suas-2026-home/tech-specs-data";
 import { projects } from "@/app/suas-2026-team/projects/project-data";
 import { sponsorRows } from "@/global-components/modules/sponsor-grid";
@@ -45,6 +48,12 @@ function specStrings(
   specs: Array<{ label: string; value: string }>,
 ): SearchContent[] {
   return specs.map((spec) => t(`${spec.label}: ${spec.value}`));
+}
+
+function scrollHeroLineText(line: ScrollHeroLine) {
+  return typeof line === "string"
+    ? line
+    : line.segments.map((segment) => segment.text).join("");
 }
 
 function buildTeamSectionEntries(): SearchEntry[] {
@@ -146,7 +155,9 @@ function buildHomeEntry(): SearchEntry {
 }
 
 function buildOurInitiativeEntry(): SearchEntry {
-  const heroLines = scrollHeroCopy.flatMap((copy) => copy.lines);
+  const heroLines = scrollHeroCopy.flatMap((copy) =>
+    copy.lines.map(scrollHeroLineText),
+  );
 
   return {
     title: "Our Initiative",

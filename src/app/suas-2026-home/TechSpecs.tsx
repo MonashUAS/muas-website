@@ -51,7 +51,7 @@ export function TechSpecs() {
                 key={panel.navTitle}
                 type="button"
                 onClick={() => setActiveIndex(index)}
-                className={`shrink-0 rounded-full border px-4 py-2 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none ${
+                className={`shrink-0 rounded-full border px-4 py-2 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none hover:cursor-pointer ${
                   isActive
                     ? "border-white bg-white text-black-500"
                     : "border-white/20 bg-white/[0.05] text-white/75 backdrop-blur-md hover:bg-white/[0.1] hover:text-white"
