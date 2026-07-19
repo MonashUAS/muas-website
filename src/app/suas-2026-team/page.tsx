@@ -75,21 +75,6 @@ type TeamSponsorRow = {
   sponsors: TeamSponsor[];
 };
 
-const redbackBuildNotes = [
-  {
-    label: "The Challenge",
-    copy: "SUAS asks one aircraft to search, map, avoid hazards, deliver a payload, and keep flying through repeated field testing.",
-  },
-  {
-    label: "The Approach",
-    copy: "Redback brings those requirements into a shared airframe, so each subsystem is designed around flight performance, integration, and serviceability.",
-  },
-  {
-    label: "The Outcome",
-    copy: "The program gives MUAS a common testbed where CAD, avionics, autonomy, payloads, and flight operations mature together before competition.",
-  },
-];
-
 const teamSponsorRows: TeamSponsorRow[] = [
   {
     desktopColumns: 2,
@@ -352,70 +337,78 @@ export default function SUAS2026TeamPage() {
           <div className="absolute inset-x-0 bottom-0 h-44 bg-[linear-gradient(180deg,transparent,#000000)]" />
 
           <div className="relative mx-auto flex min-h-dvh w-full max-w-[1720px] items-center justify-center px-5 pt-20 sm:px-8 lg:px-12">
-            <h1 className="max-w-[11ch] text-center text-[clamp(4rem,13vw,13.5rem)] font-bold uppercase leading-[0.86] text-white drop-shadow-[0_18px_60px_rgba(0,0,0,0.7)]">
-              The{" "}
-              <span className="text-white">
-                Redback
-              </span>{" "}
-              Team
-            </h1>
+            <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-2 flex-col items-center text-center sm:-translate-y-4">
+              <h1 className="text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] text-white">
+                The Team Behind{" "}
+                <span className="text-red-400">Redback</span>
+              </h1>
+
+              <p className="mt-10 max-w-[52rem] text-[clamp(1.15rem,1.55vw,1.6rem)] font-medium leading-[1.55] tracking-[-0.015em] text-blue-50">
+                Students across engineering, software, manufacturing,
+                operations and flight testing work together to design, build
+                and fly Redback, Monash UAS&apos;s competition aircraft.
+              </p>
+            </div>
           </div>
         </section>
 
         <section
           id="the-redback-team"
-          className="relative isolate scroll-mt-20 overflow-hidden bg-black-500 px-5 pb-20 pt-10 sm:px-8 sm:pb-28 sm:pt-16 lg:px-12 lg:pb-36"
+          className="relative isolate scroll-mt-20 overflow-hidden bg-black-500 py-12 sm:py-16 lg:py-20"
         >
-          <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_16%_34%,rgba(0,74,173,0.24),transparent_30%),radial-gradient(circle_at_86%_62%,rgba(90,12,12,0.24),transparent_30%),linear-gradient(180deg,#000000_0%,#020712_48%,#000000_100%)]" />
-          <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(255,255,255,0.032)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.022)_1px,transparent_1px)] bg-[size:96px_96px] opacity-40" />
-          <div className="absolute inset-x-0 top-0 -z-10 h-28 bg-[linear-gradient(180deg,#000000,transparent)]" />
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_82%_45%,rgba(0,74,173,0.15),transparent_34%)]" />
 
-          <div className="mx-auto w-full max-w-[1720px]">
-            <div className="grid gap-12 lg:grid-cols-[minmax(0,0.44fr)_minmax(0,0.56fr)] lg:items-start lg:gap-16">
-              <div className="lg:sticky lg:top-28">
-                <h2 className="max-w-[12ch] text-[clamp(3rem,6.6vw,7rem)] font-bold uppercase leading-[0.9] text-white">
+          <div className="mx-auto w-full max-w-[1720px] px-5 sm:px-8 lg:px-12">
+            <div className="grid min-w-0 grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(620px,1.28fr)] lg:items-center lg:gap-16">
+              <div className="min-w-0 max-w-4xl">
+                <h2 className="text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
                   Why We Built Redback
                 </h2>
-                <p className="mt-7 max-w-xl border-t border-white/14 pt-6 text-subtitle leading-relaxed text-blue-50/82 sm:text-h7 sm:leading-snug">
-                  Redback was developed to turn the 2026 SUAS mission into a
-                  single aircraft program, rather than a collection of separate
-                  technical projects.
-                </p>
 
-                <div className="mt-9 divide-y divide-white/12 border-y border-white/12">
-                  {redbackBuildNotes.map((note) => (
-                    <div key={note.label} className="py-5">
-                      <p className="text-b2 uppercase text-red-400/82">
-                        {note.label}
-                      </p>
-                      <p className="mt-2 text-b1 leading-relaxed text-blue-50/78 sm:text-subtitle sm:leading-relaxed">
-                        {note.copy}
-                      </p>
-                    </div>
-                  ))}
+                <div className="mt-7 max-w-[42rem] space-y-5 text-b1 leading-relaxed text-blue-50/85 sm:text-subtitle sm:leading-relaxed">
+                  <p>
+                    Redback was developed to turn the 2026 SUAS mission into one
+                    integrated aircraft program rather than several disconnected
+                    technical projects.
+                  </p>
+
+                  <ul className="list-disc space-y-5 pl-5 marker:text-blue-100/60">
+                    <li>
+                      SUAS requires one aircraft to search, map, avoid hazards,
+                      deliver a payload and remain reliable through repeated
+                      field testing.
+                    </li>
+                    <li>
+                      Redback brings these requirements into a shared airframe,
+                      allowing every subsystem to be designed around flight
+                      performance, integration and serviceability.
+                    </li>
+                    <li>
+                      The program provides MUAS with a common test platform where
+                      CAD, avionics, autonomy, payloads and flight operations can
+                      mature together before competition.
+                    </li>
+                  </ul>
                 </div>
               </div>
 
-              <div>
-                <div className="relative min-h-[430px] overflow-hidden border-t border-red-800 bg-blue-900 shadow-[0_32px_120px_rgba(0,0,0,0.54)] sm:min-h-[600px] lg:min-h-[760px]">
-                <Image
-                  src={storyImage}
-                  alt="MUAS Redback team in navy shirts with aircraft"
-                  fill
-                  sizes="(min-width: 1024px) 62vw, calc(100vw - 40px)"
-                  className="object-cover object-[50%_48%]"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0.08)_56%,rgba(0,0,0,0.38)_100%)]" />
-                <div className="absolute inset-x-0 top-0 h-1 bg-red-800" />
-                <div className="absolute bottom-5 left-5 max-w-sm border-l border-white/38 pl-4 text-b2 uppercase leading-5 text-white/64 sm:bottom-7 sm:left-7">
-                    Full team build, one aircraft program
-                </div>
-              </div>
+              <div className="relative flex min-w-0 items-center justify-center lg:justify-end">
+                <div className="relative h-[300px] w-full overflow-hidden border border-blue-100/20 bg-blue-900 shadow-[0_34px_110px_rgba(0,0,0,0.46)] [clip-path:polygon(5%_0,100%_0,100%_100%,0_100%)] sm:h-[420px] lg:h-[min(520px,calc(100svh-12rem))]">
+                  <div className="absolute -inset-8 bg-blue-500/15 blur-3xl" />
 
-                <div className="mt-5 grid gap-4 border-t border-white/12 pt-5 text-b2 uppercase text-blue-100/58 sm:grid-cols-3">
-                  <p>Design</p>
-                  <p>Manufacture</p>
-                  <p>Flight Test</p>
+                  <Image
+                    src={storyImage}
+                    alt="MUAS Redback team in navy shirts with aircraft"
+                    fill
+                    sizes="(min-width:1024px) 62vw, 100vw"
+                    className="object-cover object-center"
+                  />
+
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.28)_0%,rgba(0,31,73,0.05)_48%,rgba(0,0,0,0.18)_100%),linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,31,73,0.3)_100%)]" />
+
+                  <div className="absolute inset-x-6 top-5 h-px bg-blue-100/35" />
+
+                  <div className="absolute bottom-5 right-7 h-10 w-28 border-b border-r border-blue-100/30" />
                 </div>
               </div>
             </div>

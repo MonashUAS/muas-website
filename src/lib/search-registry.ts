@@ -208,7 +208,7 @@ function buildSuasTeamEntry(): SearchEntry {
       {
         label: "Team Page",
         anchor: "suas-team-page",
-        content: [t("SUAS 2026"), t("The SUAS Team")],
+        content: [t("SUAS 2026"), t("The Team Behind Redback")],
       },
       {
         label: "The Redback Team",
