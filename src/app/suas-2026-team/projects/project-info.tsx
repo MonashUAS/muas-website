@@ -1,103 +1,67 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+"use client";
+
 import type { Project } from "./project-data";
 
-const PANEL_WIDTH = "min(82vw,430px)";
-const CLOSED_OFFSET = `calc(${PANEL_WIDTH} + 48px - 120px)`;
-
-// ProjectInfoPanel renders the sliding tab and scrollable project detail content.
-export function ProjectInfoPanel({
-  project,
-  infoOpen,
-  onToggleInfo,
-}: {
-  project: Project;
-  infoOpen: boolean;
-  onToggleInfo: () => void;
-}) {
+// ProjectInfoPanel presents the active project's details beside the carousel.
+export function ProjectInfoPanel({ project }: { project: Project }) {
   return (
-    <aside
-      data-project-controls="true"
-      className="pointer-events-none absolute inset-y-0 right-0 z-10 flex max-w-full overflow-hidden"
-      style={{ width: `calc(${PANEL_WIDTH} + 48px)` }}
+    <div
+      className="flex h-[320px] flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-blue-950/55 px-6 py-7 shadow-[0_28px_96px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:h-[440px] sm:px-8 sm:py-8 lg:h-[580px]"
+      aria-live="polite"
     >
       <div
-        className="flex h-full w-full items-center group transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-        style={{ transform: infoOpen ? "translateX(0)" : `translateX(${CLOSED_OFFSET})` }}
+        key={project.slug}
+        className="flex min-h-0 flex-1 flex-col overflow-y-auto animate-[project-fade_420ms_ease] motion-reduce:animate-none"
       >
-        <div className="flex w-12 shrink-0">
-          <button
-            type="button"
-            aria-expanded={infoOpen}
-            className="pointer-events-auto flex h-14 w-12 items-center justify-center bg-blue-900 text-white transition-colors group-hover:bg-blue-700 cursor-pointer"
-            onClick={(event) => {
-              event.stopPropagation();
-              onToggleInfo();
-            }}
-          >
-            {infoOpen ? (
-              <ChevronRight aria-hidden="true" size={15} />
-            ) : (
-              <ChevronLeft aria-hidden="true" size={15} />
-            )}
-          </button>
-        </div>
-
-        <div
-          className="pointer-events-auto max-h-full overflow-y-auto bg-blue-900/85 backdrop-blur-md"
-          style={{ width: PANEL_WIDTH }}
-        >
-          {infoOpen ? (
-            <div className="p-6 sm:p-8">
-              <ProjectInfoContent project={project} />
-            </div>
-          ) : (
-            <button
-              type="button"
-              className="flex h-14 w-[72px] items-center justify-center whitespace-nowrap bg-blue-900 px-4 text-center text-caption text-white transition-colors hover:bg-blue-700 cursor-pointer"
-              onClick={(event) => {
-                event.stopPropagation();
-                onToggleInfo();
-              }}
-            >
-              Project Info
-            </button>
-          )}
-        </div>
+        <ProjectInfoContent project={project} />
       </div>
-    </aside>
+    </div>
   );
 }
 
-// ProjectInfoContent formats each project's description, decisions, lead, and members.
 function ProjectInfoContent({ project }: { project: Project }) {
-  return (
-    <div className="space-y-7 text-white">
-      <p className="text-b1 leading-6">{project.description}</p>
+  const teamLabel =
+    project.members.length === 1 && project.members[0] === "TBD"
+      ? "Team details coming soon"
+      : project.members.join(", ");
 
+  return (
+    <div className="flex flex-1 flex-col gap-8">
       <div>
-        <h4 className="text-subtitle uppercase">Design Decisions</h4>
-        <div className="mt-4 space-y-5">
-          {project.decisions.map((decision, index) => (
-            <div key={decision.title} className="grid grid-cols-[36px_minmax(0,1fr)] gap-4">
-              <p className="text-h6 leading-none">{index + 1}</p>
-              <div>
-                <h5 className="text-b1">{decision.title}</h5>
-                <p className="mt-3 text-b2 leading-5 text-white/85">{decision.body}</p>
-              </div>
-            </div>
-          ))}
+        <h3 className="text-h6 font-black tracking-[-0.05em] text-white sm:text-h5">
+          {project.name}
+        </h3>
+        <p className="mt-5 text-b1 leading-relaxed text-blue-50/80 sm:text-subtitle sm:leading-relaxed">
+          {project.description}
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <p className="text-b2 text-blue-100/60">Project lead</p>
+          <p className="mt-2 text-b1 text-blue-50/80">{project.lead}</p>
+        </div>
+        <div>
+          <p className="text-b2 text-blue-100/60">Project team</p>
+          <p className="mt-2 text-b1 text-blue-50/80">{teamLabel}</p>
         </div>
       </div>
 
-      <div>
-        <h4 className="text-subtitle uppercase">Project Lead</h4>
-        <p className="mt-3 text-b1">{project.lead}</p>
-      </div>
-
-      <div>
-        <h4 className="text-subtitle uppercase">Project Team</h4>
-        <p className="mt-3 text-b1 text-white/85">{project.members.join(", ")}</p>
-      </div>
+      {project.decisions.length > 0 ? (
+        <div className="mt-auto space-y-4 border-t border-white/10 pt-6">
+          <p className="text-b2 text-blue-100/60">Design notes</p>
+          <ul className="space-y-4">
+            {project.decisions.map((decision) => (
+              <li key={decision.title}>
+                <p className="text-b1 text-white">{decision.title}</p>
+                <p className="mt-1.5 text-b2 leading-relaxed text-blue-50/72">
+                  {decision.body}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
 }

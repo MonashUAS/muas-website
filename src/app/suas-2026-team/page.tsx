@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Script from "next/script";
-import type { CSSProperties } from "react";
+import { HomepageSponsorCarousel } from "@/app/home";
 import { Projects } from "./projects/Projects";
 import { TimelineRevealItem } from "./timeline-reveal";
 import { TimelineWebField } from "./timeline-web-field";
@@ -58,136 +58,15 @@ const scrollRevealScript = `
 type TimelineItemContent = {
   date: string;
   title: string;
-  team: string;
   body: string;
   image: string;
   alt: string;
 };
 
-type TeamSponsor = {
-  name: string;
-  src: string;
-  frameClassName: string;
-};
-
-type TeamSponsorRow = {
-  desktopColumns: 1 | 2 | 3;
-  sponsors: TeamSponsor[];
-};
-
-const teamSponsorRows: TeamSponsorRow[] = [
-  {
-    desktopColumns: 2,
-    sponsors: [
-      {
-        name: "Monash University",
-        src: "/images/suas-2026-team/sponsors/monash-university-white.png",
-        frameClassName: "h-32 w-full max-w-[26rem] sm:h-40 lg:h-44",
-      },
-      {
-        name: "CubePilot",
-        src: "/images/suas-2026-team/sponsors/cube-pilot-white.png",
-        frameClassName: "h-40 w-full max-w-[24rem] sm:h-48 lg:h-52",
-      },
-    ],
-  },
-  {
-    desktopColumns: 3,
-    sponsors: [
-      {
-        name: "Stahl Metall Engineering",
-        src: "/images/suas-2026-team/sponsors/stahl-metall-white.png",
-        frameClassName: "h-24 w-full max-w-[18rem]",
-      },
-      {
-        name: "SUAS-ROV",
-        src: "/images/suas-2026-team/sponsors/suas-rov-white.png",
-        frameClassName: "h-32 w-full max-w-[10rem]",
-      },
-      {
-        name: "Altium",
-        src: "/images/suas-2026-team/sponsors/altium-white.png",
-        frameClassName: "h-20 w-full max-w-[18rem]",
-      },
-    ],
-  },
-  {
-    desktopColumns: 3,
-    sponsors: [
-      {
-        name: "Leap Australia",
-        src: "/images/suas-2026-team/sponsors/leap-white.png",
-        frameClassName: "h-28 w-full max-w-[13rem]",
-      },
-      {
-        name: "Milliamp Diode",
-        src: "/images/suas-2026-team/sponsors/milliamp-diode-white.png",
-        frameClassName: "h-28 w-full max-w-[17rem]",
-      },
-      {
-        name: "Ironbark Composites",
-        src: "/images/suas-2026-team/sponsors/ironbark-composites-white.png",
-        frameClassName: "h-24 w-full max-w-[20rem]",
-      },
-    ],
-  },
-  {
-    desktopColumns: 3,
-    sponsors: [
-      {
-        name: "Ansys",
-        src: "/images/suas-2026-team/sponsors/ansys-white.png",
-        frameClassName: "h-24 w-full max-w-[18rem]",
-      },
-      {
-        name: "Monash University PEARL",
-        src: "/images/suas-2026-team/sponsors/pearl-logo---copy-white.png",
-        frameClassName: "h-28 w-full max-w-[20rem]",
-      },
-      {
-        name: "SAGE",
-        src: "/images/suas-2026-team/sponsors/sage-white.png",
-        frameClassName: "h-24 w-full max-w-[18rem]",
-      },
-    ],
-  },
-  {
-    desktopColumns: 3,
-    sponsors: [
-      {
-        name: "PTC",
-        src: "/images/suas-2026-team/sponsors/ptc-2-white.png",
-        frameClassName: "h-28 w-full max-w-[17rem]",
-      },
-      {
-        name: "freedcamp",
-        src: "/images/suas-2026-team/sponsors/freedcamp-white.png",
-        frameClassName: "h-24 w-full max-w-[18rem]",
-      },
-      {
-        name: "SIYI",
-        src: "/images/suas-2026-team/sponsors/siyi-white.png",
-        frameClassName: "h-28 w-full max-w-[17rem]",
-      },
-    ],
-  },
-  {
-    desktopColumns: 1,
-    sponsors: [
-      {
-        name: "Kiteaero",
-        src: "/images/suas-2026-team/sponsors/copy-of-kiteaerologo-black-white.png",
-        frameClassName: "h-14 w-full max-w-[18rem]",
-      },
-    ],
-  },
-];
-
 const timelineItems: TimelineItemContent[] = [
   {
     date: "04/07/2025",
     title: "First Design Meeting",
-    team: "SUAS Lead",
     body: "The SUAS Committee was inaugurated and began shaping the team's goals and approach for Redback against the 2025 ruleset.",
     image: "/images/homepage/flight-day.jpg",
     alt: "Redback aircraft on a field during flight testing",
@@ -195,7 +74,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "25/09/2025",
     title: "Propulsion System Spec Completed",
-    team: "Propulsion",
     body: "The initial propulsion specification was completed, balancing energy capacity, aircraft weight, and the power density needed to fly under competition conditions.",
     image: "/images/redback-projects/propulsion/propulsion-2.JPG",
     alt: "Redback propulsion hardware during team testing",
@@ -203,7 +81,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "16/12/2025",
     title: "First Successful Lifeline Deployment",
-    team: "Lifeline",
     body: "The team successfully released the 155g beacon payload from the minimum altitude of 45m AGL, proving the Lifeline deployment system in flight.",
     image: "/images/redback-projects/lifeline/lifeline-1.JPG",
     alt: "Team members working on the Redback lifeline payload system",
@@ -211,7 +88,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "28/01/2026",
     title: "Redback Maiden Flight",
-    team: "Flight Ops",
     body: "Redback completed the maiden flight of the proof-of-concept aircraft and flew surprisingly well for a competition aircraft at that stage of development.",
     image: "/images/redback-projects/propulsion/propulsion-1.JPG",
     alt: "Redback aircraft flying low over a grass airfield",
@@ -219,7 +95,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "09/02/2026",
     title: "CAD V2 Design Finished",
-    team: "Aerostructures",
     body: "The airframe design was completed and released for manufacturing, giving the team a ready-to-build Redback V2 structure.",
     image: "/images/homepage/flight-monitor.jpg",
     alt: "MUAS team member monitoring Redback systems during testing",
@@ -227,7 +102,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "16/02/2026",
     title: "Redback V2 Frame Manufactured",
-    team: "Aerostructures",
     body: "The Redback V2 airframe was manufactured and assembled in three days, turning the completed design into flight-ready structure.",
     image: "/images/homepage/composites.jpg",
     alt: "Composite aircraft manufacturing work for Redback",
@@ -235,7 +109,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "06/03/2026",
     title: "Redback V2 Maiden Flight",
-    team: "Flight Ops",
     body: "Redback V2 completed its maiden flight with all competition avionics on board, a major VTOL integration milestone for the team.",
     image: "/images/homepage/flight-day.jpg",
     alt: "Redback aircraft during a flight testing day",
@@ -243,7 +116,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "27/04/2026",
     title: "First Mission Management Mock Run",
-    team: "Mission Management",
     body: "The team completed beta testing of the full mission management system for a real-life flight, bringing the operational workflow into one coordinated run.",
     image: "/images/homepage/flight-monitor.jpg",
     alt: "Team member monitoring Redback systems during flight operations",
@@ -251,7 +123,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "In Progress",
     title: "First Successful Propulsion Test",
-    team: "Propulsion",
     body: "The upcoming propulsion test will validate the custom propeller setup and confirm that the aircraft can meet competition thrust and efficiency targets.",
     image: "/images/redback-projects/propulsion/propulsion-2.JPG",
     alt: "Redback propulsion components being prepared for testing",
@@ -259,7 +130,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "In Progress",
     title: "Avoidance Simulation Verification",
-    team: "DNA",
     body: "SITL and HITL testing will validate that obstacle avoidance is functional, consistent, and fast enough for reliable competition motion planning.",
     image: "/images/drones/redback.png",
     alt: "Redback aircraft render",
@@ -267,7 +137,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "In Progress",
     title: "Diversion Simulation Verification",
-    team: "DNA",
     body: "SITL and HITL testing will validate diversion and return-to-auto-mission behavior before the logic is taken to flight days.",
     image: "/images/drones/redback.png",
     alt: "Redback aircraft render",
@@ -275,7 +144,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "In Progress",
     title: "Physical Avoidance and Diversion Test",
-    team: "DNA",
     body: "The avoidance and diversion functions will be physically tested at flight days, moving the autonomy stack from simulation into real aircraft behavior.",
     image: "/images/homepage/flight-day.jpg",
     alt: "Redback flight testing on an airfield",
@@ -283,7 +151,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "In Progress",
     title: "First Braking System Drop Simulation",
-    team: "Lifeline",
     body: "The Lifeline team simulated payload release and brought the payload down to the desired drop speed, validating the braking concept before field deployment.",
     image: "/images/redback-projects/lifeline/lifeline-2.JPG",
     alt: "Lifeline payload system components for Redback",
@@ -291,7 +158,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "Date TBC",
     title: "Propulsion Wiring Harness Repair",
-    team: "Stack",
     body: "The propulsion wiring harness on Redback had to be repaired under time pressure so the aircraft could be prepared for the upcoming flight day.",
     image: "/images/redback-projects/propulsion/propulsion-1.JPG",
     alt: "Redback propulsion and wiring hardware",
@@ -299,7 +165,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "Future",
     title: "Vision Detection and Payload Deployment",
-    team: "SUAS Lead",
     body: "A future integrated milestone will combine vision detection and payload deployment in one flight, bringing perception and mission execution together.",
     image: "/images/homepage/flight-monitor.jpg",
     alt: "Team member monitoring Redback systems",
@@ -307,7 +172,6 @@ const timelineItems: TimelineItemContent[] = [
   {
     date: "Future",
     title: "First Full Mock Competition Run",
-    team: "SUAS Lead",
     body: "A future full mock run will rehearse the competition mission end to end, giving every subteam a shared test of readiness under realistic operating conditions.",
     image: "/images/homepage/flight-day.jpg",
     alt: "Redback aircraft during flight testing",
@@ -368,25 +232,21 @@ export default function SUAS2026TeamPage() {
                 <div className="mt-7 max-w-[42rem] space-y-5 text-b1 leading-relaxed text-blue-50/85 sm:text-subtitle sm:leading-relaxed">
                   <p>
                     Redback was developed to turn the 2026 SUAS mission into one
-                    integrated aircraft program rather than several disconnected
-                    technical projects.
+                    integrated aircraft program.
                   </p>
 
                   <ul className="list-disc space-y-5 pl-5 marker:text-blue-100/60">
                     <li>
-                      SUAS requires one aircraft to search, map, avoid hazards,
-                      deliver a payload and remain reliable through repeated
-                      field testing.
+                      The Requirement: Build one reliable aircraft that can search, 
+                      map, avoid hazards and deliver a payload.
                     </li>
                     <li>
-                      Redback brings these requirements into a shared airframe,
-                      allowing every subsystem to be designed around flight
-                      performance, integration and serviceability.
+                      The Approach: Develop every subsystem around a shared airframe focused 
+                      on performance, integration and serviceability.
                     </li>
                     <li>
-                      The program provides MUAS with a common test platform where
-                      CAD, avionics, autonomy, payloads and flight operations can
-                      mature together before competition.
+                      The Solution: Use Redback as a common test platform so avionics, autonomy, 
+                      payloads and flight operations mature together before competition.
                     </li>
                   </ul>
                 </div>
@@ -451,12 +311,12 @@ export default function SUAS2026TeamPage() {
           <TimelineWebField images={timelineWebImages} />
 
           <div className="mx-auto w-full max-w-[1720px]">
-            <h2 className="max-w-[13ch] text-[clamp(2.9rem,6vw,6.8rem)] font-bold uppercase leading-[0.92] text-white">
+            <h2 className="max-w-[18ch] text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
               The Production Timeline
             </h2>
 
-            <div className="relative mt-16 lg:mt-24">
-              <div className="space-y-20 md:space-y-8 lg:space-y-0">
+            <div className="relative mt-14 sm:mt-16 lg:mt-20">
+              <div className="space-y-16 md:space-y-20 lg:space-y-24">
                 {timelineItems.map((item, index) => (
                   <TimelineItem
                     key={`${item.date}-${item.title}`}
@@ -473,24 +333,12 @@ export default function SUAS2026TeamPage() {
 
       <Projects />
 
-      <section
-        id="suas-sponsors"
-        className="scroll-mt-20 bg-black-500 px-5 pb-20 pt-12 text-white sm:px-8 sm:pb-28 sm:pt-16 lg:px-12"
-      >
-        <div className="mx-auto w-full max-w-5xl text-center">
-          <p className="text-b2 uppercase text-blue-100">Thank You To Our</p>
-          <h2 className="mt-1 text-h6 font-bold uppercase leading-tight sm:text-h5">
-            Sponsors
-          </h2>
-          <p className="mt-3 text-b2 text-blue-50/78 sm:text-b1">
-            For making the Redback journey possible.
-          </p>
-
-          <div className="mt-8 px-5 py-7 sm:px-8 sm:py-10">
-            <TeamSponsorGrid />
-          </div>
-        </div>
-      </section>
+      <div id="suas-sponsors" className="scroll-mt-20">
+        <HomepageSponsorCarousel
+          heading="Thank You To Our Sponsors"
+          headingId="suas-sponsors-heading"
+        />
+      </div>
       <Script
         id="suas-team-scroll-reveal"
         strategy="afterInteractive"
@@ -510,79 +358,6 @@ export default function SUAS2026TeamPage() {
   );
 }
 
-function TeamSponsorGrid() {
-  return (
-    <div>
-      {teamSponsorRows.map((row, rowIndex) => {
-        const rowSpacingClass =
-          rowIndex === 0
-            ? ""
-            : rowIndex === teamSponsorRows.length - 1
-              ? "mt-1 sm:mt-3 lg:mt-4"
-              : "mt-3 sm:mt-6 lg:mt-10";
-
-        return (
-          <div
-            key={row.sponsors.map((sponsor) => sponsor.name).join("-")}
-            className={`grid grid-cols-12 gap-y-2 sm:gap-x-8 sm:gap-y-4 ${rowSpacingClass}`}
-          >
-            {row.sponsors.map((sponsor, sponsorIndex) => {
-              const isTabletOrphan =
-                row.desktopColumns === 3 && sponsorIndex === 2;
-              const isTabletCentered =
-                row.desktopColumns === 1 || isTabletOrphan;
-
-              const desktopColumnClass =
-                row.desktopColumns === 1
-                  ? "lg:col-span-12"
-                  : row.desktopColumns === 2
-                    ? "lg:col-span-6"
-                    : "lg:col-span-4";
-
-              return (
-                <div
-                  key={sponsor.name}
-                  data-suas-reveal=""
-                  style={{
-                    "--suas-reveal-delay": `${Math.min(rowIndex, 4) * 70}ms`,
-                  } as CSSProperties}
-                  className={`col-span-12 flex items-center justify-center sm:col-span-6 ${
-                    row.desktopColumns === 2
-                      ? "h-36 sm:h-44 lg:h-56"
-                      : "h-28 sm:h-36 lg:h-44"
-                  } ${desktopColumnClass} ${
-                    isTabletCentered
-                      ? "sm:col-start-4 lg:col-start-auto"
-                      : ""
-                  }`}
-                >
-                  <div
-                    className={`relative max-h-full drop-shadow-[0_0_24px_rgba(255,255,255,0.16)] ${sponsor.frameClassName}`}
-                  >
-                    <Image
-                      src={sponsor.src}
-                      alt={`${sponsor.name} logo`}
-                      fill
-                      sizes={
-                        row.desktopColumns === 1
-                          ? "(min-width: 1024px) 18rem, (min-width: 640px) 18rem, calc(100vw - 116px)"
-                          : row.desktopColumns === 2
-                            ? "(min-width: 1024px) 26rem, (min-width: 640px) calc(50vw - 74px), calc(100vw - 116px)"
-                            : "(min-width: 1024px) 20rem, (min-width: 640px) calc(50vw - 74px), calc(100vw - 116px)"
-                      }
-                      className="object-contain"
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 type TimelineItemData = (typeof timelineItems)[number];
 
 function TimelineItem({
@@ -595,45 +370,38 @@ function TimelineItem({
   index: number;
 }) {
   const isLeft = align === "left";
-  const textOrderClass = isLeft ? "md:order-1 md:text-right" : "md:order-2";
+  const textOrderClass = isLeft ? "md:order-1 md:text-right" : "md:order-2 md:text-left";
   const imageOrderClass = isLeft ? "md:order-2" : "md:order-1";
-  const verticalOffset = index === 0 ? "" : isLeft ? "lg:-mt-6" : "lg:mt-10";
 
   return (
     <TimelineRevealItem
       index={index}
-      className={`relative isolate grid items-center gap-6 md:grid-cols-2 md:gap-10 lg:gap-16 ${verticalOffset}`}
+      className="relative isolate grid items-center gap-6 md:grid-cols-2 md:gap-10 lg:gap-16"
     >
       <div className={`${textOrderClass} relative z-10 min-w-0`}>
-        <div className="inline-block max-w-2xl">
+        <div className={`max-w-2xl ${isLeft ? "md:ml-auto" : ""}`}>
           <p className="text-subtitle leading-tight text-blue-50/82">{item.date}</p>
-          <h3 className="mt-1 text-h7 font-bold leading-tight text-red-400 sm:text-h6">
+          <h3 className="mt-2 text-h6 font-black leading-tight tracking-[-0.05em] text-white sm:text-h5">
             {item.title}
           </h3>
-          <p className="mt-3 text-b2 uppercase text-blue-100/58">
-            {item.team}
-          </p>
-          <p className="mt-5 text-b1 leading-relaxed text-blue-50/84 sm:text-subtitle sm:leading-relaxed">
+          <p className="mt-4 text-b1 leading-relaxed text-blue-50/84 sm:mt-5 sm:text-subtitle sm:leading-relaxed">
             {item.body}
           </p>
         </div>
       </div>
 
       <div className={`${imageOrderClass} relative z-10 min-w-0`}>
-        <div className="relative h-[240px] overflow-hidden border-[5px] border-red-800 bg-blue-900 shadow-[0_28px_96px_rgba(0,0,0,0.55)] sm:h-[360px] lg:h-[430px]">
-          <div className="absolute -top-[5px] left-0 z-10 h-3 w-1/2 bg-red-700" />
-          <div className="absolute -top-[5px] left-1/2 z-10 h-3 w-28 bg-white" />
+        <div className="relative h-[240px] w-full overflow-hidden border border-blue-100/20 bg-blue-900 shadow-[0_34px_110px_rgba(0,0,0,0.46)] sm:h-[360px] lg:h-[430px]">
           <Image
             src={item.image}
             alt={item.alt}
             fill
             sizes="(min-width: 1024px) 42vw, (min-width: 768px) 44vw, calc(100vw - 40px)"
-            className="object-cover"
+            className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,31,73,0.18))]" />
-          <p className="absolute left-4 top-5 text-b2 uppercase text-white/46">
-            Team member working on Redback
-          </p>
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.28)_0%,rgba(0,31,73,0.05)_48%,rgba(0,0,0,0.18)_100%),linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,31,73,0.3)_100%)]" />
+          <div className="absolute inset-x-6 top-5 h-px bg-blue-100/35" />
+          <div className="absolute bottom-5 right-7 h-10 w-28 border-b border-r border-blue-100/30" />
         </div>
       </div>
     </TimelineRevealItem>
