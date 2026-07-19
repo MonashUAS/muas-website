@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Script from "next/script";
 import { HomepageSponsorCarousel } from "@/app/home";
 import { AnimatedTextHighlight } from "@/global-components/animated-text-highlight";
+import { ScrollRevealProvider } from "@/global-components/scroll-reveal";
 import { Projects } from "./projects/Projects";
 import { RedbackWebHighlight } from "./redback-web-highlight";
 import { TimelineRevealItem } from "./timeline-reveal";
@@ -17,45 +17,6 @@ const timelineWebImages = {
   shelf: "/images/suas-2026-team/timeline-web-shelf.png",
   lattice: "/images/suas-2026-team/timeline-web-lattice.png",
 };
-
-const scrollRevealScript = `
-(() => {
-  const revealTargets = () => {
-    document.documentElement.dataset.suasReveal = "ready";
-
-    const targets = document.querySelectorAll("[data-suas-reveal]");
-    if (!targets.length) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      targets.forEach((target) => target.classList.add("is-visible"));
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        rootMargin: "0px 0px -12%",
-        threshold: 0.16,
-      },
-    );
-
-    targets.forEach((target) => observer.observe(target));
-  };
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", revealTargets, { once: true });
-  } else {
-    revealTargets();
-  }
-})();
-`;
 
 type TimelineItemContent = {
   date: string;
@@ -182,7 +143,7 @@ const timelineItems: TimelineItemContent[] = [
 
 export default function SUAS2026TeamPage() {
   return (
-    <div className="bg-black-500 text-white">
+    <ScrollRevealProvider className="bg-black-500 text-white">
       <div className="relative isolate overflow-hidden">
         <section
           id="suas-team-page"
@@ -313,6 +274,13 @@ export default function SUAS2026TeamPage() {
                   transition: none;
                 }
               }
+
+              @media (scripting: none) {
+                [data-suas-reveal] {
+                  opacity: 1;
+                  transform: none;
+                }
+              }
             `}
           </style>
           <div className="absolute inset-0 -z-30 bg-[linear-gradient(180deg,#000000_0%,#001126_42%,#000611_100%)]" />
@@ -349,22 +317,7 @@ export default function SUAS2026TeamPage() {
           headingId="suas-sponsors-heading"
         />
       </div>
-      <Script
-        id="suas-team-scroll-reveal"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{ __html: scrollRevealScript }}
-      />
-      <noscript>
-        <style>
-          {`
-            [data-suas-reveal] {
-              opacity: 1 !important;
-              transform: none !important;
-            }
-          `}
-        </style>
-      </noscript>
-    </div>
+    </ScrollRevealProvider>
   );
 }
 

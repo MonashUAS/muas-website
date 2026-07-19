@@ -305,6 +305,8 @@ export function PageDissolveTransition({
 
   // Once the App Router commits a new pathname, dissolve the cover away.
   // If navigation was programmatic (no prior click cover), flash a cover first.
+  // Defer state updates so they never run in the same turn as the router commit
+  // (avoids "state update on a component that hasn't mounted yet" during transitions).
   useEffect(() => {
     if (pathnameRef.current === pathname) {
       return;
@@ -316,11 +318,17 @@ export function PageDissolveTransition({
       lastLocationKeyRef.current = `${window.location.pathname}${window.location.search}`;
     }
 
-    if (phaseRef.current === "idle") {
-      startNavigationTransition(true);
-    }
+    const timeoutId = window.setTimeout(() => {
+      if (phaseRef.current === "idle") {
+        startNavigationTransition(true);
+      }
 
-    beginReveal(transitionIdRef.current);
+      beginReveal(transitionIdRef.current);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
   }, [beginReveal, pathname, startNavigationTransition]);
 
   const revealMs = prefersReducedMotion ? REDUCED_REVEAL_MS : REVEAL_FADE_MS;

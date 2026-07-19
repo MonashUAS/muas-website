@@ -50,6 +50,7 @@ export function SingleWindowCarousel({
   const dragStartXRef = useRef<number | null>(null);
   const isTransitioningRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
+  const hasNotifiedParentRef = useRef(false);
   const prefersReducedMotion = usePrefersReducedMotion();
 
   const maxIndex = Math.max(slides.length - 1, 0);
@@ -62,7 +63,18 @@ export function SingleWindowCarousel({
   );
 
   useEffect(() => {
-    onActiveIndexChange?.(activeIndex);
+    // Skip the mount notification — the parent already owns the initial index.
+    // Syncing during the first commit can race App Router transitions.
+    if (!onActiveIndexChange) {
+      return;
+    }
+
+    if (!hasNotifiedParentRef.current) {
+      hasNotifiedParentRef.current = true;
+      return;
+    }
+
+    onActiveIndexChange(activeIndex);
   }, [activeIndex, onActiveIndexChange]);
 
   const navigateToSlide = useCallback(
