@@ -2,6 +2,7 @@ import Image from "next/image";
 import Script from "next/script";
 import { HomepageSponsorCarousel } from "@/app/home";
 import { Projects } from "./projects/Projects";
+import { RedbackWebHighlight } from "./redback-web-highlight";
 import { TimelineRevealItem } from "./timeline-reveal";
 import { TimelineWebField } from "./timeline-web-field";
 
@@ -204,13 +205,12 @@ export default function SUAS2026TeamPage() {
             <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-2 flex-col items-center text-center sm:-translate-y-4">
               <h1 className="text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] text-white">
                 The Team Behind{" "}
-                <span className="text-red-400">Redback</span>
+                <RedbackWebHighlight>Redback</RedbackWebHighlight>
               </h1>
 
               <p className="mt-10 max-w-[52rem] text-[clamp(1.15rem,1.55vw,1.6rem)] font-medium leading-[1.55] tracking-[-0.015em] text-blue-50">
-                Students across engineering, software, manufacturing,
-                operations and flight testing work together to design, build
-                and fly Redback, Monash UAS&apos;s competition aircraft.
+                Explore the rationale, development and key milestones behind Redback, from its initial design through manufacturing, 
+                testing and flight.  
               </p>
             </div>
           </div>
