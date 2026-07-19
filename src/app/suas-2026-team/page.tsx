@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Script from "next/script";
 import { HomepageSponsorCarousel } from "@/app/home";
+import { AnimatedTextHighlight } from "@/global-components/animated-text-highlight";
 import { Projects } from "./projects/Projects";
 import { RedbackWebHighlight } from "./redback-web-highlight";
 import { TimelineRevealItem } from "./timeline-reveal";
@@ -237,15 +238,24 @@ export default function SUAS2026TeamPage() {
 
                   <ul className="list-disc space-y-5 pl-5 marker:text-blue-100/60">
                     <li>
-                      The Requirement: Build one reliable aircraft that can search, 
+                      <AnimatedTextHighlight variant="redback">
+                        The Requirement
+                      </AnimatedTextHighlight>
+                      : Build one reliable aircraft that can search, 
                       map, avoid hazards and deliver a payload.
                     </li>
                     <li>
-                      The Approach: Develop every subsystem around a shared airframe focused 
+                      <AnimatedTextHighlight variant="redback">
+                        The Approach
+                      </AnimatedTextHighlight>
+                      : Develop every subsystem around a shared airframe focused 
                       on performance, integration and serviceability.
                     </li>
                     <li>
-                      The Solution: Use Redback as a common test platform so avionics, autonomy, 
+                      <AnimatedTextHighlight variant="redback">
+                        The Solution
+                      </AnimatedTextHighlight>
+                      : Use Redback as a common test platform so avionics, autonomy, 
                       payloads and flight operations mature together before competition.
                     </li>
                   </ul>

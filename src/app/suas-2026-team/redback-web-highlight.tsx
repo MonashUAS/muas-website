@@ -10,7 +10,7 @@ type RedbackWebHighlightProps = {
 export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
   return (
     <span className="relative inline-block px-[0.22em]">
-      <span className="redback-web-label relative z-10 inline-block text-[#d52b2b]">
+      <span className="redback-web-label relative z-10 inline-block text-[#ae1b1b]">
         {children}
       </span>
 

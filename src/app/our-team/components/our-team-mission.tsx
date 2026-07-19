@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { AnimatedTextHighlight } from "@/global-components/animated-text-highlight";
 import { temporaryImage } from "../data/team-data";
 
 export function OurTeamMission() {
@@ -19,27 +20,28 @@ export function OurTeamMission() {
             <div className="mt-7 max-w-[42rem] space-y-5 text-b1 leading-relaxed text-blue-50/85 sm:text-subtitle sm:leading-relaxed">
               <p>
                 Monash UAS brings together{" "}
-                <strong className="font-black text-white">
+                <AnimatedTextHighlight variant="gold">
                   more than 100 members
-                </strong>{" "}
+                </AnimatedTextHighlight>{" "}
                 across five specialised sections, each contributing to the
                 design, production and operation of our aircraft.
               </p>
 
               <p>
                 Our mission is to demonstrate the{" "}
-                <strong className="font-black text-white">
+                <AnimatedTextHighlight variant="gold">
                   humanitarian potential of uncrewed aerial systems
-                </strong>{" "}
+                </AnimatedTextHighlight>{" "}
                 while giving students practical experience through competition,
                 flight testing and real-world engineering.
               </p>
 
               <p>
                 Through workshops and outreach, we also aim to{" "}
-                <strong className="font-black text-white">
-                  inspire the next generation of STEM students.
-                </strong>
+                <AnimatedTextHighlight variant="gold">
+                  inspire the next generation of STEM students
+                </AnimatedTextHighlight>
+                .
               </p>
             </div>
           </div>
