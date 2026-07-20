@@ -7,10 +7,12 @@ type RedbackWebHighlightProps = {
 };
 
 // Hub-centred orb web behind Redback: white strands draw first, then the label sticks.
-export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
+export function RedbackWebHighlight({
+  children,
+}: RedbackWebHighlightProps) {
   return (
     <span className="relative inline-block px-[0.22em]">
-      <span className="redback-web-label relative z-10 inline-block text-[#ae1b1b]">
+      <span className="redback-web-label relative z-10 inline-block bg-gradient-to-r from-red-700 to-red-200 bg-clip-text text-transparent">
         {children}
       </span>
 
@@ -32,6 +34,7 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
           strokeDashoffset="1"
           className="redback-web-spoke redback-web-spoke-1"
         />
+
         <path
           d="M180 112 L118 24"
           pathLength="1"
@@ -44,6 +47,7 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
           className="redback-web-spoke redback-web-spoke-2"
           opacity="0.92"
         />
+
         <path
           d="M180 112 L180 16"
           pathLength="1"
@@ -55,6 +59,7 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
           strokeDashoffset="1"
           className="redback-web-spoke redback-web-spoke-3"
         />
+
         <path
           d="M180 112 L248 26"
           pathLength="1"
@@ -67,6 +72,7 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
           className="redback-web-spoke redback-web-spoke-4"
           opacity="0.9"
         />
+
         <path
           d="M180 112 L312 52"
           pathLength="1"
@@ -78,6 +84,7 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
           strokeDashoffset="1"
           className="redback-web-spoke redback-web-spoke-5"
         />
+
         <path
           d="M180 112 L338 112"
           pathLength="1"
@@ -90,6 +97,7 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
           className="redback-web-spoke redback-web-spoke-6"
           opacity="0.88"
         />
+
         <path
           d="M180 112 L304 168"
           pathLength="1"
@@ -102,6 +110,7 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
           className="redback-web-spoke redback-web-spoke-7"
           opacity="0.86"
         />
+
         <path
           d="M180 112 L214 202"
           pathLength="1"
@@ -114,6 +123,7 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
           className="redback-web-spoke redback-web-spoke-8"
           opacity="0.82"
         />
+
         <path
           d="M180 112 L128 196"
           pathLength="1"
@@ -126,6 +136,7 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
           className="redback-web-spoke redback-web-spoke-9"
           opacity="0.84"
         />
+
         <path
           d="M180 112 L52 148"
           pathLength="1"
@@ -183,6 +194,7 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
           className="redback-web-ring redback-web-ring-3"
           opacity="0.7"
         />
+
         <path
           d="M324 132 L292 176 L236 198 L168 194 L108 166 L72 128"
           pathLength="1"
@@ -205,81 +217,81 @@ export function RedbackWebHighlight({ children }: RedbackWebHighlightProps) {
         }
 
         .redback-web-spoke-1 {
-          animation: draw-redback-web 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.08s
-            forwards;
+          animation: draw-redback-web 0.72s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
         }
 
         .redback-web-spoke-2 {
-          animation: draw-redback-web 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s
-            forwards;
+          animation: draw-redback-web 0.7s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.12s forwards;
         }
 
         .redback-web-spoke-3 {
-          animation: draw-redback-web 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.16s
-            forwards;
+          animation: draw-redback-web 0.72s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.16s forwards;
         }
 
         .redback-web-spoke-4 {
-          animation: draw-redback-web 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s
-            forwards;
+          animation: draw-redback-web 0.7s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
         }
 
         .redback-web-spoke-5 {
-          animation: draw-redback-web 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.24s
-            forwards;
+          animation: draw-redback-web 0.72s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.24s forwards;
         }
 
         .redback-web-spoke-6 {
-          animation: draw-redback-web 0.68s cubic-bezier(0.22, 1, 0.36, 1) 0.28s
-            forwards;
+          animation: draw-redback-web 0.68s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
         }
 
         .redback-web-spoke-7 {
-          animation: draw-redback-web 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.32s
-            forwards;
+          animation: draw-redback-web 0.7s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.32s forwards;
         }
 
         .redback-web-spoke-8 {
-          animation: draw-redback-web 0.68s cubic-bezier(0.22, 1, 0.36, 1) 0.36s
-            forwards;
+          animation: draw-redback-web 0.68s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.36s forwards;
         }
 
         .redback-web-spoke-9 {
-          animation: draw-redback-web 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.4s
-            forwards;
+          animation: draw-redback-web 0.7s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
         }
 
         .redback-web-spoke-10 {
-          animation: draw-redback-web 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.44s
-            forwards;
+          animation: draw-redback-web 0.7s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.44s forwards;
         }
 
         .redback-web-ring-1 {
-          animation: draw-redback-web 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.48s
-            forwards;
+          animation: draw-redback-web 0.85s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.48s forwards;
         }
 
         .redback-web-ring-2 {
-          animation: draw-redback-web 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.56s
-            forwards;
+          animation: draw-redback-web 0.9s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.56s forwards;
         }
 
         .redback-web-ring-3 {
-          animation: draw-redback-web 0.82s cubic-bezier(0.22, 1, 0.36, 1) 0.64s
-            forwards;
+          animation: draw-redback-web 0.82s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.64s forwards;
         }
 
         .redback-web-ring-4 {
-          animation: draw-redback-web 0.82s cubic-bezier(0.22, 1, 0.36, 1) 0.7s
-            forwards;
+          animation: draw-redback-web 0.82s
+            cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards;
         }
 
         .redback-web-label {
           opacity: 0;
           transform: translateY(-0.18em) scale(0.88);
           transform-origin: center bottom;
-          animation: stick-redback-label 0.65s cubic-bezier(0.22, 1.35, 0.36, 1)
-            0.95s forwards;
+          animation: stick-redback-label 0.65s
+            cubic-bezier(0.22, 1.35, 0.36, 1) 0.95s forwards;
         }
 
         @keyframes draw-redback-web {
