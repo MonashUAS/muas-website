@@ -84,7 +84,7 @@ export function TechSpecs() {
                 key={panel.navTitle}
                 type="button"
                 onClick={() => changePanel(index)}
-                className={`shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none hover:cursor-pointer sm:text-base md:px-6 md:py-3 md:text-lg ${
+                className={`shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none hover:cursor-pointer sm:text-base md:px-4 md:py-2 md:text-lg ${
                   isActive
                     ? "border-white bg-white text-black-500"
                     : "border-white/20 bg-white/[0.05] text-white/75 backdrop-blur-md hover:bg-white/[0.1] hover:text-white"
