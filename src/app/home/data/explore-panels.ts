@@ -25,12 +25,6 @@ export const explorePanels: ExplorePanel[] = [
     alt: "Temporary Our Drones panel placeholder",
   },
   {
-    title: "Competitions",
-    href: "/competitions",
-    preview: "Follow our work across national and international UAV competitions.",
-    alt: "Temporary Competitions panel placeholder",
-  },
-  {
     title: "Recruitment",
     href: "/recruitment",
     preview: "Help shape the next generation of drone technology with MUAS.",
@@ -43,7 +37,7 @@ export const explorePanels: ExplorePanel[] = [
     alt: "Temporary Sponsor Us panel placeholder",
   },
   {
-    title: "Contact",
+    title: "Contact Us",
     href: "/contact-us",
     preview:
       "Start a conversation with MUAS about partnerships, recruitment, or enquiries.",

@@ -2,10 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   type CSSProperties,
-  type MouseEvent,
   useEffect,
   useMemo,
   useRef,
@@ -17,13 +15,6 @@ import type { SectionLead, TeamSection } from "./section-data";
 type SectionExperienceProps = {
   nextSection: TeamSection;
   section: TeamSection;
-};
-
-type TransitionRect = {
-  height: number;
-  left: number;
-  top: number;
-  width: number;
 };
 
 type InteractiveBackgroundProps = {
@@ -54,7 +45,7 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
   return (
     <div className="relative bg-blue-900 text-white">
       <HeroVideo section={section} shade={videoShade} />
-      <section className="min-h-[calc(100vh-5rem)]" />
+      <section className="viewport-fold" />
       <main className="relative z-10">
         <ContentSections section={section} />
         <NextSection section={nextSection} />
@@ -66,7 +57,7 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
 // HeroVideo renders the fixed autoplaying section video behind the folding content.
 function HeroVideo({ section, shade }: { section: TeamSection; shade: number }) {
   return (
-    <section className="fixed inset-x-0 top-20 z-0 flex h-[calc(100vh-5rem)] items-center justify-center overflow-hidden ">
+    <section className="fixed inset-x-0 top-20 z-0 flex h-[calc(100svh-var(--header-height))] items-center justify-center overflow-hidden ">
       <video
         aria-label={`${section.name} hero video`}
         autoPlay
@@ -102,7 +93,7 @@ function Description({ section }: { section: TeamSection }) {
   return (
     <section
       id="team-overview"
-      className="mx-auto flex h-[calc(100vh-10rem)] w-full max-w-5xl scroll-mt-20 flex-col items-center justify-center py-20 text-center"
+      className="mx-auto flex h-[calc(100svh-(var(--header-height)*2))] w-full max-w-5xl scroll-mt-20 flex-col items-center justify-center py-20 text-center"
     >
       <ParticleText text={section.description} />
       <h2 className="mt-14 text-subtitle font-black">
@@ -167,7 +158,7 @@ function Projects({ section }: { section: TeamSection }) {
     <section
       id="team-projects"
       ref={sectionRef}
-      className={`flex h-[calc(100vh)] scroll-mt-20 flex-col items-center justify-center overflow-hidden py-20 transition duration-[1600ms] ease-out ${
+      className={`flex h-svh scroll-mt-20 flex-col items-center justify-center overflow-hidden py-20 transition duration-[1600ms] ease-out ${
         isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >
@@ -177,52 +168,19 @@ function Projects({ section }: { section: TeamSection }) {
   );
 }
 
-// NextSection renders the linked preview and zooms it to fullscreen before routing.
+// NextSection renders the linked preview card; shared dissolve handles the route swap.
 function NextSection({ section }: { section: TeamSection }) {
-  const router = useRouter();
-  const previewRef = useRef<HTMLDivElement | null>(null);
-  const [transitionRect, setTransitionRect] = useState<TransitionRect | null>(null);
-  const [isTransitionFullScreen, setIsTransitionFullScreen] = useState(false);
-
-  // handleNextClick measures the preview before animating it into the destination page.
-  const handleNextClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-
-    const preview = previewRef.current;
-
-    if (!preview) {
-      router.push(`/sections/${section.slug}`);
-      return;
-    }
-
-    const rect = preview.getBoundingClientRect();
-
-    setTransitionRect({
-      height: rect.height,
-      left: rect.left,
-      top: rect.top,
-      width: rect.width,
-    });
-    window.requestAnimationFrame(() => {
-      setIsTransitionFullScreen(true);
-    });
-    window.setTimeout(() => {
-      router.push(`/sections/${section.slug}`);
-    }, 760);
-  };
-
   return (
-    <section className="relative z-10 flex h-[calc(100vh-8rem)] items-center justify-center bg-white px-6 py-20 text-blue-900">
+    <section className="relative z-10 flex h-[calc(100svh-(var(--header-height)*1.6))] items-center justify-center bg-white px-6 py-20 text-blue-900">
       <Link
         aria-label={`Learn about ${section.name}`}
         className="group flex max-w-4xl flex-col items-center text-center"
         href={`/sections/${section.slug}`}
-        onClick={handleNextClick}
       >
         <h2 className="text-h6 font-black leading-tight sm:text-h5 tracking-[-0.05em]">
           Next Section: <span className="underline underline-offset-8">{section.name}</span>
         </h2>
-        <div ref={previewRef} className="mt-10 aspect-[16/9] w-full max-w-3xl overflow-hidden bg-blue-900">
+        <div className="mt-10 aspect-[16/9] w-full max-w-3xl overflow-hidden bg-blue-900">
           <video
             aria-label={`${section.name} preview video`}
             className="h-full w-full object-cover brightness-75 transition duration-700 ease-out group-hover:scale-110 group-hover:brightness-100"
@@ -234,57 +192,7 @@ function NextSection({ section }: { section: TeamSection }) {
           />
         </div>
       </Link>
-
-      {transitionRect ? (
-        <TransitionPreview
-          isFullScreen={isTransitionFullScreen}
-          section={section}
-          transitionRect={transitionRect}
-        />
-      ) : null}
     </section>
-  );
-}
-
-// TransitionPreview renders the measured preview as a fixed still layer that grows to cover the viewport.
-function TransitionPreview({
-  isFullScreen,
-  section,
-  transitionRect,
-}: {
-  isFullScreen: boolean;
-  section: TeamSection;
-  transitionRect: TransitionRect;
-}) {
-  const transitionStyle: CSSProperties = isFullScreen
-    ? {
-        height: "100vh",
-        left: 0,
-        top: 0,
-        width: "100vw",
-      }
-    : {
-        height: transitionRect.height,
-        left: transitionRect.left,
-        top: transitionRect.top,
-        width: transitionRect.width,
-      };
-
-  return (
-    <div
-      aria-hidden="true"
-      className="fixed z-[80] overflow-hidden bg-blue-900 transition-all duration-700 ease-in-out"
-      style={transitionStyle}
-    >
-      <video
-        className="h-full w-full object-cover"
-        muted
-        playsInline
-        preload="metadata"
-        src={section.heroVideo}
-      />
-      <div className="absolute inset-0 bg-black/25" />
-    </div>
   );
 }
 

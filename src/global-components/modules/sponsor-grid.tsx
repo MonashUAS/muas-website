@@ -131,6 +131,8 @@ export function SponsorGrid() {
   );
 
   useEffect(() => {
+    // Reduced-motion browsers rely on the motion-reduce:* utilities below for
+    // immediate visibility — no need to sync React state before mount.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }

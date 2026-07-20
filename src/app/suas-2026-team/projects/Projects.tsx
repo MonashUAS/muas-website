@@ -1,134 +1,103 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { MouseEvent } from "react";
-import { ProjectCard } from "./project-card";
-import { projects } from "./project-data";
+import Image from "next/image";
+import { useCallback, useMemo, useState } from "react";
+import { SingleWindowCarousel } from "@/global-components/modules/single-window-carousel";
+import { ProjectInfoPanel } from "./project-info";
+import { placeholderImage, projects } from "./project-data";
 
-const IMAGE_ROTATION_MS = 5000;
+const LIFELINE_INDEX = projects.findIndex((project) => project.slug === "lifeline");
+const INITIAL_PROJECT_INDEX = LIFELINE_INDEX >= 0 ? LIFELINE_INDEX : 0;
 
-// Projects renders the Redback project carousel and owns project/image navigation state.
+// Projects renders the Redback project carousel using the shared single-window shell.
 export function Projects() {
-  const [projectIndex, setProjectIndex] = useState(4);
-  const [imageIndex, setImageIndex] = useState(0);
-  const [infoOpen, setInfoOpen] = useState(false);
-  const [hoverSide, setHoverSide] = useState<"left" | "right">("right");
-  const activeProject = projects[projectIndex];
+  const [activeIndex, setActiveIndex] = useState(INITIAL_PROJECT_INDEX);
+  const activeProject = projects[activeIndex] ?? projects[0];
 
-  // This effect auto-rotates project images every five seconds while the info panel is closed.
-  useEffect(() => {
-    if (infoOpen || activeProject.images.length < 2) {
-      return;
-    }
+  const handleActiveIndexChange = useCallback((index: number) => {
+    setActiveIndex(index);
+  }, []);
 
-    const timer = window.setInterval(() => {
-      setImageIndex((current) => wrapIndex(current + 1, activeProject.images.length));
-    }, IMAGE_ROTATION_MS);
-
-    return () => window.clearInterval(timer);
-  }, [activeProject.images.length, infoOpen, projectIndex]);
-
-  // moveProject changes the active project and resets panel/image state for a clean transition.
-  function moveProject(step: number) {
-    setProjectIndex((current) => wrapIndex(current + step, projects.length));
-    setImageIndex(0);
-    setInfoOpen(false);
-  }
-
-  // selectProject jumps to a dot-selected project and resets transient carousel state.
-  function selectProject(index: number) {
-    setProjectIndex(index);
-    setImageIndex(0);
-    setInfoOpen(false);
-  }
-
-  // handleMouseMove updates the cursor direction based on the screen half being hovered.
-  function handleMouseMove(event: MouseEvent<HTMLElement>) {
-    /* Only track coordinate shifts when info panel is closed */
-    if (infoOpen) return; 
-    
-    setHoverSide(event.clientX < window.innerWidth / 2 ? "left" : "right");
-  }
-
-  // toggleInfo opens or closes the project details panel.
-  function toggleInfo() {
-    setInfoOpen((open) => !open);
-  }
+  const slides = useMemo(
+    () =>
+      projects.map((project) => ({
+        key: project.slug,
+        content: <ProjectSlide project={project} />,
+      })),
+    [],
+  );
 
   return (
     <section
       id="our-redback-projects"
-      className="scroll-mt-10 bg-black-500 px-4 py-16 text-white sm:px-6 lg:px-10"
+      className="scroll-mt-10 bg-[linear-gradient(180deg,#02040a_0%,#001126_46%,#02040a_100%)] py-20 text-white sm:py-24 lg:py-28"
+      aria-labelledby="redback-projects-heading"
     >
-      <div className="mx-auto flex w-full max-w-7xl flex-col items-center">
-        <p className="text-b2 uppercase text-white/85">Explore</p>
-        <h2 className="text-center text-h6 uppercase leading-tight text-white sm:text-h5">
-          Our Redback Projects
-        </h2>
+      <div className="mx-auto w-full max-w-[1720px] px-5 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2
+            id="redback-projects-heading"
+            className="text-[clamp(2.6rem,5vw,4.8rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white"
+          >
+            Our Redback Projects
+          </h2>
+          <p className="mt-5 text-b1 leading-relaxed text-blue-50/75 sm:text-subtitle">
+            Explore the subsystems that bring Redback from concept to flight.
+          </p>
+        </div>
 
-        {/* project selector dots */}
-        <div className="mt-7 flex gap-3">
-          {projects.map((project, index) => (
-            <button
-              key={project.slug}
-              type="button"
-              aria-label={`Show ${project.name}`}
-              className={`h-4 w-4 rounded-full transition-colors cursor-pointer ${
-                index === projectIndex ? "bg-blue-100" : "bg-blue-600 hover:bg-blue-300"
-              } `}
-              onClick={(event) => {
-                event.stopPropagation();
-                selectProject(index);
-              }}
+        <div className="mt-12 grid gap-8 lg:mt-16 lg:grid-cols-[minmax(0,1.45fr)_minmax(22rem,0.55fr)] lg:items-stretch lg:gap-12">
+          <div className="min-w-0">
+            <SingleWindowCarousel
+              slides={slides}
+              labelledBy="redback-projects-heading"
+              previousLabel="Show previous project"
+              nextLabel="Show next project"
+              getDotLabel={(pageIndex) =>
+                `Show ${projects[pageIndex]?.name ?? `project ${pageIndex + 1}`}`
+              }
+              initialIndex={INITIAL_PROJECT_INDEX}
+              onActiveIndexChange={handleActiveIndexChange}
             />
-          ))}
-        </div>
+          </div>
 
-        <div 
-          className={`w-full flex flex-col justify-center items-center ${
-            infoOpen 
-              ? "cursor-default" 
-              : hoverSide === "left" ? "cursor-project-left" : "cursor-project-right"
-          }`}
-          onClick={(event) => {
-            // Prevent carousel navigation when clicking if the info panel is open
-            if (infoOpen) return;
-            handleSectionClick(event, moveProject);
-          }}
-          onMouseMove={handleMouseMove}
-        >
-          <ProjectCard
-            key={activeProject.slug}
-            imageIndex={imageIndex}
-            infoOpen={infoOpen}
-            project={activeProject}
-            onToggleInfo={toggleInfo}
-          />
-
-          <h3 className="mt-8 max-w-full text-center text-[clamp(44px,8vw,86px)] font-bold uppercase leading-none text-white">
-            {activeProject.name}.
-          </h3>
+          <ProjectInfoPanel project={activeProject} />
         </div>
-        
       </div>
     </section>
   );
 }
 
-// handleSectionClick navigates projects from broad left/right clicks while leaving controls alone.
-function handleSectionClick(
-  event: MouseEvent<HTMLElement>,
-  moveProject: (step: number) => void,
-) {
-  if ((event.target as HTMLElement).closest("button, [data-project-controls='true']")) {
-    return;
-  }
+type ProjectSlideProps = {
+  project: (typeof projects)[number];
+};
 
-  const midpoint = window.innerWidth / 2;
-  moveProject(event.clientX < midpoint ? -1 : 1);
-}
+function ProjectSlide({ project }: ProjectSlideProps) {
+  const image = project.images[0];
 
-// wrapIndex keeps carousel indexes looping smoothly in either direction.
-function wrapIndex(index: number, length: number) {
-  return (index + length) % length;
+  return (
+    <div className="relative min-h-[320px] overflow-hidden rounded-[1.5rem] bg-blue-950 sm:min-h-[440px] lg:min-h-[580px]">
+      {image ? (
+        <Image
+          alt={`${project.name} project`}
+          src={image}
+          fill
+          sizes="(min-width: 1024px) 62vw, 100vw"
+          className="rounded-[inherit] object-cover"
+          draggable={false}
+        />
+      ) : (
+        <div
+          className="flex h-full w-full items-center justify-center p-8 text-center"
+          style={{ background: placeholderImage }}
+        >
+          <p className="max-w-sm text-b1 text-blue-50/80 sm:text-subtitle">
+            {project.name} images coming soon
+          </p>
+        </div>
+      )}
+
+      <div className="absolute inset-0 rounded-[inherit] bg-[linear-gradient(180deg,rgba(0,0,0,0.08),rgba(0,31,73,0.4)_44%,rgba(0,0,0,0.72))]" />
+    </div>
+  );
 }

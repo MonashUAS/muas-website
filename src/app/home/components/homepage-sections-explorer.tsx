@@ -2,118 +2,21 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { PointerEvent } from "react";
+import { useMemo } from "react";
+import { SingleWindowCarousel } from "@/global-components/modules/single-window-carousel";
 import { homepageSections } from "../data/sections";
-import { usePrefersReducedMotion } from "../utils/use-prefers-reduced-motion";
-
-const AUTOPLAY_INTERVAL_MS = 4800;
-const CAROUSEL_TRANSITION_MS = 700;
-const SLIDE_GAP_PX = 24;
-const SWIPE_THRESHOLD_PX = 48;
 
 // A dependency-free single-window carousel for the homepage team gallery.
 // Placeholder image paths are maintained in sections.ts.
 export function HomepageSectionsExplorer() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const dragStartXRef = useRef<number | null>(null);
-  const isTransitioningRef = useRef(false);
-  const transitionTimeoutRef = useRef<number | null>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
-
-  const maxIndex = homepageSections.length - 1;
-  const slideOffset = `calc(-${activeIndex * 100}% - ${
-    activeIndex * SLIDE_GAP_PX
-  }px)`;
-  const pageIndexes = useMemo(
-    () => Array.from({ length: maxIndex + 1 }, (_, index) => index),
-    [maxIndex],
+  const slides = useMemo(
+    () =>
+      homepageSections.map((section) => ({
+        key: section.href,
+        content: <SectionTile section={section} />,
+      })),
+    [],
   );
-
-  const navigateToSlide = useCallback(
-    (nextIndex: number) => {
-      if (isTransitioningRef.current && !prefersReducedMotion) {
-        return;
-      }
-
-      const normalizedIndex =
-        nextIndex < 0 ? maxIndex : nextIndex > maxIndex ? 0 : nextIndex;
-
-      setActiveIndex(normalizedIndex);
-
-      if (prefersReducedMotion) {
-        return;
-      }
-
-      isTransitioningRef.current = true;
-
-      if (transitionTimeoutRef.current !== null) {
-        window.clearTimeout(transitionTimeoutRef.current);
-      }
-
-      transitionTimeoutRef.current = window.setTimeout(() => {
-        isTransitioningRef.current = false;
-        transitionTimeoutRef.current = null;
-      }, CAROUSEL_TRANSITION_MS);
-    },
-    [maxIndex, prefersReducedMotion],
-  );
-
-  useEffect(() => {
-    if (prefersReducedMotion || isPaused || maxIndex === 0) {
-      return;
-    }
-
-    const interval = window.setInterval(() => {
-      navigateToSlide(activeIndex + 1);
-    }, AUTOPLAY_INTERVAL_MS);
-
-    return () => window.clearInterval(interval);
-  }, [activeIndex, isPaused, maxIndex, navigateToSlide, prefersReducedMotion]);
-
-  useEffect(() => {
-    return () => {
-      if (transitionTimeoutRef.current !== null) {
-        window.clearTimeout(transitionTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const goToPreviousSlide = () => {
-    navigateToSlide(activeIndex - 1);
-  };
-
-  const goToNextSlide = () => {
-    navigateToSlide(activeIndex + 1);
-  };
-
-  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    dragStartXRef.current = event.clientX;
-    setIsPaused(true);
-  };
-
-  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
-    const dragStartX = dragStartXRef.current;
-    dragStartXRef.current = null;
-    setIsPaused(false);
-
-    if (dragStartX === null) {
-      return;
-    }
-
-    const dragDistance = event.clientX - dragStartX;
-
-    if (Math.abs(dragDistance) < SWIPE_THRESHOLD_PX) {
-      return;
-    }
-
-    if (dragDistance < 0) {
-      goToNextSlide();
-    } else {
-      goToPreviousSlide();
-    }
-  };
 
   return (
     <section
@@ -136,81 +39,13 @@ export function HomepageSectionsExplorer() {
             </p>
           </div>
 
-          <div
-            className="w-full"
-            role="region"
-            aria-labelledby="homepage-sections-heading"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            onFocus={() => setIsPaused(true)}
-            onBlur={() => setIsPaused(false)}
-          >
-            <div className="relative px-12 sm:px-16 lg:px-20">
-              <div
-                className="overflow-hidden rounded-[1.5rem]"
-                onPointerDown={handlePointerDown}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={() => {
-                  dragStartXRef.current = null;
-                  setIsPaused(false);
-                }}
-              >
-                <div
-                  className="flex touch-pan-y rounded-[1.5rem] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-                  style={{
-                    gap: `${SLIDE_GAP_PX}px`,
-                    transform: `translate3d(${slideOffset}, 0, 0)`,
-                  }}
-                >
-                  {homepageSections.map((section) => (
-                    <div
-                      key={section.href}
-                      className="shrink-0 basis-full overflow-hidden rounded-[1.5rem]"
-                    >
-                      <SectionTile section={section} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={goToPreviousSlide}
-                className="absolute left-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-2xl text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
-                aria-label="Show previous section"
-              >
-                ‹
-              </button>
-
-              <button
-                type="button"
-                onClick={goToNextSlide}
-                className="absolute right-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-2xl text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
-                aria-label="Show next section"
-              >
-                ›
-              </button>
-            </div>
-
-            <div className="mt-7 flex justify-center gap-2">
-              {pageIndexes.map((pageIndex) => {
-                const isActive = pageIndex === activeIndex;
-
-                return (
-                  <button
-                    key={pageIndex}
-                    type="button"
-                    onClick={() => navigateToSlide(pageIndex)}
-                    className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
-                      isActive ? "w-9 bg-blue-50" : "w-2.5 bg-white/25"
-                    }`}
-                    aria-label={`Show section slide ${pageIndex + 1}`}
-                    aria-current={isActive ? "true" : undefined}
-                  />
-                );
-              })}
-            </div>
-          </div>
+          <SingleWindowCarousel
+            slides={slides}
+            labelledBy="homepage-sections-heading"
+            previousLabel="Show previous section"
+            nextLabel="Show next section"
+            getDotLabel={(pageIndex) => `Show section slide ${pageIndex + 1}`}
+          />
         </div>
       </div>
     </section>

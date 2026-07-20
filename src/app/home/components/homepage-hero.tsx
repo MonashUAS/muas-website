@@ -82,7 +82,7 @@ export function HomepageHero() {
   return (
     <section
       id="homepage-hero"
-      className="relative min-h-[calc(100svh-5rem)] scroll-mt-20 overflow-hidden bg-black-500 text-white"
+      className="relative viewport-fold scroll-mt-20 overflow-hidden bg-black-500 text-white"
     >
       <div className="absolute inset-0">
         {heroSlides.map((slide, index) => {
@@ -131,7 +131,7 @@ export function HomepageHero() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(84,134,200,0.22),transparent_32%)]" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(0deg,rgba(0,0,0,0.64),transparent)]" />
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100svh-5rem)] w-full max-w-6xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8 lg:px-12">
+      <div className="relative z-10 mx-auto flex viewport-fold w-full max-w-6xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8 lg:px-12">
         <Image
           src="/logos/logo-with-text.svg"
           alt="MUAS Logo"
