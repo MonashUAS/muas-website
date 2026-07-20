@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
@@ -10,7 +11,7 @@ import {
   useGLTF,
   useProgress,
 } from "@react-three/drei";
-import { Minus, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 
 import { keyFeatures } from "./key-features-data";
 import type { KeyFeature } from "./key-features-data";
@@ -87,9 +88,11 @@ function FeatureVideo({ src }: { src: string }) {
 export function ModelViewer({
   className,
   media,
+  isDesktop,
 }: {
   className?: string;
   media: KeyFeature["media"];
+  isDesktop: boolean;
 }) {
   const { progress } = useProgress();
   const modelSrc = media.type === "model" ? media.src : defaultMedia.src;
@@ -97,23 +100,38 @@ export function ModelViewer({
 
   useSuppressKnownThreeNoise();
 
+  // On Mobile & Tablet: Replace 3D model with static Next.js Image for performance
+  if (!isDesktop && media.type === "model") {
+    return (
+      <div className={`relative w-full overflow-hidden bg-black-500 ${className ?? ""}`}>
+        <Image
+          src="/models/redback.png"
+          alt="Redback rendering"
+          fill
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="z-10 object-contain p-4 md:p-12"
+          draggable={false}
+        />
+      </div>
+    );
+  }
+
+  // On Desktop OR if video on either device: Render standard layout
   return (
     <div
       className={`w-full overflow-hidden bg-black-500 ${
         className ?? "relative h-[420px] min-h-[42vh] lg:h-[620px]"
       }`}
     >
-      <ModelCanvas src={modelSrc} />
+      {isDesktop && media.type === "model" ? <ModelCanvas src={modelSrc} /> : null}
 
-      {media.type === "video" ? (
-        <FeatureVideo src={media.src} />
-      ) : null}
+      {media.type === "video" ? <FeatureVideo src={media.src} /> : null}
 
-      {media.type === "model" ? <ModelInteractionMask /> : null}
+      {isDesktop && media.type === "model" ? <ModelInteractionMask /> : null}
 
-      {isModelLoading ? <ModelLoadingOverlay progress={progress} /> : null}
+      {isDesktop && isModelLoading ? <ModelLoadingOverlay progress={progress} /> : null}
 
-      {media.type === "model" ? (
+      {isDesktop && media.type === "model" ? (
         <div className="absolute inset-x-0 bottom-5 text-center text-caption uppercase text-white/55">
           <span>Drag to rotate</span>
           <span className="mx-2">|</span>
@@ -207,27 +225,138 @@ export function KeyFeatures() {
   );
   const activeMedia = activeFeature?.media ?? defaultMedia;
 
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    setIsDesktop(mediaQuery.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
+
+  // Handlers for cycling features in mobile mode
+  const handlePrevFeature = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!expandedFeature) return;
+    const idx = keyFeatures.findIndex((f) => f.title === expandedFeature);
+    const prevIdx = idx <= 0 ? keyFeatures.length - 1 : idx - 1;
+    setExpandedFeature(keyFeatures[prevIdx].title);
+  };
+
+  const handleNextFeature = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!expandedFeature) return;
+    const idx = keyFeatures.findIndex((f) => f.title === expandedFeature);
+    const nextIdx = idx >= keyFeatures.length - 1 ? 0 : idx + 1;
+    setExpandedFeature(keyFeatures[nextIdx].title);
+  };
+
   return (
     <section
       id="key-features"
-      className="relative scroll-mt-10 overflow-hidden bg-black-500 px-6 pb-[calc(7rem+20px)] pt-20 text-white lg:px-14 lg:pb-[calc(9rem+20px)]"
+      className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-12 md:pb-24 lg:pb-[calc(9rem+20px)] pt-12 text-white lg:pt-20"
     >
-      
+      {/* MOBILE / VERTICAL TABLET VIEW (Hidden on Desktop) */}
+      <div className="flex w-full flex-col lg:hidden">
+        <h2 className="mb-4 md:mb-8 px-5 sm:px-12 text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white">
+          Key Features
+        </h2>
 
-      <div className="relative mx-auto min-h-[680px] w-full max-w-7xl lg:min-h-[720px]">
-        <ModelViewer
-          className="absolute inset-y-0 right-[-1.5rem] z-0 h-full w-[calc(100%+3rem)] lg:right-[calc(50%-50vw)] lg:w-[75vw]"
-          media={activeMedia}
-        />
+        {/* Media Block under title - Scaled to fit viewport cleanly */}
+        <div className="relative w-full overflow-hidden h-[calc(100svh-12rem)] min-h-[550px] max-h-[850px] md:min-h-[700px] md:max-h-[1100px]">
+          {mounted && (
+            <ModelViewer
+              isDesktop={false}
+              media={activeMedia}
+              className="absolute inset-0 h-full w-full"
+            />
+          )}
 
-        <div className="relative z-10 max-w-xl pt-10 lg:max-w-[31rem] lg:pt-16">
+          {/* Close Feature Button over Media */}
+          {expandedFeature && (
+            <button
+              onClick={() => setExpandedFeature(null)}
+              className="absolute right-4 top-4 md:right-8 md:top-8 z-30 grid size-10 md:size-12 place-items-center rounded-full border border-red-300 bg-red-900/55 text-white backdrop-blur-md transition-colors hover:bg-red-800"
+              aria-label="Close feature details"
+            >
+              <Minus className="size-5 md:size-6" />
+            </button>
+          )}
+
+          {/* Bottom Nav / Feature Info Container */}
+          <div className="absolute inset-x-0 bottom-6 md:bottom-10 z-20 px-4 sm:px-8 md:px-16">
+            {expandedFeature && activeFeature ? (
+              /* Active Feature Info Block - Reverted to separated floating chevrons */
+              <div className="mx-auto flex w-full max-w-2xl items-center justify-between">
+                <button
+                  onClick={handlePrevFeature}
+                  className="flex flex-none items-center justify-center px-3 sm:px-5 md:px-6 transition-colors hover:text-white/70"
+                  aria-label="Previous Feature"
+                >
+                  <ChevronLeft className="size-6 md:size-8 text-white" />
+                </button>
+
+                <div className="flex-1 px-4 py-4 sm:px-6 md:py-6 rounded-[2rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] shadow-2xl backdrop-blur-md">
+                  <h3 className="mb-1.5 md:mb-2 text-sm font-bold text-white sm:text-base md:text-lg">
+                    {activeFeature.title}
+                  </h3>
+                  <p className="text-xs leading-relaxed text-white/90 sm:text-sm md:text-base">
+                    {activeFeature.body}
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleNextFeature}
+                  className="flex flex-none items-center justify-center px-3 sm:px-5 md:px-6 transition-colors hover:text-white/70"
+                  aria-label="Next Feature"
+                >
+                  <ChevronRight className="size-6 md:size-8 text-white" />
+                </button>
+              </div>
+            ) : (
+              /* Default Horizontal Nav Block */
+              <nav
+                aria-label="Explore key features"
+                className="mx-auto flex w-full max-w-max gap-2 overflow-x-auto sm:gap-3"
+              >
+                {keyFeatures.map((feature) => (
+                  <button
+                    key={feature.title}
+                    type="button"
+                    onClick={() => setExpandedFeature(feature.title)}
+                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-red-700 bg-black/60 px-4 py-2.5 text-sm font-medium text-white/80 backdrop-blur-md transition-colors duration-300 hover:bg-red-900/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 sm:text-base md:text-lg md:px-6 md:py-3"
+                  >
+                    {feature.title}
+                    <Plus className="size-4 md:size-5" aria-hidden />
+                  </button>
+                ))}
+              </nav>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* DESKTOP VIEW (Side-by-side, Hidden on Mobile) */}
+      <div className="relative mx-auto hidden min-h-[680px] w-full max-w-7xl px-14 lg:block lg:min-h-[720px]">
+        {mounted && (
+          <ModelViewer
+            isDesktop={true}
+            className="absolute inset-y-0 right-[calc(50%-50vw)] z-0 h-full w-[75vw]"
+            media={activeMedia}
+          />
+        )}
+
+        <div className="relative z-10 max-w-[31rem] pt-16">
           <h2 className="mb-10 pb-1 text-left text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white">
             Key Features
           </h2>
           <div className="flex flex-col gap-5">
             {keyFeatures.map((feature) => {
               const isExpanded = expandedFeature === feature.title;
-              const panelId = getFeaturePanelId(feature.title);
+              const panelId = getFeaturePanelId(feature.title) + "-desktop";
 
               return (
                 <div key={feature.title} className="grid grid-cols-[1fr_auto] gap-3">
