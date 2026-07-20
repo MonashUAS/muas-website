@@ -68,13 +68,13 @@ export function TechSpecs() {
       className="scroll-mt-10 bg-black-500 px-6 py-20 text-white lg:px-14"
     >
       <div className="mx-auto w-full max-w-7xl pt-10">
-        <h2 className="text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-none tracking-tighter text-white">
+        <h2 className="mb-10 pb-1 text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white">
           Technical Specifications
         </h2>
 
         <nav
           aria-label="Explore technical specifications"
-          className="mx-auto mt-8 flex max-w-max gap-2 overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-3 shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-md sm:gap-3"
+          className="mx-auto mt-8 flex w-full max-w-max gap-2 overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-3 shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-md sm:gap-3"
         >
           {techSpecPanels.map((panel, index) => {
             const isActive = activeIndex === index;
@@ -84,7 +84,7 @@ export function TechSpecs() {
                 key={panel.navTitle}
                 type="button"
                 onClick={() => changePanel(index)}
-                className={`shrink-0 rounded-full border px-4 py-2 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none hover:cursor-pointer ${
+                className={`shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none hover:cursor-pointer sm:text-base md:px-6 md:py-3 md:text-lg ${
                   isActive
                     ? "border-white bg-white text-black-500"
                     : "border-white/20 bg-white/[0.05] text-white/75 backdrop-blur-md hover:bg-white/[0.1] hover:text-white"
@@ -99,30 +99,30 @@ export function TechSpecs() {
 
         {/* Transition structural container wrapper */}
         <div
-          className={`mt-12 grid min-h-[34rem] overflow-hidden bg-black-500 lg:grid-cols-[minmax(20rem,0.78fr)_minmax(0,1fr)] lg:items-stretch transition-all duration-200 ease-out motion-reduce:transition-none ${
+          className={`mt-12 grid grid-cols-1 overflow-hidden bg-black-500 lg:grid-cols-[minmax(20rem,0.78fr)_minmax(0,1fr)] lg:items-center transition-all duration-200 ease-out motion-reduce:transition-none ${
             isDissolving
               ? "translate-y-1 opacity-0 blur-[3px]"
               : "translate-y-0 opacity-100 blur-0"
           }`}
         >
-          <div className="relative z-10 flex flex-col justify-center pb-10 lg:py-8 lg:pr-10">
-            <h3 className="font-medium leading-tight tracking-tighter text-white text-[clamp(1.5rem,3vw,3rem)]">
+          <div className="relative z-10 flex flex-col justify-center pb-4 lg:py-8 lg:pr-10">
+            <h3 className="font-medium leading-tight tracking-tighter text-white text-[clamp(1.4rem,5vw,2.2rem)] lg:text-[clamp(1.5rem,3vw,3rem)]">
               {activePanel.title}
             </h3>
 
-            <div className="mt-4 space-y-1 leading-tight text-white/68 text-h7">
+            <div className="mt-3 space-y-1 leading-tight text-white/68 text-sm sm:text-base lg:mt-4 lg:text-h7">
               {activePanel.kicker ? <p>{activePanel.kicker}</p> : null}
               <p>{activePanel.subtitle}</p>
             </div>
 
-            <div className="mt-10 space-y-9">
+            <div className="mt-6 space-y-5 lg:mt-10 lg:space-y-9">
               {activePanel.metrics.map((metric) => (
                 <SpecPanelMetric key={metric.label} metric={metric} />
               ))}
             </div>
           </div>
 
-          <div className="relative min-h-[18rem] overflow-hidden lg:min-h-[34rem]">
+          <div className="relative mt-6 h-[220px] overflow-hidden sm:h-[280px] md:h-[340px] lg:mt-0 lg:h-auto lg:min-h-[34rem]">
             <Image
               key={activePanel.image.src}
               src={imageSrc}
@@ -149,11 +149,11 @@ function SpecPanelMetric({ metric }: { metric: TechSpecPanelMetric }) {
   return (
     <div>
       <p
-        className={`inline-block max-w-xl break-words pb-[0.06em] pr-[0.08em] text-h5 font-black leading-[1.08] tracking-tight sm:text-h4 ${metricGradientClass}`}
+        className={`inline-block max-w-xl break-words pb-[0.06em] pr-[0.08em] text-[1.45rem] font-black leading-[1.08] tracking-tight sm:text-[1.8rem] lg:text-h5 ${metricGradientClass}`}
       >
         {metric.value}
       </p>
-      <p className="mt-4 space-y-1 leading-tight text-white/68 text-subtitle">
+      <p className="mt-2 leading-tight text-white/68 text-xs sm:text-sm lg:mt-4 lg:text-subtitle">
         {metric.label}
       </p>
     </div>
