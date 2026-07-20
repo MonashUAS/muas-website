@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  type CSSProperties,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
 import Image from "next/image";
+import { type PointerEvent, useCallback, useMemo, useRef, useState } from "react";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import type { SectionProject } from "@/app/sections/section-data";
 
@@ -14,209 +9,184 @@ type ProjectCarouselProps = {
   projects: SectionProject[];
 };
 
-// ProjectCarousel presents section projects as an infinite horizontal carousel.
+const carouselTransitionMs = 700;
+const slideGapPx = 24;
+const swipeThresholdPx = 48;
+
+// ProjectCarousel follows the homepage carousel pattern for section project slides.
 export function ProjectCarousel({ projects }: ProjectCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeProject = projects[activeIndex];
-  const visibleProjects = useMemo(
-    () => getVisibleProjects(projects, activeIndex),
-    [activeIndex, projects],
+  const dragStartXRef = useRef<number | null>(null);
+  const slideIndexes = useMemo(
+    () => Array.from({ length: projects.length }, (_, index) => index),
+    [projects.length],
   );
+  const slideOffset = `calc(-${activeIndex * 100}% - ${
+    activeIndex * slideGapPx
+  }px)`;
 
-  // navigateTo wraps project selection at either end for an infinite-wheel feel.
-  const navigateTo = useCallback(
+  const navigateToSlide = useCallback(
     (index: number) => {
       setActiveIndex(wrapIndex(index, projects.length));
     },
     [projects.length],
   );
 
-  // moveCarousel advances the active project while wrapping around the project list.
-  const moveCarousel = useCallback(
-    (direction: number) => {
-      setActiveIndex((current) => wrapIndex(current + direction, projects.length));
-    },
-    [projects.length],
-  );
+  const goToPreviousSlide = () => {
+    navigateToSlide(activeIndex - 1);
+  };
+
+  const goToNextSlide = () => {
+    navigateToSlide(activeIndex + 1);
+  };
+
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    dragStartXRef.current = event.clientX;
+  };
+
+  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    const dragStartX = dragStartXRef.current;
+    dragStartXRef.current = null;
+
+    if (dragStartX === null) {
+      return;
+    }
+
+    const dragDistance = event.clientX - dragStartX;
+
+    if (Math.abs(dragDistance) < swipeThresholdPx) {
+      return;
+    }
+
+    if (dragDistance < 0) {
+      goToNextSlide();
+    } else {
+      goToPreviousSlide();
+    }
+  };
+
+  if (projects.length === 0) {
+    return null;
+  }
 
   return (
     <div
       aria-label="Section projects"
-      className="relative mt-8 overflow-clip py-4 sm:mt-10 lg:mt-12"
+      className="mt-10 w-full lg:mt-12"
+      role="region"
     >
-      <div className="relative h-[50rem] sm:h-[40rem] lg:h-[35rem]">
-        {visibleProjects.map(({ index, offset, project }) => {
-          const isActive = offset === 0;
+      <div className="relative px-12 sm:px-16 lg:px-20">
+        <div
+          className="overflow-hidden rounded-[1.5rem] border border-white/12 bg-white/[0.045]"
+          onPointerCancel={() => {
+            dragStartXRef.current = null;
+          }}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+        >
+          <div
+            className="flex touch-pan-y rounded-[1.5rem] transition-transform ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+            style={{
+              gap: `${slideGapPx}px`,
+              transform: `translate3d(${slideOffset}, 0, 0)`,
+              transitionDuration: `${carouselTransitionMs}ms`,
+            }}
+          >
+            {projects.map((project, index) => (
+              <div
+                className="shrink-0 basis-full overflow-hidden rounded-[1.5rem]"
+                key={project.name}
+              >
+                <ProjectSlide
+                  index={index}
+                  project={project}
+                  projectCount={projects.length}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button
+          aria-label="Previous project"
+          className="absolute left-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
+          onClick={goToPreviousSlide}
+          type="button"
+        >
+          <LuChevronLeft aria-hidden className="h-5 w-5" />
+        </button>
+
+        <button
+          aria-label="Next project"
+          className="absolute right-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
+          onClick={goToNextSlide}
+          type="button"
+        >
+          <LuChevronRight aria-hidden className="h-5 w-5" />
+        </button>
+      </div>
+
+      <div className="mt-7 flex justify-center gap-2">
+        {slideIndexes.map((slideIndex) => {
+          const isActive = slideIndex === activeIndex;
 
           return (
             <button
-              aria-label={`Show ${project.name} project`}
-              aria-pressed={isActive}
-              className={`absolute left-1/2 top-1/2 min-w-0 overflow-hidden border text-left shadow-[0_28px_80px_rgba(0,0,0,0.3)] backdrop-blur-md transition-[opacity,transform,border-color,background-color] duration-500 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
-                isActive
-                  ? "cursor-default border-blue-100/28 bg-white/[0.09] text-white"
-                  : "cursor-pointer border-white/10 bg-white/[0.045] text-blue-50/72 hover:border-white/22 hover:bg-white/[0.075] hover:text-white"
+              aria-current={isActive ? "true" : undefined}
+              aria-label={`Show project slide ${slideIndex + 1}`}
+              className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
+                isActive ? "w-9 bg-blue-50" : "w-2.5 bg-white/25 hover:bg-white/45"
               }`}
-              key={`${project.name}-${offset}`}
-              onClick={() => navigateTo(index)}
-              style={getProjectCardStyle(offset, isActive)}
+              key={slideIndex}
+              onClick={() => navigateToSlide(slideIndex)}
               type="button"
-            >
-              {isActive ? (
-                <ActiveProjectCard
-                  activeIndex={activeIndex}
-                  project={activeProject}
-                  projectCount={projects.length}
-                />
-              ) : (
-                <ProjectPreviewCard
-                  index={index}
-                  project={project}
-                />
-              )}
-            </button>
+            />
           );
         })}
-      </div>
-
-      <div className="relative z-20 mx-auto mt-3 flex w-full max-w-6xl items-center justify-between gap-4 px-1 sm:mt-5">
-        <div className="min-w-0 text-b2 text-blue-50/58 sm:text-b1">
-          <span className="text-white">{activeProject.name}</span>
-          <span className="px-2 text-blue-100/34">/</span>
-          {String(activeIndex + 1).padStart(2, "0")} of{" "}
-          {String(projects.length).padStart(2, "0")}
-        </div>
-
-        <div className="flex shrink-0 gap-3">
-          <button
-            aria-label="Previous project"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/16 bg-white/[0.08] text-white transition-colors duration-300 hover:border-white/28 hover:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none"
-            onClick={() => moveCarousel(-1)}
-            type="button"
-          >
-            <LuChevronLeft aria-hidden className="h-5 w-5" />
-          </button>
-          <button
-            aria-label="Next project"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/16 bg-white/[0.08] text-white transition-colors duration-300 hover:border-white/28 hover:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none"
-            onClick={() => moveCarousel(1)}
-            type="button"
-          >
-            <LuChevronRight aria-hidden className="h-5 w-5" />
-          </button>
-        </div>
       </div>
     </div>
   );
 }
 
-// ActiveProjectCard renders the focused project with full image and description.
-function ActiveProjectCard({
-  activeIndex,
-  project,
-  projectCount,
-}: {
-  activeIndex: number;
+type ProjectSlideProps = {
+  index: number;
   project: SectionProject;
   projectCount: number;
-}) {
+};
+
+// ProjectSlide keeps project imagery and copy inside one contained homepage-style card.
+function ProjectSlide({ index, project, projectCount }: ProjectSlideProps) {
   return (
-    <article className="grid min-h-[40rem] sm:min-h-[34rem] lg:min-h-[30rem] lg:grid-cols-[minmax(0,0.58fr)_minmax(300px,0.42fr)]">
-      <div className="relative min-h-36 overflow-hidden bg-blue-900 sm:min-h-72 lg:min-h-0">
+    <article className="grid min-h-[34rem] bg-[linear-gradient(155deg,rgba(255,255,255,0.08)_0%,rgba(84,134,200,0.09)_44%,rgba(0,31,73,0.38)_100%)] text-white lg:min-h-[32rem] lg:grid-cols-[minmax(0,0.58fr)_minmax(320px,0.42fr)]">
+      <div className="relative min-h-56 overflow-hidden bg-blue-900 sm:min-h-72 lg:min-h-full">
         <Image
           alt={`${project.name} project`}
-          className="object-cover"
+          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
           draggable={false}
           fill
-          priority={activeIndex === 0}
-          sizes="(min-width: 1024px) 45vw, 86vw"
+          priority={index === 0}
+          sizes="(min-width: 1024px) 46vw, 100vw"
           src={project.image}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,31,73,0.5)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,31,73,0.46)_100%)]" />
         <div className="absolute inset-x-6 top-5 h-px bg-blue-100/35" />
         <div className="absolute bottom-5 right-7 h-10 w-28 border-b border-r border-blue-100/30" />
       </div>
 
-      <div className="flex min-h-0 flex-col justify-between p-5 sm:p-7 lg:p-8">
-        <div>
-          <p className="text-caption font-medium uppercase tracking-[0.2em] text-blue-100/62">
-            {String(activeIndex + 1).padStart(2, "0")} /{" "}
-            {String(projectCount).padStart(2, "0")}
-          </p>
-          <h3 className="mt-4 break-words text-h6 font-medium leading-tight text-white sm:mt-5 sm:text-h5">
-            {project.name}
-          </h3>
-          <p className="mt-4 text-b2 leading-relaxed text-blue-50/78 sm:text-b1">
-            {project.description}
-          </p>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-// ProjectPreviewCard renders an adjacent project preview in the horizontal row.
-function ProjectPreviewCard({
-  index,
-  project,
-}: {
-  index: number;
-  project: SectionProject;
-}) {
-  return (
-    <article className="flex h-full flex-col">
-      <div className="relative h-44 overflow-hidden bg-blue-900 sm:h-56">
-        <Image
-          alt={`${project.name} project preview`}
-          className="object-cover"
-          draggable={false}
-          fill
-          sizes="(min-width: 1024px) 22vw, 68vw"
-          src={project.image}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,31,73,0.56)_100%)]" />
-      </div>
-
-      <div className="flex flex-1 flex-col justify-end p-4 sm:p-5">
-        <p className="text-caption font-medium uppercase tracking-[0.2em] text-blue-100/52">
-          {String(index + 1).padStart(2, "0")}
+      <div className="flex min-h-0 flex-col justify-center p-6 sm:p-8 lg:p-10">
+        <p className="text-caption font-medium uppercase tracking-[0.18em] text-blue-100/66">
+          {String(index + 1).padStart(2, "0")} /{" "}
+          {String(projectCount).padStart(2, "0")}
         </p>
-        <h3 className="mt-2 break-words text-b1 font-medium leading-tight sm:text-subtitle">
+        <h3 className="mt-5 break-words text-h6 font-medium leading-[0.95] tracking-[-0.05em] text-white sm:text-h5 lg:text-h4">
           {project.name}
         </h3>
+        <p className="mt-5 max-w-2xl text-b2 leading-relaxed text-blue-50/78 sm:text-b1">
+          {project.description}
+        </p>
       </div>
     </article>
   );
-}
-
-// getProjectCardStyle positions the active project with one wrapped neighbour on each side.
-function getProjectCardStyle(
-  offset: number,
-  isActive: boolean,
-) {
-  const distance = isActive ? 0 : offset * 32;
-  const scale = isActive ? 1 : Math.max(0.76, 0.88 - Math.abs(offset) * 0.06);
-
-  return {
-    height: isActive ? "auto" : "22rem",
-    opacity: isActive ? 1 : 0.52,
-    transform: `translate(calc(-50% + ${distance}rem), -50%) scale(${scale})`,
-    width: isActive ? "min(90vw, 58rem)" : "min(66vw, 22rem)",
-    zIndex: 2 - Math.abs(offset),
-  } as CSSProperties;
-}
-
-// getVisibleProjects returns the active project plus its wrapped neighbours.
-function getVisibleProjects(projects: SectionProject[], activeIndex: number) {
-  return [-1, 0, 1].map((offset) => {
-    const index = wrapIndex(activeIndex + offset, projects.length);
-
-    return {
-      index,
-      offset,
-      project: projects[index],
-    };
-  });
 }
 
 // wrapIndex loops carousel indices around the available project range.
