@@ -106,11 +106,12 @@ export function ScrollHero() {
           })}
 
         {!isLoaded ? (
-          <div className="absolute inset-0 z-30 grid place-items-center bg-black-500 text-center text-white">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black-500 text-center text-white">
             <div>
               <p className="text-b1 uppercase tracking-[0.22em] text-white/70">
                 Loading Redback
               </p>
+
               <p className="mt-3 text-h7">
                 {Math.round((loadedFrameCount / FRAME_COUNT) * 100)}%
               </p>
