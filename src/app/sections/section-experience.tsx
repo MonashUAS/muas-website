@@ -56,7 +56,7 @@ function SectionHero({ section }: { section: TeamSection }) {
         </div>
 
         <div className="mt-8 w-full max-w-2xl border-t border-white/24 pt-5 sm:mt-10 sm:pt-7">
-          <h2 className="text-subtitle font-medium uppercase leading-none tracking-[-0.05em] text-white sm:text-h7 lg:text-h6">
+          <h2 className="text-subtitle font-medium leading-none tracking-[-0.05em] text-white sm:text-h7 lg:text-h6">
             {section.leads.length === 1 ? "Section Lead" : "Section Leads"}
           </h2>
 
@@ -78,7 +78,7 @@ function getHeroTitleClassName(sectionName: string) {
     ? "text-h6 sm:text-h4 lg:text-h2"
     : "text-h4 sm:text-h2 lg:text-h1";
 
-  return `max-w-none whitespace-nowrap font-medium uppercase leading-[0.92] tracking-[-0.05em] text-white ${sizeClassName}`;
+  return `max-w-none whitespace-nowrap font-medium leading-[0.92] tracking-[-0.05em] text-white ${sizeClassName}`;
 }
 
 // LeadProfile renders a single section lead headshot and name.
@@ -111,7 +111,7 @@ function Projects({ section }: { section: TeamSection }) {
 
       <div className="mx-auto w-full max-w-[1720px]">
         <div className="max-w-4xl">
-          <h2 className="text-h5 font-medium uppercase leading-[0.96] tracking-[-0.05em] text-white sm:text-h3">
+          <h2 className="text-h5 font-medium leading-[0.96] tracking-[-0.05em] text-white sm:text-h3">
             Projects
           </h2>
           <p className="mt-4 max-w-3xl text-b1 leading-relaxed text-blue-50/76 sm:text-subtitle">
@@ -139,7 +139,7 @@ function NextSection({ section }: { section: TeamSection }) {
           <p className="text-caption font-medium uppercase tracking-[0.2em] text-blue-100/62">
             Next Section
           </p>
-          <h2 className="mt-4 max-w-4xl text-h5 font-medium uppercase leading-[0.96] tracking-[-0.05em] text-white sm:text-h3">
+          <h2 className="mt-4 max-w-4xl text-h5 font-medium leading-[0.96] tracking-[-0.05em] text-white sm:text-h3">
             {section.name}
           </h2>
           <p className="mt-5 max-w-3xl text-b1 leading-relaxed text-blue-50/74 sm:text-subtitle">
