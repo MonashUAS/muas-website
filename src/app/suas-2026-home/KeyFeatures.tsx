@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Bounds,
@@ -15,6 +15,8 @@ import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 
 import { keyFeatures } from "./key-features-data";
 import type { KeyFeature } from "./key-features-data";
+
+import LoadingScreen from "./LoadingScreen";
 
 const defaultMedia: KeyFeature["media"] = {
   src: "/models/redback.glb",
@@ -31,11 +33,10 @@ const MODEL_KEY_LIGHT = 2;
 const MODEL_RED_RIM_LIGHT = 0.3;
 
 // Tune these hotspot values to control how much of the model area accepts mouse zoom/drag.
-// Outside this centered hotspot, wheel input scrolls the page instead of zooming the model.
 const MODEL_INTERACTION_HOTSPOT_WIDTH = 0.5;
 const MODEL_INTERACTION_HOTSPOT_HEIGHT = 0.72;
 
-// Loads and frames one GLB inside the shared model viewer canvas.
+// Loads and frames one GLB inside the shared model viewer canvas using strict bounds matching.
 export function FeatureModel({ src }: { src: string }) {
   const gltf = useGLTF(src);
 
@@ -74,7 +75,7 @@ function FeatureVideo({ src }: { src: string }) {
   return (
     <video
       key={src}
-      className="absolute inset-0 z-10 h-full w-full object-cover"
+      className="absolute inset-0 h-full w-full object-cover"
       src={src}
       autoPlay
       loop
@@ -84,15 +85,17 @@ function FeatureVideo({ src }: { src: string }) {
   );
 }
 
-// Switches between model and video media inside the feature media stage.
+// Switches between model and video media smoothly without flashing.
 export function ModelViewer({
   className,
   media,
   isDesktop,
+  isDissolving = false,
 }: {
   className?: string;
   media: KeyFeature["media"];
   isDesktop: boolean;
+  isDissolving?: boolean;
 }) {
   const { progress } = useProgress();
   const modelSrc = media.type === "model" ? media.src : defaultMedia.src;
@@ -100,44 +103,58 @@ export function ModelViewer({
 
   useSuppressKnownThreeNoise();
 
-  // On Mobile & Tablet: Replace 3D model with static Next.js Image for performance
-  if (!isDesktop && media.type === "model") {
-    return (
-      <div className={`relative w-full overflow-hidden bg-black-500 ${className ?? ""}`}>
-        <Image
-          src="/models/redback.png"
-          alt="Redback rendering"
-          fill
-          sizes="(max-width: 1024px) 100vw, 50vw"
-          className="z-10 object-contain p-4 md:p-12"
-          draggable={false}
-        />
-      </div>
-    );
-  }
-
-  // On Desktop OR if video on either device: Render standard layout
   return (
     <div
-      className={`w-full overflow-hidden bg-black-500 ${
-        className ?? "relative h-[420px] min-h-[42vh] lg:h-[620px]"
-      }`}
+      className={`w-full overflow-hidden bg-black-500 transition-all duration-500 ease-out ${
+        isDissolving ? "opacity-30 blur-[6px]" : "opacity-100 blur-0"
+      } ${className ?? "relative h-[420px] min-h-[42vh] lg:h-[620px]"}`}
     >
-      {isDesktop && media.type === "model" ? <ModelCanvas src={modelSrc} /> : null}
+      {/* DESKTOP 3D MODEL LAYER */}
+      <div
+        className={`absolute inset-0 z-10 transition-opacity duration-500 ${
+          isDesktop ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {isDesktop && (
+          <>
+            <ModelCanvas src={modelSrc} />
+            <ModelInteractionMask />
+            {isModelLoading && <LoadingScreen progress={progress} />}
+            <div className="pointer-events-none absolute inset-x-0 bottom-5 text-center text-caption uppercase text-white/55">
+              <span>Drag to rotate</span>
+              <span className="mx-2">|</span>
+              <span>Scroll to zoom</span>
+            </div>
+          </>
+        )}
+      </div>
 
-      {media.type === "video" ? <FeatureVideo src={media.src} /> : null}
+      {/* MOBILE / TABLET STATIC IMAGE LAYER */}
+      <div
+        className={`absolute inset-0 z-10 transition-opacity duration-500 ${
+          !isDesktop ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {!isDesktop && (
+          <Image
+            src="/models/redback.png"
+            alt="Redback rendering"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-contain p-4 md:p-12"
+            draggable={false}
+          />
+        )}
+      </div>
 
-      {isDesktop && media.type === "model" ? <ModelInteractionMask /> : null}
-
-      {isDesktop && isModelLoading ? <ModelLoadingOverlay progress={progress} /> : null}
-
-      {isDesktop && media.type === "model" ? (
-        <div className="absolute inset-x-0 bottom-5 text-center text-caption uppercase text-white/55">
-          <span>Drag to rotate</span>
-          <span className="mx-2">|</span>
-          <span>Scroll to zoom</span>
-        </div>
-      ) : null}
+      {/* OVERLAY VIDEO LAYER: Crossfades smoothly over base layers */}
+      <div
+        className={`absolute inset-0 z-20 bg-black-500 transition-opacity duration-500 ease-out ${
+          media.type === "video" ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {media.type === "video" && <FeatureVideo src={media.src} />}
+      </div>
     </div>
   );
 }
@@ -165,20 +182,6 @@ function ModelInteractionMask() {
         className="pointer-events-auto absolute bottom-0 right-0 top-0"
         style={{ width: horizontalInset }}
       />
-    </div>
-  );
-}
-
-// ModelLoadingOverlay mirrors the ScrollHero loader treatment for GLB loading.
-function ModelLoadingOverlay({ progress }: { progress: number }) {
-  return (
-    <div className="absolute inset-0 z-20 grid place-items-center bg-black-500 text-center text-white">
-      <div>
-        <p className="text-b1 uppercase tracking-[0.22em] text-white/70">
-          Loading Redback
-        </p>
-        <p className="mt-3 text-h7">{Math.round(progress)}%</p>
-      </div>
     </div>
   );
 }
@@ -219,14 +222,26 @@ function useSuppressKnownThreeNoise() {
 // Coordinates feature expansion state and the active viewer media.
 export function KeyFeatures() {
   const [expandedFeature, setExpandedFeature] = useState<string | null>(null);
-  const activeFeature = useMemo(
-    () => keyFeatures.find((feature) => feature.title === expandedFeature),
-    [expandedFeature],
+  const [displayedFeature, setDisplayedFeature] = useState<string | null>(null);
+  const [isDissolving, setIsDissolving] = useState(false);
+  const transitionTimer = useRef<number | null>(null);
+
+  const displayedActiveFeature = useMemo(
+    () => keyFeatures.find((feature) => feature.title === displayedFeature),
+    [displayedFeature],
   );
-  const activeMedia = activeFeature?.media ?? defaultMedia;
+  const displayedMedia = displayedActiveFeature?.media ?? defaultMedia;
 
   const [isDesktop, setIsDesktop] = useState(true);
   const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (transitionTimer.current !== null) {
+        window.clearTimeout(transitionTimer.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -237,13 +252,29 @@ export function KeyFeatures() {
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
-  // Handlers for cycling features in mobile mode
+  const toggleFeature = (title: string | null) => {
+    if (title === expandedFeature) return;
+
+    setExpandedFeature(title);
+    setIsDissolving(true);
+
+    if (transitionTimer.current !== null) {
+      window.clearTimeout(transitionTimer.current);
+    }
+
+    // Matches the 400ms duration for a perfectly smooth crossfade dissolve
+    transitionTimer.current = window.setTimeout(() => {
+      setDisplayedFeature(title);
+      setIsDissolving(false);
+    }, 400);
+  };
+
   const handlePrevFeature = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!expandedFeature) return;
     const idx = keyFeatures.findIndex((f) => f.title === expandedFeature);
     const prevIdx = idx <= 0 ? keyFeatures.length - 1 : idx - 1;
-    setExpandedFeature(keyFeatures[prevIdx].title);
+    toggleFeature(keyFeatures[prevIdx].title);
   };
 
   const handleNextFeature = (e: React.MouseEvent) => {
@@ -251,73 +282,79 @@ export function KeyFeatures() {
     if (!expandedFeature) return;
     const idx = keyFeatures.findIndex((f) => f.title === expandedFeature);
     const nextIdx = idx >= keyFeatures.length - 1 ? 0 : idx + 1;
-    setExpandedFeature(keyFeatures[nextIdx].title);
+    toggleFeature(keyFeatures[nextIdx].title);
   };
 
   return (
     <section
       id="key-features"
-      className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-12 md:pb-24 lg:pb-[calc(9rem+20px)] pt-12 text-white lg:pt-20"
+      className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-12 pt-12 text-white md:pb-24 lg:pb-[calc(9rem+20px)] lg:pt-20"
     >
       {/* MOBILE / VERTICAL TABLET VIEW (Hidden on Desktop) */}
       <div className="flex w-full flex-col lg:hidden">
-        <h2 className="mb-4 md:mb-8 px-5 sm:px-12 text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white">
+        <h2 className="mb-4 px-5 text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white sm:px-12 md:mb-8">
           Key Features
         </h2>
 
-        {/* Media Block under title - Scaled to fit viewport cleanly */}
         <div className="relative w-full overflow-hidden h-[calc(100svh-12rem)] min-h-[550px] max-h-[850px] md:min-h-[700px] md:max-h-[1100px]">
           {mounted && (
             <ModelViewer
               isDesktop={false}
-              media={activeMedia}
+              media={displayedMedia}
+              isDissolving={isDissolving}
               className="absolute inset-0 h-full w-full"
             />
           )}
 
-          {/* Close Feature Button over Media */}
-          {expandedFeature && (
+          <div
+            className={`absolute right-4 top-4 z-40 transition-all duration-400 ease-out md:right-8 md:top-8 ${
+              displayedFeature && !isDissolving
+                ? "translate-y-0 opacity-100"
+                : "pointer-events-none -translate-y-4 opacity-0"
+            }`}
+          >
             <button
-              onClick={() => setExpandedFeature(null)}
-              className="absolute right-4 top-4 md:right-8 md:top-8 z-30 grid size-10 md:size-12 place-items-center rounded-full border border-red-300 bg-red-900/55 text-white backdrop-blur-md transition-colors hover:bg-red-800"
+              onClick={() => toggleFeature(null)}
+              className="grid size-10 place-items-center rounded-full border border-red-300 bg-red-900/55 text-white backdrop-blur-md transition-colors hover:bg-red-800 md:size-12"
               aria-label="Close feature details"
             >
               <Minus className="size-5 md:size-6" />
             </button>
-          )}
+          </div>
 
-          {/* Bottom Nav / Feature Info Container */}
-          <div className="absolute inset-x-0 bottom-6 md:bottom-10 z-20 px-4 sm:px-8 md:px-16">
-            {expandedFeature && activeFeature ? (
-              /* Active Feature Info Block - Reverted to separated floating chevrons */
+          <div
+            className={`absolute inset-x-0 bottom-6 z-30 px-4 transition-all duration-400 ease-out sm:px-8 md:bottom-10 md:px-16 ${
+              isDissolving ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"
+            }`}
+          >
+            {displayedFeature && displayedActiveFeature ? (
               <div className="mx-auto flex w-full max-w-2xl items-center justify-between">
                 <button
                   onClick={handlePrevFeature}
-                  className="flex flex-none items-center justify-center px-3 sm:px-5 md:px-6 transition-colors hover:text-white/70"
+                  className="flex flex-none items-center justify-center px-3 transition-colors hover:text-white/70 sm:px-5 md:px-6"
                   aria-label="Previous Feature"
                 >
-                  <ChevronLeft className="size-6 md:size-8 text-white" />
+                  <ChevronLeft className="size-6 text-white md:size-8" />
                 </button>
 
-                <div className="flex-1 px-4 py-4 sm:px-6 md:py-6 rounded-[2rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] shadow-2xl backdrop-blur-md">
-                  <h3 className="mb-1.5 md:mb-2 text-sm font-bold text-white sm:text-base md:text-lg">
-                    {activeFeature.title}
+                <div className="flex-1 rounded-[2rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-4 py-4 shadow-2xl backdrop-blur-md sm:px-6 md:py-6">
+                  <h3 className="mb-1.5 text-sm font-bold text-white sm:text-base md:mb-2 md:text-lg">
+                    {displayedActiveFeature.title}
                   </h3>
                   <p className="text-xs leading-relaxed text-white/90 sm:text-sm md:text-base">
-                    {activeFeature.body}
+                    {displayedActiveFeature.body}
                   </p>
                 </div>
 
                 <button
                   onClick={handleNextFeature}
-                  className="flex flex-none items-center justify-center px-3 sm:px-5 md:px-6 transition-colors hover:text-white/70"
+                  className="flex flex-none items-center justify-center px-3 transition-colors hover:text-white/70 sm:px-5 md:px-6"
                   aria-label="Next Feature"
                 >
-                  <ChevronRight className="size-6 md:size-8 text-white" />
+                  <ChevronRight className="size-6 text-white md:size-8" />
                 </button>
               </div>
             ) : (
-              /* Default Horizontal Nav Block */
               <nav
                 aria-label="Explore key features"
                 className="mx-auto flex w-full max-w-max gap-2 overflow-x-auto sm:gap-3"
@@ -326,8 +363,8 @@ export function KeyFeatures() {
                   <button
                     key={feature.title}
                     type="button"
-                    onClick={() => setExpandedFeature(feature.title)}
-                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-red-700 bg-black/60 px-4 py-2.5 text-sm font-medium text-white/80 backdrop-blur-md transition-colors duration-300 hover:bg-red-900/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 sm:text-base md:text-lg md:px-6 md:py-3"
+                    onClick={() => toggleFeature(feature.title)}
+                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-red-700 bg-black/60 px-4 py-2.5 text-sm font-medium text-white/80 backdrop-blur-md transition-colors duration-300 hover:bg-red-900/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 sm:text-base md:px-6 md:py-3 md:text-lg"
                   >
                     {feature.title}
                     <Plus className="size-4 md:size-5" aria-hidden />
@@ -345,7 +382,8 @@ export function KeyFeatures() {
           <ModelViewer
             isDesktop={true}
             className="absolute inset-y-0 right-[calc(50%-50vw)] z-0 h-full w-[75vw]"
-            media={activeMedia}
+            media={displayedMedia}
+            isDissolving={isDissolving}
           />
         )}
 
@@ -367,7 +405,7 @@ export function KeyFeatures() {
                         ? "border-red-300 bg-red-900/55 text-white"
                         : "border-red-700 bg-black/45 text-white/80 hover:bg-red-900/55 hover:text-white"
                     }`}
-                    onClick={() => setExpandedFeature(isExpanded ? null : feature.title)}
+                    onClick={() => toggleFeature(isExpanded ? null : feature.title)}
                     aria-expanded={isExpanded}
                     aria-controls={panelId}
                   >
@@ -381,7 +419,7 @@ export function KeyFeatures() {
                         ? "border-red-300 bg-red-900/55"
                         : "border-red-700 bg-black/45 hover:bg-red-900/55"
                     }`}
-                    onClick={() => setExpandedFeature(isExpanded ? null : feature.title)}
+                    onClick={() => toggleFeature(isExpanded ? null : feature.title)}
                     aria-label={`${isExpanded ? "Collapse" : "Expand"} ${feature.title}`}
                   >
                     {isExpanded ? (

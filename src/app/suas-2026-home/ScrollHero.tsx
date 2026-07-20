@@ -6,6 +6,7 @@ import {
   type ScrollHeroLine,
   type TextWindow,
 } from "./scroll-hero-data";
+import LoadingScreen from "./LoadingScreen"
 
 const FRAME_COUNT = 420;
 const FRAME_PATH = "/images/redback-animation/";
@@ -112,18 +113,11 @@ export function ScrollHero() {
             return <ScrollHeroText copy={copy} key={copy.key} opacity={opacity} />;
           })}
 
-        {!isLoaded ? (
-          <div className="absolute inset-0 z-30 grid place-items-center bg-black-500 text-center text-white">
-            <div>
-              <p className="text-b1 uppercase tracking-[0.22em] text-white/70">
-                Loading Redback
-              </p>
-              <p className="mt-3 text-h7">
-                {Math.round((loadedFrameCount / FRAME_COUNT) * 100)}%
-              </p>
-            </div>
-          </div>
-        ) : null}
+        {!isLoaded && (
+          <LoadingScreen
+            progress={(loadedFrameCount / FRAME_COUNT) * 100}
+          />
+        )}  
       </div>
     </section>
   );
