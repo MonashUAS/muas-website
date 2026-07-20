@@ -212,9 +212,7 @@ export function KeyFeatures() {
       id="key-features"
       className="relative scroll-mt-10 overflow-hidden bg-black-500 px-6 pb-[calc(7rem+20px)] pt-20 text-white lg:px-14 lg:pb-[calc(9rem+20px)]"
     >
-      <h2 className="mb-10 pb-1 text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white">
-        Key Features
-      </h2>
+      
 
       <div className="relative mx-auto min-h-[680px] w-full max-w-7xl lg:min-h-[720px]">
         <ModelViewer
@@ -223,6 +221,9 @@ export function KeyFeatures() {
         />
 
         <div className="relative z-10 max-w-xl pt-10 lg:max-w-[31rem] lg:pt-16">
+          <h2 className="mb-10 pb-1 text-left text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white">
+            Key Features
+          </h2>
           <div className="flex flex-col gap-5">
             {keyFeatures.map((feature) => {
               const isExpanded = expandedFeature === feature.title;
@@ -234,7 +235,7 @@ export function KeyFeatures() {
                     type="button"
                     className={`h-12 rounded-full border px-5 text-left text-subtitle backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
                       isExpanded
-                        ? "border-red-500 bg-red-900/55 text-white"
+                        ? "border-red-300 bg-red-900/55 text-white"
                         : "border-red-700 bg-black/45 text-white/80 hover:bg-red-900/55 hover:text-white"
                     }`}
                     onClick={() => setExpandedFeature(isExpanded ? null : feature.title)}
@@ -248,7 +249,7 @@ export function KeyFeatures() {
                     type="button"
                     className={`grid size-12 place-items-center rounded-full border text-white backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
                       isExpanded
-                        ? "border-red-500 bg-red-900/55"
+                        ? "border-red-300 bg-red-900/55"
                         : "border-red-700 bg-black/45 hover:bg-red-900/55"
                     }`}
                     onClick={() => setExpandedFeature(isExpanded ? null : feature.title)}
@@ -270,7 +271,7 @@ export function KeyFeatures() {
                     }`}
                   >
                     <div className="min-h-0">
-                      <div className="rounded-[1.25rem] border border-red-700 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-5 pb-5 pt-4 text-b1 leading-6 text-white backdrop-blur-md">
+                      <div className="rounded-[1.25rem] border border-red-300 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-5 pb-5 pt-4 text-b1 leading-6 text-white backdrop-blur-md">
                         {feature.body}
                       </div>
                     </div>
