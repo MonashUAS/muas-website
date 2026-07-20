@@ -14,6 +14,10 @@ const PRELOAD_CONCURRENCY = 12;
 // Increase this value to make the scroll animation slower, or reduce it to make it faster.
 const SCROLL_LENGTH_VH = 1200;
 
+// Adjust this percentage to fine-tune the animation pan between frames 160 and 342.
+// 0% is the absolute left edge, 50% is dead center. 
+const ANIMATION_PAN_OFFSET = "35%";
+
 // ScrollHero maps scroll progress to a frame sequence and timed copy overlays.
 export function ScrollHero() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -92,9 +96,12 @@ export function ScrollHero() {
 
         <img
           alt="Redback aircraft animation"
-          className="relative z-10 h-full w-full object-cover"
+          className="relative z-10 h-full w-full object-cover transition-[object-position] duration-500 ease-in-out"
           draggable={false}
           src={getFramePath(frame)}
+          style={{
+            objectPosition: frame >= 160 && frame <= 342 ? `${ANIMATION_PAN_OFFSET} center` : "center"
+          }}
         />
 
         {scrollHeroCopy

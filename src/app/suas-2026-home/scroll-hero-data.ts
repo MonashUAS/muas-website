@@ -74,7 +74,7 @@ export const scrollHeroCopy: ScrollHeroCopy[] = [
   },
   {
     key: "rescue",
-    className: "max-w-2xl text-h5",
+    className: "max-w-2xl text-h7 sm:text-h5",
     lines: [
       {
         segments: [
@@ -96,7 +96,9 @@ export const scrollHeroCopy: ScrollHeroCopy[] = [
       },
     ],
     window: TEXT_WINDOWS.rescue,
-    position: "justify-center text-right translate-x-[25%]",
+    // 1. pb-[15vh] scales dynamically based on phone height.
+    // 2. Flex justification + safe padding completely prevents tablet horizontal cut-offs.
+    position: "justify-end text-right pb-[50vh] md:pb-[5vh] lg:pb-0 lg:pr-[8vw]",
   },
   {
     key: "closing",
