@@ -131,7 +131,7 @@ export function HomepageHero() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(84,134,200,0.22),transparent_32%)]" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(0deg,rgba(0,0,0,0.64),transparent)]" />
 
-      <div className="relative z-10 mx-auto flex viewport-fold w-full max-w-6xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8 lg:px-12">
+      <div className="relative z-10 mx-auto flex viewport-fold w-full max-w-6xl -translate-y-12 flex-col items-center justify-center px-6 py-20 text-center sm:px-8 lg:px-12">
         <Image
           src="/logos/logo-with-text.svg"
           alt="MUAS Logo"
@@ -141,7 +141,7 @@ export function HomepageHero() {
           className="h-auto w-[190px] sm:w-[240px] lg:w-[280px]"
         />
 
-        <p className="mt-8 text-[clamp(2.4rem,7vw,5.6rem)] font-medium leading-[0.95] tracking-[-0.05em] text-white">
+<p className="mt-8 text-[clamp(2.4rem,7vw,5.6rem)] font-black leading-[0.95] tracking-[-0.05em] text-white">
           Redefining Drone Technology
         </p>
 

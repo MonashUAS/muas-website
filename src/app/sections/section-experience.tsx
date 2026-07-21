@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { ProjectCarousel } from "@/app/sections/project-carousel";
 import { AnimatedTextHighlight } from "@/global-components/animated-text-highlight";
+import { NextDestinationLink } from "@/global-components/next-destination-link";
 import type { SectionLead, TeamSection } from "./section-data";
 
 type SectionExperienceProps = {
@@ -18,7 +18,16 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
       <SectionHero section={section} />
       <main className="relative z-10">
         <Projects section={section} />
-        <NextSection section={nextSection} />
+        <NextDestinationLink
+          id={`next-${nextSection.slug}`}
+          href={`/sections/${nextSection.slug}`}
+          title={`Next: ${nextSection.name}`}
+          description={nextSection.shortDescription}
+          imageSrc={
+            nextSection.projects[0]?.image ?? "/images/homepage/flight-day.jpg"
+          }
+          imageAlt={`${nextSection.name} preview`}
+        />
       </main>
     </div>
   );
@@ -104,53 +113,12 @@ function Projects({ section }: { section: TeamSection }) {
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:86px_86px] opacity-24" />
 
       <div className="mx-auto w-full max-w-[1720px]">
-        <div className="max-w-4xl">
-          <h2 className="text-h5 font-medium leading-[0.96] tracking-[-0.05em] text-white sm:text-h3">
-            Projects
-          </h2>
-          <p className="mt-4 max-w-3xl text-b1 leading-relaxed text-blue-50/76 sm:text-subtitle">
-            Current work inside the {section.name} section.
-          </p>
-        </div>
+        <h2 className="text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
+          Projects
+        </h2>
 
         <ProjectCarousel projects={section.projects} />
       </div>
-    </section>
-  );
-}
-
-// NextSection renders the linked preview card; shared dissolve handles the route swap.
-function NextSection({ section }: { section: TeamSection }) {
-  return (
-    <section className="relative z-10 overflow-hidden bg-[linear-gradient(155deg,#001f49_0%,#02040a_48%,#05080d_100%)] px-5 py-16 text-white sm:px-8 sm:py-20 lg:px-12">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_20%,rgba(84,134,200,0.16),transparent_32%)]" />
-      <Link
-        aria-label={`Learn about ${section.name}`}
-        className="group relative mx-auto grid w-full max-w-[1720px] gap-8 outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(420px,0.7fr)] lg:items-center"
-        href={`/sections/${section.slug}`}
-      >
-        <div>
-          <p className="text-caption font-medium uppercase tracking-[0.2em] text-blue-100/62">
-            Next Section
-          </p>
-          <h2 className="mt-4 max-w-4xl text-h5 font-medium leading-[0.96] tracking-[-0.05em] text-white sm:text-h3">
-            {section.name}
-          </h2>
-          <p className="mt-5 max-w-3xl text-b1 leading-relaxed text-blue-50/74 sm:text-subtitle">
-            {section.shortDescription}
-          </p>
-        </div>
-
-        <div className="aspect-[16/9] w-full overflow-hidden border border-blue-200/25 bg-blue-900 shadow-[0_32px_90px_rgba(0,0,0,0.36)] [clip-path:polygon(7%_0,100%_0,100%_100%,0_100%)]">
-          <Image
-            alt={`${section.name} project preview`}
-            className="h-full w-full object-cover brightness-75 transition duration-700 ease-out group-hover:scale-110 group-hover:brightness-100"
-            height={720}
-            src={section.projects[0]?.image ?? "/images/homepage/flight-day.jpg"}
-            width={1280}
-          />
-        </div>
-      </Link>
     </section>
   );
 }

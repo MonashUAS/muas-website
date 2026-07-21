@@ -72,10 +72,10 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
   return (
     <div
       aria-label="Section projects"
-      className="mt-10 w-full lg:mt-12"
+      className="mt-8 w-full sm:mt-10 lg:mt-12"
       role="region"
     >
-      <div className="relative px-12 sm:px-16 lg:px-20">
+      <div className="relative px-10 sm:px-12 lg:px-14">
         <div
           className="overflow-hidden rounded-[1.5rem] border border-white/12 bg-white/[0.045]"
           onPointerCancel={() => {
@@ -94,14 +94,10 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
           >
             {projects.map((project, index) => (
               <div
-                className="shrink-0 basis-full overflow-hidden rounded-[1.5rem]"
+                className="h-[min(70svh,36rem)] shrink-0 basis-full overflow-hidden rounded-[1.5rem] sm:h-[min(72svh,38rem)] lg:h-[min(68svh,40rem)]"
                 key={project.name}
               >
-                <ProjectSlide
-                  index={index}
-                  project={project}
-                  projectCount={projects.length}
-                />
+                <ProjectSlide index={index} project={project} />
               </div>
             ))}
           </div>
@@ -151,14 +147,13 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
 type ProjectSlideProps = {
   index: number;
   project: SectionProject;
-  projectCount: number;
 };
 
-// ProjectSlide keeps project imagery and copy inside one contained homepage-style card.
-function ProjectSlide({ index, project, projectCount }: ProjectSlideProps) {
+// ProjectSlide keeps every project inside one fixed-size card layout.
+function ProjectSlide({ index, project }: ProjectSlideProps) {
   return (
-    <article className="grid min-h-[34rem] bg-[linear-gradient(155deg,rgba(255,255,255,0.08)_0%,rgba(84,134,200,0.09)_44%,rgba(0,31,73,0.38)_100%)] text-white lg:min-h-[32rem] lg:grid-cols-[minmax(0,0.58fr)_minmax(320px,0.42fr)]">
-      <div className="relative min-h-56 overflow-hidden bg-blue-900 sm:min-h-72 lg:min-h-full">
+    <article className="grid h-full grid-rows-[minmax(0,1.15fr)_minmax(0,0.85fr)] bg-[linear-gradient(155deg,rgba(255,255,255,0.08)_0%,rgba(84,134,200,0.09)_44%,rgba(0,31,73,0.38)_100%)] text-white lg:grid-cols-[minmax(0,0.58fr)_minmax(320px,0.42fr)] lg:grid-rows-none">
+      <div className="relative min-h-0 overflow-hidden bg-blue-900">
         <Image
           alt={`${project.name} project`}
           className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -173,15 +168,11 @@ function ProjectSlide({ index, project, projectCount }: ProjectSlideProps) {
         <div className="absolute bottom-5 right-7 h-10 w-28 border-b border-r border-blue-100/30" />
       </div>
 
-      <div className="flex min-h-0 flex-col justify-center p-6 sm:p-8 lg:p-10">
-        <p className="text-caption font-medium uppercase tracking-[0.18em] text-blue-100/66">
-          {String(index + 1).padStart(2, "0")} /{" "}
-          {String(projectCount).padStart(2, "0")}
-        </p>
-        <h3 className="mt-5 break-words text-h6 font-medium leading-[0.95] tracking-[-0.05em] text-white sm:text-h5 lg:text-h4">
+      <div className="flex min-h-0 flex-col justify-center overflow-hidden p-6 sm:p-8 lg:p-10">
+        <h3 className="shrink-0 break-words text-h6 font-medium leading-[0.95] tracking-[-0.05em] text-white sm:text-h5 lg:text-h4">
           {project.name}
         </h3>
-        <p className="mt-5 max-w-2xl text-b2 leading-relaxed text-blue-50/78 sm:text-b1">
+        <p className="mt-5 min-h-0 overflow-hidden text-b2 leading-relaxed text-blue-50/78 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:6] sm:text-b1 sm:[-webkit-line-clamp:8] lg:[-webkit-line-clamp:12]">
           {project.description}
         </p>
       </div>
