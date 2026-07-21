@@ -377,14 +377,16 @@ export function KeyFeatures() {
       </div>
 
       {/* DESKTOP VIEW (Side-by-side, Hidden on Mobile) */}
-      <div className="relative mx-auto hidden min-h-[680px] w-full max-w-7xl px-14 lg:block lg:min-h-[720px]">
+      <div className="relative mx-auto hidden w-full max-w-[1720px] px-5 sm:px-8 lg:px-12 lg:block">
         {mounted && (
-          <ModelViewer
-            isDesktop={true}
-            className="absolute inset-y-0 right-[calc(50%-50vw)] z-0 h-full w-[75vw]"
-            media={displayedMedia}
-            isDissolving={isDissolving}
-          />
+          <div className="absolute inset-y-0 right-0 z-0 h-full w-3/4">
+            <ModelViewer
+              isDesktop={true}
+              className="h-full w-full"
+              media={displayedMedia}
+              isDissolving={isDissolving}
+            />
+          </div>
         )}
 
         <div className="relative z-10 max-w-[31rem] pt-16">
@@ -400,7 +402,7 @@ export function KeyFeatures() {
                 <div key={feature.title} className="grid grid-cols-[1fr_auto] gap-3">
                   <button
                     type="button"
-                    className={`h-12 rounded-full border px-5 text-left text-subtitle backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
+                    className={`h-12 border px-5 text-left text-subtitle backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
                       isExpanded
                         ? "border-red-300 bg-red-900/55 text-white"
                         : "border-red-700 bg-black/45 text-white/80 hover:bg-red-900/55 hover:text-white"
@@ -414,7 +416,7 @@ export function KeyFeatures() {
 
                   <button
                     type="button"
-                    className={`grid size-12 place-items-center rounded-full border text-white backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
+                    className={`grid size-12 place-items-center border text-white backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
                       isExpanded
                         ? "border-red-300 bg-red-900/55"
                         : "border-red-700 bg-black/45 hover:bg-red-900/55"
@@ -438,7 +440,7 @@ export function KeyFeatures() {
                     }`}
                   >
                     <div className="min-h-0">
-                      <div className="rounded-[1.25rem] border border-red-300 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-5 pb-5 pt-4 text-b1 leading-6 text-white backdrop-blur-md">
+                      <div className=" border border-red-300 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-5 pb-5 pt-4 text-b1 leading-6 text-white backdrop-blur-md">
                         {feature.body}
                       </div>
                     </div>
