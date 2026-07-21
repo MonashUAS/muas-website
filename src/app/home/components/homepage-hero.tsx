@@ -154,7 +154,7 @@ export function HomepageHero() {
           </Link>
           <Link
             href="/recruitment"
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/28 bg-white/[0.06] px-6 text-b1 text-white backdrop-blur-md transition-colors duration-300 hover:bg-white/[0.12] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
+            className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#051b5e] px-6 text-b1 text-white transition-colors duration-300 hover:bg-[#0b2a7a] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
           >
             Join The Team
           </Link>

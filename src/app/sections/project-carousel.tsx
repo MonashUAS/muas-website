@@ -105,7 +105,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
 
         <button
           aria-label="Previous project"
-          className="absolute left-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
+          className="absolute left-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
           onClick={goToPreviousSlide}
           type="button"
         >
@@ -114,7 +114,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
 
         <button
           aria-label="Next project"
-          className="absolute right-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/24 bg-black/36 text-white backdrop-blur transition-colors duration-300 hover:bg-black/52 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
+          className="absolute right-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
           onClick={goToNextSlide}
           type="button"
         >

@@ -1,4 +1,5 @@
 import { HomepageSponsorCarousel } from "@/app/home";
+import { headerContentContainerClass } from "@/global-components/layout/sidebar/navbar-classes";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -87,11 +88,11 @@ export default function OurSponsorsPage() {
         headingId="thanks-to-heading"
       />
 
-      <section className="relative scroll-mt-20 overflow-hidden bg-[linear-gradient(145deg,#02040a_0%,#001126_46%,#001f49_100%)] px-5 py-10 text-white sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+      <section className="relative scroll-mt-20 overflow-hidden bg-[linear-gradient(145deg,#02040a_0%,#001126_46%,#001f49_100%)] py-10 text-white sm:py-16 lg:py-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(84,134,200,0.18),transparent_30%),radial-gradient(circle_at_84%_64%,rgba(0,74,173,0.2),transparent_34%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:86px_86px] opacity-25" />
 
-        <div className="relative mx-auto grid max-w-[1720px] gap-8 lg:grid-cols-[minmax(280px,0.7fr)_minmax(0,1fr)] lg:gap-14">
+        <div className={`${headerContentContainerClass} relative grid gap-8 lg:grid-cols-[minmax(280px,0.7fr)_minmax(0,1fr)] lg:gap-14`}>
           <div id="why-sponsor-muas" className="scroll-mt-20 lg:sticky lg:top-28 lg:self-start">
             <h2 className="text-[clamp(2.8rem,7vw,6.4rem)] font-medium leading-[0.9] tracking-[-0.05em]">
               {sponsorWhyHeading}
@@ -103,7 +104,7 @@ export default function OurSponsorsPage() {
 
             <Link
               href="/contact-us"
-              className="mt-6 inline-flex min-h-11 items-center justify-center rounded bg-white px-5 py-2.5 text-b1 font-bold text-blue-900 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:mt-8 sm:min-h-12 sm:px-6 sm:py-3"
+              className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 py-2.5 text-b1 font-bold text-blue-900 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:mt-8 sm:min-h-12 sm:px-6 sm:py-3"
             >
               {sponsorCtaLabel}
             </Link>

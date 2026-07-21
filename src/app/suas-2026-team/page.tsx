@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { HomepageSponsorCarousel } from "@/app/home";
 import { AnimatedTextHighlight } from "@/global-components/animated-text-highlight";
+import { headerContentContainerClass } from "@/global-components/layout/sidebar/navbar-classes";
 import { ScrollRevealProvider } from "@/global-components/scroll-reveal";
 import { Projects } from "./projects/Projects";
 import { RedbackWebHighlight } from "./redback-web-highlight";
@@ -245,7 +246,7 @@ export default function SUAS2026TeamPage() {
 
         <section
           id="the-production-timeline"
-          className="relative isolate scroll-mt-20 overflow-hidden bg-[#001126] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36"
+          className="relative isolate scroll-mt-20 overflow-hidden bg-[#001126] py-20 sm:py-28 lg:py-36"
         >
           <style>
             {`
@@ -285,7 +286,7 @@ export default function SUAS2026TeamPage() {
           <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(255,255,255,0.026)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.018)_1px,transparent_1px)] bg-[size:92px_92px] opacity-50" />
           <TimelineWebField images={timelineWebImages} />
 
-          <div className="mx-auto w-full max-w-[1720px]">
+          <div className={headerContentContainerClass}>
             <h2 className="max-w-[18ch] text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
               The Production Timeline
             </h2>

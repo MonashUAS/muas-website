@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ProjectCarousel } from "@/app/sections/project-carousel";
 import { AnimatedTextHighlight } from "@/global-components/animated-text-highlight";
+import { headerContentContainerClass } from "@/global-components/layout/sidebar/navbar-classes";
 import { NextDestinationLink } from "@/global-components/next-destination-link";
 import type { SectionLead, TeamSection } from "./section-data";
 
@@ -53,9 +54,9 @@ function SectionHero({ section }: { section: TeamSection }) {
 
       <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-2 flex-col items-center py-12 text-center sm:-translate-y-4 sm:py-16">
         <div className="flex w-full min-w-0 max-w-full flex-col items-center">
-          <h1 className="w-full min-w-0 max-w-full text-[clamp(1.55rem,6.2vw,3.5rem)] font-black leading-[0.95] tracking-[-0.065em] text-white sm:text-[clamp(2.75rem,6.4vw,7rem)]">
+          <h1 className="w-full min-w-0 max-w-[12ch] text-balance text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] text-white">
             <AnimatedTextHighlight
-              className="inline-block max-w-full whitespace-nowrap"
+              className="inline max-w-full"
               variant="goldUnderline"
             >
               {section.name}
@@ -107,12 +108,12 @@ function Projects({ section }: { section: TeamSection }) {
   return (
     <section
       id="team-projects"
-      className="relative isolate scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,#02040a_0%,#001126_46%,#001f49_100%)] px-5 py-16 text-white sm:px-8 sm:py-20 lg:px-12 lg:py-24"
+      className="relative isolate scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,#02040a_0%,#001126_46%,#001f49_100%)] py-16 text-white sm:py-20 lg:py-24"
     >
       <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_18%,rgba(84,134,200,0.18),transparent_30%),radial-gradient(circle_at_84%_68%,rgba(0,74,173,0.2),transparent_34%)]" />
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:86px_86px] opacity-24" />
 
-      <div className="mx-auto w-full max-w-[1720px]">
+      <div className={headerContentContainerClass}>
         <h2 className="text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
           Projects
         </h2>

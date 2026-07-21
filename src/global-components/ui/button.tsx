@@ -12,13 +12,13 @@ export function Button({
 }: ButtonProps) {
   const variantClass =
     variant === "primary"
-      ? "bg-blue-500 text-white hover:bg-blue-600"
-      : "border border-blue-500 text-blue-500 hover:bg-blue-50";
+      ? "bg-white text-blue-900 hover:bg-blue-100"
+      : "bg-[#051b5e] text-white hover:bg-[#0b2a7a]";
 
   return (
     <button
       type={type}
-      className={`inline-flex min-h-11 items-center justify-center rounded px-5 text-b1 transition-colors ${variantClass} ${className}`}
+      className={`inline-flex min-h-11 items-center justify-center rounded-full px-5 text-b1 transition-colors ${variantClass} ${className}`}
       {...props}
     />
   );
