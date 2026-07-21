@@ -1,104 +1,444 @@
 "use client";
 
-import { Suspense, useMemo, useState } from "react";
+import Image from "next/image";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Bounds, Center, Environment, OrbitControls, useGLTF } from "@react-three/drei";
-import { Minus, Plus } from "lucide-react";
-import { keyFeatures } from "./key-features-data";
+import {
+  Bounds,
+  Center,
+  Environment,
+  OrbitControls,
+  useGLTF,
+  useProgress,
+} from "@react-three/drei";
+import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 
-// Component for rendering individual feature models
+import { keyFeatures } from "./key-features-data";
+import type { KeyFeature } from "./key-features-data";
+
+import LoadingScreen from "./LoadingScreen";
+
+const defaultMedia: KeyFeature["media"] = {
+  src: "/models/redback.glb",
+  type: "model",
+};
+
+// Tune MODEL_FRAME_MARGIN down to zoom in on initial load; tune it up to show more space around the model.
+const MODEL_FRAME_MARGIN = 0.8;
+const MODEL_CAMERA_POSITION: [number, number, number] = [10, 100, -220];
+
+// Tune these lighting values to make GLB media brighter or darker.
+const MODEL_AMBIENT_LIGHT = 0.1;
+const MODEL_KEY_LIGHT = 2;
+const MODEL_RED_RIM_LIGHT = 0.3;
+
+// Tune these hotspot values to control how much of the model area accepts mouse zoom/drag.
+const MODEL_INTERACTION_HOTSPOT_WIDTH = 0.5;
+const MODEL_INTERACTION_HOTSPOT_HEIGHT = 0.72;
+
+// Loads and frames one GLB inside the shared model viewer canvas using strict bounds matching.
 export function FeatureModel({ src }: { src: string }) {
   const gltf = useGLTF(src);
 
   return (
-    // Bounds is used to automatically frame the model in the view, with a margin for better aesthetics
-    <Bounds fit clip observe margin={1.35}>
+    <Bounds fit clip observe margin={MODEL_FRAME_MARGIN}>
       <Center>
-        <primitive object={gltf.scene} /> 
+        <primitive object={gltf.scene} />
       </Center>
     </Bounds>
   );
 }
 
-// Component for rendering the 3D model viewer with controls
-export function ModelViewer({ model }: { model: string }) {
+// Renders the interactive 3D canvas for GLB feature media.
+function ModelCanvas({ src }: { src: string }) {
   return (
-    <div className="relative h-[420px] min-h-[42vh] w-full lg:h-[620px]">
-      <Canvas camera={{ position: [4, 2.2, 5], fov: 38 }} dpr={[1, 2]}>
-        <color attach="background" args={["#000000"]} />
-        <ambientLight intensity={1.5} />
-        <directionalLight position={[5, 6, 4]} intensity={2.4} />
-        <directionalLight position={[-4, 1, -5]} intensity={0.9} color="#d61c1c" />
-        <Suspense fallback={null}>
-          <FeatureModel key={model} src={model} />
-          <Environment preset="city" />
-        </Suspense>
-        <OrbitControls />
-      </Canvas>
-      <div className="absolute inset-x-0 bottom-5 text-center text-caption uppercase text-white/55">
-        <span>Drag to rotate</span>
-        <span className="mx-2">|</span>
-        <span>Scroll to zoom</span>
+    <Canvas camera={{ position: MODEL_CAMERA_POSITION, fov: 38 }} dpr={[1, 2]}>
+      <color attach="background" args={["#000000"]} />
+      <ambientLight intensity={MODEL_AMBIENT_LIGHT} />
+      <directionalLight position={[5, 6, 4]} intensity={MODEL_KEY_LIGHT} />
+      <directionalLight
+        position={[-4, 1, -5]}
+        intensity={MODEL_RED_RIM_LIGHT}
+        color="#d61c1c"
+      />
+      <Suspense fallback={null}>
+        <FeatureModel key={src} src={src} />
+        <Environment preset="night" />
+      </Suspense>
+      <OrbitControls />
+    </Canvas>
+  );
+}
+
+// Plays MP4 feature media automatically inside the same viewer frame.
+function FeatureVideo({ src }: { src: string }) {
+  return (
+    <video
+      key={src}
+      className="absolute inset-0 h-full w-full object-cover"
+      src={src}
+      autoPlay
+      loop
+      muted
+      playsInline
+    />
+  );
+}
+
+// Switches between model and video media smoothly without flashing.
+export function ModelViewer({
+  className,
+  media,
+  isDesktop,
+  isDissolving = false,
+}: {
+  className?: string;
+  media: KeyFeature["media"];
+  isDesktop: boolean;
+  isDissolving?: boolean;
+}) {
+  const { progress } = useProgress();
+  const modelSrc = media.type === "model" ? media.src : defaultMedia.src;
+  const isModelLoading = media.type === "model" && progress < 100;
+
+  useSuppressKnownThreeNoise();
+
+  return (
+    <div
+      className={`w-full overflow-hidden bg-black-500 transition-all duration-500 ease-out ${
+        isDissolving ? "opacity-30 blur-[6px]" : "opacity-100 blur-0"
+      } ${className ?? "relative h-[420px] min-h-[42vh] lg:h-[620px]"}`}
+    >
+      {/* DESKTOP 3D MODEL LAYER */}
+      <div
+        className={`absolute inset-0 z-10 transition-opacity duration-500 ${
+          isDesktop ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {isDesktop && (
+          <>
+            <ModelCanvas src={modelSrc} />
+            <ModelInteractionMask />
+            {isModelLoading && <LoadingScreen progress={progress} />}
+            <div className="pointer-events-none absolute inset-x-0 bottom-5 text-center text-caption uppercase text-white/55">
+              <span>Drag to rotate</span>
+              <span className="mx-2">|</span>
+              <span>Scroll to zoom</span>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* MOBILE / TABLET STATIC IMAGE LAYER */}
+      <div
+        className={`absolute inset-0 z-10 transition-opacity duration-500 ${
+          !isDesktop ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {!isDesktop && (
+          <Image
+            src="/models/redback.png"
+            alt="Redback rendering"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-contain p-4 md:p-12"
+            draggable={false}
+          />
+        )}
+      </div>
+
+      {/* OVERLAY VIDEO LAYER: Crossfades smoothly over base layers */}
+      <div
+        className={`absolute inset-0 z-20 bg-black-500 transition-opacity duration-500 ease-out ${
+          media.type === "video" ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {media.type === "video" && <FeatureVideo src={media.src} />}
       </div>
     </div>
   );
 }
 
-// Main component for the Key Features section, managing state for expanded features and rendering the model viewer
-export function KeyFeatures() {
-  const [expandedFeature, setExpandedFeature] = useState<string | null>(null);
-  const activeFeature = useMemo(
-    () => keyFeatures.find((feature) => feature.title === expandedFeature),
-    [expandedFeature],
-  );
-  const activeModel = activeFeature?.model ?? "/models/redback.glb"; //
+// ModelInteractionMask leaves only the center of the canvas interactive so gutters still scroll the page.
+function ModelInteractionMask() {
+  const horizontalInset = `${((1 - MODEL_INTERACTION_HOTSPOT_WIDTH) / 2) * 100}%`;
+  const verticalInset = `${((1 - MODEL_INTERACTION_HOTSPOT_HEIGHT) / 2) * 100}%`;
 
   return (
-    <section id="key-features" className="scroll-mt-10 bg-black-500 px-6 py-20 text-white lg:px-14">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[minmax(360px,0.9fr)_minmax(420px,1.2fr)] lg:items-center">
-        {/* Left column with feature list and descriptions */}
-        <div>
-          <p className="mb-4 text-subtitle text-white">KEY FEATURES</p>
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-10">
+      <div
+        className="pointer-events-auto absolute inset-x-0 top-0"
+        style={{ height: verticalInset }}
+      />
+      <div
+        className="pointer-events-auto absolute inset-x-0 bottom-0"
+        style={{ height: verticalInset }}
+      />
+      <div
+        className="pointer-events-auto absolute bottom-0 left-0 top-0"
+        style={{ width: horizontalInset }}
+      />
+      <div
+        className="pointer-events-auto absolute bottom-0 right-0 top-0"
+        style={{ width: horizontalInset }}
+      />
+    </div>
+  );
+}
+
+// useSuppressKnownThreeNoise hides known third-party loader noise while the GLB still renders.
+function useSuppressKnownThreeNoise() {
+  useEffect(() => {
+    const originalWarn = console.warn;
+    const originalError = console.error;
+
+    const shouldSuppress = (args: unknown[]) => {
+      const message = args.map(String).join(" ");
+
+      return (
+        message.includes("THREE.Clock: This module has been deprecated") ||
+        message.includes("THREE.GLTFLoader: Couldn't load texture blob:")
+      );
+    };
+
+    console.warn = (...args: unknown[]) => {
+      if (!shouldSuppress(args)) {
+        originalWarn(...args);
+      }
+    };
+    console.error = (...args: unknown[]) => {
+      if (!shouldSuppress(args)) {
+        originalError(...args);
+      }
+    };
+
+    return () => {
+      console.warn = originalWarn;
+      console.error = originalError;
+    };
+  }, []);
+}
+
+// Coordinates feature expansion state and the active viewer media.
+export function KeyFeatures() {
+  const [expandedFeature, setExpandedFeature] = useState<string | null>(null);
+  const [displayedFeature, setDisplayedFeature] = useState<string | null>(null);
+  const [isDissolving, setIsDissolving] = useState(false);
+  const transitionTimer = useRef<number | null>(null);
+
+  const displayedActiveFeature = useMemo(
+    () => keyFeatures.find((feature) => feature.title === displayedFeature),
+    [displayedFeature],
+  );
+  const displayedMedia = displayedActiveFeature?.media ?? defaultMedia;
+
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (transitionTimer.current !== null) {
+        window.clearTimeout(transitionTimer.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    setIsDesktop(mediaQuery.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
+
+  const toggleFeature = (title: string | null) => {
+    if (title === expandedFeature) return;
+
+    setExpandedFeature(title);
+    setIsDissolving(true);
+
+    if (transitionTimer.current !== null) {
+      window.clearTimeout(transitionTimer.current);
+    }
+
+    // Matches the 400ms duration for a perfectly smooth crossfade dissolve
+    transitionTimer.current = window.setTimeout(() => {
+      setDisplayedFeature(title);
+      setIsDissolving(false);
+    }, 400);
+  };
+
+  const handlePrevFeature = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!expandedFeature) return;
+    const idx = keyFeatures.findIndex((f) => f.title === expandedFeature);
+    const prevIdx = idx <= 0 ? keyFeatures.length - 1 : idx - 1;
+    toggleFeature(keyFeatures[prevIdx].title);
+  };
+
+  const handleNextFeature = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!expandedFeature) return;
+    const idx = keyFeatures.findIndex((f) => f.title === expandedFeature);
+    const nextIdx = idx >= keyFeatures.length - 1 ? 0 : idx + 1;
+    toggleFeature(keyFeatures[nextIdx].title);
+  };
+
+  return (
+    <section
+      id="key-features"
+      className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-12 pt-12 text-white md:pb-24 lg:pb-[calc(9rem+20px)] lg:pt-20"
+    >
+      {/* MOBILE / VERTICAL TABLET VIEW (Hidden on Desktop) */}
+      <div className="flex w-full flex-col lg:hidden">
+        <h2 className="mb-4 px-5 text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white sm:px-12 md:mb-8">
+          Key Features
+        </h2>
+
+        <div className="relative w-full overflow-hidden h-[calc(100svh-12rem)] min-h-[550px] max-h-[850px] md:min-h-[700px] md:max-h-[1100px]">
+          {mounted && (
+            <ModelViewer
+              isDesktop={false}
+              media={displayedMedia}
+              isDissolving={isDissolving}
+              className="absolute inset-0 h-full w-full"
+            />
+          )}
+
+          <div
+            className={`absolute right-4 top-4 z-40 transition-all duration-400 ease-out md:right-8 md:top-8 ${
+              displayedFeature && !isDissolving
+                ? "translate-y-0 opacity-100"
+                : "pointer-events-none -translate-y-4 opacity-0"
+            }`}
+          >
+            <button
+              onClick={() => toggleFeature(null)}
+              className="grid size-10 place-items-center rounded-full border border-red-300 bg-red-900/55 text-white backdrop-blur-md transition-colors hover:bg-red-800 md:size-12"
+              aria-label="Close feature details"
+            >
+              <Minus className="size-5 md:size-6" />
+            </button>
+          </div>
+
+          <div
+            className={`absolute inset-x-0 bottom-6 z-30 px-4 transition-all duration-400 ease-out sm:px-8 md:bottom-10 md:px-16 ${
+              isDissolving ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"
+            }`}
+          >
+            {displayedFeature && displayedActiveFeature ? (
+              <div className="mx-auto flex w-full max-w-2xl items-center justify-between">
+                <button
+                  onClick={handlePrevFeature}
+                  className="flex flex-none items-center justify-center px-3 transition-colors hover:text-white/70 sm:px-5 md:px-6"
+                  aria-label="Previous Feature"
+                >
+                  <ChevronLeft className="size-6 text-white md:size-8" />
+                </button>
+
+                <div className="flex-1 rounded-[2rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-4 py-4 shadow-2xl backdrop-blur-md sm:px-6 md:py-6">
+                  <h3 className="mb-1.5 text-sm font-bold text-white sm:text-base md:mb-2 md:text-lg">
+                    {displayedActiveFeature.title}
+                  </h3>
+                  <p className="text-xs leading-relaxed text-white/90 sm:text-sm md:text-base">
+                    {displayedActiveFeature.body}
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleNextFeature}
+                  className="flex flex-none items-center justify-center px-3 transition-colors hover:text-white/70 sm:px-5 md:px-6"
+                  aria-label="Next Feature"
+                >
+                  <ChevronRight className="size-6 text-white md:size-8" />
+                </button>
+              </div>
+            ) : (
+              <nav
+                aria-label="Explore key features"
+                className="mx-auto flex w-full max-w-max gap-2 overflow-x-auto sm:gap-3"
+              >
+                {keyFeatures.map((feature) => (
+                  <button
+                    key={feature.title}
+                    type="button"
+                    onClick={() => toggleFeature(feature.title)}
+                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-red-700 bg-black/60 px-4 py-2.5 text-sm font-medium text-white/80 backdrop-blur-md transition-colors duration-300 hover:bg-red-900/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 sm:text-base md:px-6 md:py-3 md:text-lg"
+                  >
+                    {feature.title}
+                    <Plus className="size-4 md:size-5" aria-hidden />
+                  </button>
+                ))}
+              </nav>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* DESKTOP VIEW (Side-by-side, Hidden on Mobile) */}
+      <div className="relative mx-auto hidden min-h-[680px] w-full max-w-7xl px-14 lg:block lg:min-h-[720px]">
+        {mounted && (
+          <ModelViewer
+            isDesktop={true}
+            className="absolute inset-y-0 right-[calc(50%-50vw)] z-0 h-full w-[75vw]"
+            media={displayedMedia}
+            isDissolving={isDissolving}
+          />
+        )}
+
+        <div className="relative z-10 max-w-[31rem] pt-16">
+          <h2 className="mb-10 pb-1 text-left text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white">
+            Key Features
+          </h2>
           <div className="flex flex-col gap-5">
             {keyFeatures.map((feature) => {
               const isExpanded = expandedFeature === feature.title;
-              const panelId = getFeaturePanelId(feature.title);
+              const panelId = getFeaturePanelId(feature.title) + "-desktop";
 
               return (
-                <div key={feature.title} className="grid grid-cols-[1fr_48px] gap-3">
-                  
-                  {/* feature title button */}
+                <div key={feature.title} className="grid grid-cols-[1fr_auto] gap-3">
                   <button
                     type="button"
-                    className={`border border-red-700 px-4 py-3 text-left text-subtitle transition-colors hover:bg-red-950/40 hover:cursor-pointer ${
-                      isExpanded ? "bg-red-950/35" : "bg-black-500"
+                    className={`h-12 rounded-full border px-5 text-left text-subtitle backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
+                      isExpanded
+                        ? "border-red-300 bg-red-900/55 text-white"
+                        : "border-red-700 bg-black/45 text-white/80 hover:bg-red-900/55 hover:text-white"
                     }`}
-                    onClick={() => setExpandedFeature(isExpanded ? null : feature.title)}
+                    onClick={() => toggleFeature(isExpanded ? null : feature.title)}
                     aria-expanded={isExpanded}
                     aria-controls={panelId}
                   >
                     {feature.title}
                   </button>
-                  
-                  {/* plus/minus button */}
+
                   <button
                     type="button"
-                    className="flex items-center justify-center border border-red-700 bg-black-500 p-4 text-white transition-colors hover:bg-red-950/40 hover:cursor-pointer"
-                    onClick={() => setExpandedFeature(isExpanded ? null : feature.title)}
+                    className={`grid size-12 place-items-center rounded-full border text-white backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
+                      isExpanded
+                        ? "border-red-300 bg-red-900/55"
+                        : "border-red-700 bg-black/45 hover:bg-red-900/55"
+                    }`}
+                    onClick={() => toggleFeature(isExpanded ? null : feature.title)}
                     aria-label={`${isExpanded ? "Collapse" : "Expand"} ${feature.title}`}
                   >
-                    {isExpanded ? <Minus className="size-5" /> : <Plus className="size-5" />}
+                    {isExpanded ? (
+                      <Minus className="size-5" aria-hidden />
+                    ) : (
+                      <Plus className="size-5" aria-hidden />
+                    )}
                   </button>
 
-                  {/* Description stays mounted so its height can animate open and closed. */}
                   <div
                     id={panelId}
                     className={`col-span-2 grid overflow-hidden transition-[grid-template-rows,opacity] duration-500 ease-out ${
-                      isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                      isExpanded
+                        ? "grid-rows-[1fr] opacity-100"
+                        : "grid-rows-[0fr] opacity-0"
                     }`}
                   >
                     <div className="min-h-0">
-                      <div className="border border-b border-red-700 bg-[linear-gradient(180deg,rgba(214,28,28,0.2),rgba(0,0,0,0.95)_56%)] px-4 pb-5 pt-3 text-b1 leading-6 text-white">
+                      <div className="rounded-[1.25rem] border border-red-300 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-5 pb-5 pt-4 text-b1 leading-6 text-white backdrop-blur-md">
                         {feature.body}
                       </div>
                     </div>
@@ -108,15 +448,12 @@ export function KeyFeatures() {
             })}
           </div>
         </div>
-
-        {/* Right column with the 3D model viewer */}
-        <ModelViewer model={activeModel} />
       </div>
     </section>
   );
 }
 
-// getFeaturePanelId creates a stable id shared by the feature button and panel.
+// Creates a stable id shared by each feature button and its description panel.
 function getFeaturePanelId(title: string) {
   return `${title.replaceAll(" ", "-").toLowerCase()}-panel`;
 }
