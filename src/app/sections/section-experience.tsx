@@ -57,7 +57,7 @@ function SectionHero({ section }: { section: TeamSection }) {
           <h1 className="w-full min-w-0 max-w-[12ch] text-balance text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] text-white">
             <AnimatedTextHighlight
               className="inline max-w-full"
-              variant="goldUnderline"
+              variant="goldSingleUnderline"
             >
               {section.name}
             </AnimatedTextHighlight>
