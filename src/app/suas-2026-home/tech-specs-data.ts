@@ -17,7 +17,7 @@ export type TechSpecPanel = {
 
 export const techSpecPanels: TechSpecPanel[] = [
   {
-    navTitle: "collapsed",
+    navTitle: "Collapsed",
     title: "Aerostructure",
     kicker: "Collapsed State",
     subtitle: "Dimensions",
@@ -32,7 +32,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     ],
   },
   {
-    navTitle: "deployed",
+    navTitle: "Deployed",
     title: "Aerostructure",
     kicker: "Deployed State",
     subtitle: "Dimensions",
@@ -46,8 +46,22 @@ export const techSpecPanels: TechSpecPanel[] = [
       { label: "Height", value: "14' (358mm)" },
     ],
   },
+    {
+    navTitle: "Airframe",
+    title: "Aerostructure",
+    subtitle: "Materials",
+    image: {
+      src: "/images/redback-tech-specs/deployed.png",
+      alt: "Redback aircraft deployed state detail",
+    },
+    metrics: [
+      { label: "Main Frame", value: "Carbon Fibre" },
+      { label: "Motor and Boom Mounts", value: "Aluminium" },
+      { label: "Connectors", value: "PETG" },
+    ],
+  },
   {
-    navTitle: "weight",
+    navTitle: "Weight",
     title: "Aerostructure",
     subtitle: "Weight",
     image: {
@@ -60,7 +74,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     ],
   },
   {
-    navTitle: "performance",
+    navTitle: "Performance",
     title: "Flight Performance",
     subtitle: "Range and Speed",
     image: {
@@ -68,12 +82,12 @@ export const techSpecPanels: TechSpecPanel[] = [
       alt: "Redback aircraft flight performance detail",
     },
     metrics: [
-      { label: "Total Operating Range", value: "--" },
-      { label: "Maximum Flight Speed", value: "--" },
+      { label: "Total Operating Range", value: "~9.3mi (15km)" },
+      { label: "Maximum Flight Speed", value: "~49.2mph (22m/s)" },
     ],
   },
   {
-    navTitle: "power",
+    navTitle: "Power",
     title: "Stack and Propulsion",
     subtitle: "Power and Propulsion",
     image: {
@@ -83,12 +97,13 @@ export const techSpecPanels: TechSpecPanel[] = [
     metrics: [
       { label: "Motor Model", value: "M6C10-150KV" },
       { label: "ESC Rating", value: "60A" },
-      { label: "Battery Capacity", value: "599.4Wh (6 x 99.9Wh)" },
       { label: "Propellor Size", value: "21'" },
+      { label: "Propulsion Battery Capacity", value: "599.4Wh (6 x 99.9Wh)" },
+      { label: "Avionics Battery Capacity", value: "32.56Wh (2.2 x 14.8Wh)" },
     ],
   },
   {
-    navTitle: "vision",
+    navTitle: "Vision",
     title: "Vision",
     subtitle: "Camera and Detection",
     image: {
@@ -97,13 +112,14 @@ export const techSpecPanels: TechSpecPanel[] = [
     },
     metrics: [
       { label: "Camera", value: "SIYI A8 Mini Gimbal Camera" },
-      { label: "Ground Sample Distance", value: "-" },
-      { label: "Object Detection Model", value: "-" },
-      { label: "Map Resolution", value: "1920 x 1080p (~6cm/pixel)" },
+      { label: "Object Detection Model", value: "YOLOv8" },
+      { label: "Risk Mapping Software", value: "Microsoft Image Composite Editor (MICE) and Open Drone Model (ODM)" },
+      { label: "Ground Sample Distance", value: "6cm/pixel" },
+      { label: "Map Resolution", value: "1920 x 1080p" },
     ],
   },
   {
-    navTitle: "payload",
+    navTitle: "Payload",
     title: "Lifeline",
     subtitle: "Payload Delivery",
     image: {
@@ -116,7 +132,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     ],
   },
   {
-    navTitle: "controller",
+    navTitle: "Controller",
     title: "Flight Operations",
     subtitle: "Controller",
     image: {
