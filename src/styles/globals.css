@@ -224,3 +224,45 @@
   background-color: rgb(228 197 106 / 0.42);
   box-shadow: none;
 }
+
+/* Page dissolve: concurrent crossfade of outgoing → incoming (no black frame). */
+@keyframes page-dissolve-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-dissolve-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+::view-transition-old(.page-dissolve) {
+  animation: 260ms ease-out both page-dissolve-fade-out;
+}
+
+::view-transition-new(.page-dissolve) {
+  animation: 260ms ease-out both page-dissolve-fade-in;
+}
+
+::view-transition-group(.page-dissolve) {
+  animation-duration: 260ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.page-dissolve),
+  ::view-transition-new(.page-dissolve),
+  ::view-transition-group(.page-dissolve) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

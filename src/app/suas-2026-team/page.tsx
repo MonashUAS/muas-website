@@ -147,7 +147,7 @@ export default function SUAS2026TeamPage() {
       <div className="relative isolate overflow-hidden">
         <section
           id="suas-team-page"
-          className="relative -mt-20 flex min-h-dvh scroll-mt-20 items-end overflow-hidden"
+          className="relative isolate flex min-h-[100svh] scroll-mt-20 items-center justify-center overflow-hidden bg-black px-6 pt-[var(--header-height)] text-white sm:px-10"
         >
           <Image
             src={teamHeroImage}
@@ -159,22 +159,19 @@ export default function SUAS2026TeamPage() {
             sizes="100vw"
             className="object-cover object-[50%_42%]"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.34)_0%,rgba(0,0,0,0.08)_34%,rgba(0,0,0,0.58)_76%,#000000_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_52%_38%,transparent_0%,rgba(0,0,0,0.1)_38%,rgba(0,0,0,0.72)_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-44 bg-[linear-gradient(180deg,transparent,#000000)]" />
+          <div className="absolute inset-0 bg-black/45" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,7,20,0.3)_0%,rgba(0,7,20,0.18)_42%,rgba(0,7,20,0.68)_100%)]" />
 
-          <div className="relative mx-auto flex min-h-dvh w-full max-w-[1720px] items-center justify-center px-5 pt-20 sm:px-8 lg:px-12">
-            <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-2 flex-col items-center text-center sm:-translate-y-4">
-              <h1 className="text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] text-white">
-                The Team Behind{" "}
-                <RedbackWebHighlight>Redback</RedbackWebHighlight>
-              </h1>
+          <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-2 flex-col items-center text-center sm:-translate-y-4">
+            <h1 className="text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] text-white">
+              The Team Behind{" "}
+              <RedbackWebHighlight>Redback</RedbackWebHighlight>
+            </h1>
 
-              <p className="mt-10 max-w-[52rem] text-[clamp(1.15rem,1.55vw,1.6rem)] font-medium leading-[1.55] tracking-[-0.015em] text-blue-50">
-                Explore the rationale, development and key milestones behind Redback, from its initial design through manufacturing, 
-                testing and flight.  
-              </p>
-            </div>
+            <p className="mt-10 max-w-[52rem] text-[clamp(1.15rem,1.55vw,1.6rem)] font-medium leading-[1.55] tracking-[-0.015em] text-blue-50">
+              Explore the rationale, development and key milestones behind Redback, from its initial design through manufacturing, 
+              testing and flight.  
+            </p>
           </div>
         </section>
 
