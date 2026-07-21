@@ -2,13 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  type CSSProperties,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
 import { ProjectCarousel } from "@/app/sections/project-carousel";
 import type { SectionLead, TeamSection } from "./section-data";
 
@@ -17,153 +10,117 @@ type SectionExperienceProps = {
   section: TeamSection;
 };
 
-type InteractiveBackgroundProps = {
-  children: React.ReactNode;
-  className: string;
-};
-
-// SectionExperience renders the animated client-side section page experience.
+// SectionExperience renders the complete shared page layout for each MUAS team section.
 export function SectionExperience({ nextSection, section }: SectionExperienceProps) {
-  const [videoShade, setVideoShade] = useState(0.45);
-
-  // Updates the fixed hero shade as content scrolls over the video.
-  useEffect(() => {
-    const handleScroll = () => {
-      const foldProgress = clamp(window.scrollY / (window.innerHeight * 0.75), 0, 1);
-
-      setVideoShade(0.45 + foldProgress * 0.4);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   return (
-    <div className="relative bg-blue-900 text-white">
-      <HeroVideo section={section} shade={videoShade} />
-      <section className="viewport-fold" />
+    <div className="min-h-full bg-background text-white">
+      <SectionHero section={section} />
       <main className="relative z-10">
-        <ContentSections section={section} />
+        <Projects section={section} />
         <NextSection section={nextSection} />
       </main>
     </div>
   );
 }
 
-// HeroVideo renders the fixed autoplaying section video behind the folding content.
-function HeroVideo({ section, shade }: { section: TeamSection; shade: number }) {
+// SectionHero introduces each team section with full-bleed media and lead profiles.
+function SectionHero({ section }: { section: TeamSection }) {
+  const heroTitleClassName = getHeroTitleClassName(section.name);
+
   return (
-    <section className="fixed inset-x-0 top-20 z-0 flex h-[calc(100svh-var(--header-height))] items-center justify-center overflow-hidden ">
+    <section className="relative isolate viewport-fold scroll-mt-20 overflow-hidden bg-black-500 text-white">
       <video
         aria-label={`${section.name} hero video`}
         autoPlay
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 -z-30 h-full w-full object-cover"
         loop
         muted
         playsInline
+        preload="auto"
         src={section.heroVideo}
       />
-      <div className="absolute inset-0 bg-black transition-colors duration-200" style={{ opacity: shade }} />
-      <div className="relative z-10 mx-auto max-w-5xl px-6 text-center uppercase">
-        <h1 className="text-h4 font-black leading-none sm:text-h2 tracking-[-0.05em]">{section.name}</h1>
-        <p className="mx-auto mt-5 max-w-3xl text-b2 font-black leading-relaxed sm:text-b1">
-          {section.shortDescription}
-        </p>
+      <div className="absolute inset-0 -z-20 bg-[linear-gradient(155deg,rgba(0,31,73,0.76)_0%,rgba(2,4,10,0.48)_45%,rgba(5,8,13,0.82)_100%)]" />
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_50%_40%,rgba(84,134,200,0.22),transparent_32%)]" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,255,255,0.055)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:84px_84px] opacity-20" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[linear-gradient(0deg,rgba(0,0,0,0.64),transparent)]" />
+
+      <div className="relative z-10 mx-auto flex viewport-fold w-full max-w-6xl flex-col items-center justify-center px-5 py-12 text-center sm:px-8 sm:py-16 lg:px-12">
+        <div className="flex min-w-0 flex-col items-center">
+          <h1 className={heroTitleClassName}>
+            {section.name}
+          </h1>
+
+          <p className="mt-5 max-w-3xl text-b2 leading-relaxed text-blue-50 sm:mt-7 sm:text-subtitle">
+            {section.description}
+          </p>
+        </div>
+
+        <div className="mt-8 w-full max-w-2xl border-t border-white/24 pt-5 sm:mt-10 sm:pt-7">
+          <h2 className="text-subtitle font-medium leading-none tracking-[-0.05em] text-white sm:text-h7 lg:text-h6">
+            {section.leads.length === 1 ? "Section Lead" : "Section Leads"}
+          </h2>
+
+          <div className="mt-5 flex flex-wrap justify-center gap-6 sm:mt-7 sm:gap-8">
+            {section.leads.map((lead) => (
+              <LeadProfile key={lead.name} lead={lead} />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-// ContentSections groups description, leads, and projects into one shared interactive surface.
-function ContentSections({ section }: { section: TeamSection }) {
-  return (
-    <StaticSectionBackground className="px-6">
-      <Description section={section} />
-      <Projects section={section} />
-    </StaticSectionBackground>
-  );
+// getHeroTitleClassName keeps long section names on one line without viewport-scaled type.
+function getHeroTitleClassName(sectionName: string) {
+  const compactTitle = sectionName.replace(/\s+/g, "").length > 12;
+  const sizeClassName = compactTitle
+    ? "text-h6 sm:text-h4 lg:text-h2"
+    : "text-h4 sm:text-h2 lg:text-h1";
+
+  return `max-w-none whitespace-nowrap font-medium leading-[0.92] tracking-[-0.05em] text-white ${sizeClassName}`;
 }
 
-// Description renders the section overview and lead portraits over an interactive blue field.
-function Description({ section }: { section: TeamSection }) {
-  return (
-    <section
-      id="team-overview"
-      className="mx-auto flex h-[calc(100svh-(var(--header-height)*2))] w-full max-w-5xl scroll-mt-20 flex-col items-center justify-center py-20 text-center"
-    >
-      <ParticleText text={section.description} />
-      <h2 className="mt-14 text-subtitle font-black">
-        {section.leads.length === 1 ? "Section Lead" : "Section Leads"}
-      </h2>
-      <div className="mt-8 flex flex-wrap justify-center gap-10">
-        {section.leads.map((lead) => (
-          <LeadProfile key={lead.name} lead={lead} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-// LeadProfile renders a single section lead headshot and name on a transparent card.
+// LeadProfile renders a single section lead headshot and name.
 function LeadProfile({ lead }: { lead: SectionLead }) {
   return (
-    <figure className="flex w-40 flex-col items-center bg-transparent px-4 py-5 text-center">
+    <figure className="flex min-w-0 max-w-32 flex-col items-center text-center sm:max-w-36">
       <Image
         alt={lead.name}
-        className="h-24 w-24 rounded-full object-cover"
-        height={96}
+        className="aspect-square w-20 rounded-full border border-white/20 object-cover shadow-[0_18px_42px_rgba(0,0,0,0.34)] sm:w-28 lg:w-32"
+        height={144}
         src={lead.image}
-        width={96}
+        width={144}
       />
-      <figcaption className="mt-5 text-b1 font-black">{lead.name}</figcaption>
+      <figcaption className="mt-3 break-words text-b2 font-medium leading-tight tracking-[-0.03em] text-white sm:mt-4 sm:text-b1 lg:text-subtitle">
+        {lead.name}
+      </figcaption>
     </figure>
   );
 }
 
-// Projects renders the project carousel after slowly fading into view.
+// Projects renders the section project carousel on the shared MUAS page background.
 function Projects({ section }: { section: TeamSection }) {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  // Watches the projects band and starts its entry fade when it reaches the viewport.
-  useEffect(() => {
-    const element = sectionRef.current;
-
-    if (!element) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.18 },
-    );
-
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
   return (
     <section
       id="team-projects"
-      ref={sectionRef}
-      className={`flex h-svh scroll-mt-20 flex-col items-center justify-center overflow-hidden py-20 transition duration-[1600ms] ease-out ${
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-      }`}
+      className="relative isolate scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,#02040a_0%,#001126_46%,#001f49_100%)] px-5 py-16 text-white sm:px-8 sm:py-20 lg:px-12 lg:py-24"
     >
-      <h2 className="text-center text-h6 font-black sm:text-h5 tracking-[-0.05em]">Projects</h2>
-      <ProjectCarousel projects={section.projects} />
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_18%,rgba(84,134,200,0.18),transparent_30%),radial-gradient(circle_at_84%_68%,rgba(0,74,173,0.2),transparent_34%)]" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:86px_86px] opacity-24" />
+
+      <div className="mx-auto w-full max-w-[1720px]">
+        <div className="max-w-4xl">
+          <h2 className="text-h5 font-medium leading-[0.96] tracking-[-0.05em] text-white sm:text-h3">
+            Projects
+          </h2>
+          <p className="mt-4 max-w-3xl text-b1 leading-relaxed text-blue-50/76 sm:text-subtitle">
+            Current work inside the {section.name} section.
+          </p>
+        </div>
+
+        <ProjectCarousel projects={section.projects} />
+      </div>
     </section>
   );
 }
@@ -171,125 +128,35 @@ function Projects({ section }: { section: TeamSection }) {
 // NextSection renders the linked preview card; shared dissolve handles the route swap.
 function NextSection({ section }: { section: TeamSection }) {
   return (
-    <section className="relative z-10 flex h-[calc(100svh-(var(--header-height)*1.6))] items-center justify-center bg-white px-6 py-20 text-blue-900">
+    <section className="relative z-10 overflow-hidden bg-[linear-gradient(155deg,#001f49_0%,#02040a_48%,#05080d_100%)] px-5 py-16 text-white sm:px-8 sm:py-20 lg:px-12">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_20%,rgba(84,134,200,0.16),transparent_32%)]" />
       <Link
         aria-label={`Learn about ${section.name}`}
-        className="group flex max-w-4xl flex-col items-center text-center"
+        className="group relative mx-auto grid w-full max-w-[1720px] gap-8 outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(420px,0.7fr)] lg:items-center"
         href={`/sections/${section.slug}`}
       >
-        <h2 className="text-h6 font-black leading-tight sm:text-h5 tracking-[-0.05em]">
-          Next Section: <span className="underline underline-offset-8">{section.name}</span>
-        </h2>
-        <div className="mt-10 aspect-[16/9] w-full max-w-3xl overflow-hidden bg-blue-900">
-          <video
-            aria-label={`${section.name} preview video`}
+        <div>
+          <p className="text-caption font-medium uppercase tracking-[0.2em] text-blue-100/62">
+            Next Section
+          </p>
+          <h2 className="mt-4 max-w-4xl text-h5 font-medium leading-[0.96] tracking-[-0.05em] text-white sm:text-h3">
+            {section.name}
+          </h2>
+          <p className="mt-5 max-w-3xl text-b1 leading-relaxed text-blue-50/74 sm:text-subtitle">
+            {section.shortDescription}
+          </p>
+        </div>
+
+        <div className="aspect-[16/9] w-full overflow-hidden border border-blue-200/25 bg-blue-900 shadow-[0_32px_90px_rgba(0,0,0,0.36)] [clip-path:polygon(7%_0,100%_0,100%_100%,0_100%)]">
+          <Image
+            alt={`${section.name} project preview`}
             className="h-full w-full object-cover brightness-75 transition duration-700 ease-out group-hover:scale-110 group-hover:brightness-100"
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            src={section.heroVideo}
+            height={720}
+            src={section.projects[0]?.image ?? "/images/homepage/flight-day.jpg"}
+            width={1280}
           />
         </div>
       </Link>
     </section>
   );
-}
-
-// StaticSectionBackground groups the section content on a navbar-inspired vertical gradient.
-function StaticSectionBackground({ children, className }: InteractiveBackgroundProps) {
-  return (
-    <div
-      className={`relative overflow-hidden bg-[linear-gradient(180deg,#000000_0%,#001f49_100%)] ${className}`}
-    >
-      <div className="relative z-10">{children}</div>
-    </div>
-  );
-}
-
-// ParticleText animates description words from subtle particles into readable text.
-function ParticleText({ text }: { text: string }) {
-  const particles = useMemo(() => splitTextIntoWordParticles(text), [text]);
-  const textRef = useRef<HTMLParagraphElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  // Watches the description paragraph and starts the particle animation only once it scrolls into view.
-  useEffect(() => {
-    const element = textRef.current;
-
-    if (!element) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.45 },
-    );
-
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  return (
-    <p
-      ref={textRef}
-      className="max-w-3xl text-b2 leading-relaxed text-blue-50 sm:text-b1"
-      aria-label={text}
-    >
-      {particles.map((particle, index) => (
-        <span
-          aria-hidden="true"
-          className={`section-description-particle inline-block whitespace-nowrap ${
-            isVisible ? "section-description-particle-visible" : ""
-          }`}
-          key={`${particle.word}-${index}`}
-          style={getParticleStyle(index, particle.seed)}
-        >
-          {particle.word}
-          {index < particles.length - 1 ? "\u00a0" : ""}
-        </span>
-      ))}
-    </p>
-  );
-}
-
-// splitTextIntoWordParticles prepares deterministic particle seeds for each word.
-function splitTextIntoWordParticles(text: string) {
-  return text.trim().split(/\s+/).map((word, index) => ({
-    word,
-    seed: pseudoRandom(index + word.charCodeAt(0)),
-  }));
-}
-
-// getParticleStyle maps a particle seed into CSS variables for its entry animation.
-function getParticleStyle(index: number, seed: number) {
-  const x = Math.round((seed - 0.5) * 22);
-  const y = Math.round((pseudoRandom(index + 17) - 0.5) * 18);
-  const delay = Math.min(index * 5, 420);
-
-  return {
-    "--particle-delay": `${delay}ms`,
-    "--particle-x": `${x}px`,
-    "--particle-y": `${y}px`,
-  } as CSSProperties;
-}
-
-// pseudoRandom creates stable animation scatter values without storing them in data.
-function pseudoRandom(input: number) {
-  const value = Math.sin(input * 12.9898) * 43758.5453;
-
-  return value - Math.floor(value);
-}
-
-// clamp keeps scroll-derived values inside the expected animation range.
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
 }
