@@ -133,7 +133,7 @@ export const sections: TeamSection[] = [
     heroVideo: placeholderVideo,
     leads: [
       { name: "Alexi Rampono", image: "/images/headshots/alexi-r.png" },
-      { name: "Alastair Mclennan", image: "/images/headshots/alastair-m.png" },
+      { name: "Alistair Mclennan", image: "/images/headshots/alistair-m.png" },
     ],
     projects: [
       {
@@ -214,7 +214,7 @@ export const sections: TeamSection[] = [
     name: "Propulsion",
     shortDescription: "The team that makes our aircrafts fly.",
     description:
-      "The propulsion section is dedicated to the testing, design and manufacture of MUAS propulsion systems. The section is focused on developing new and exciting capabilities within the team, including our own motors, controllers and propellers..",
+      "The propulsion section is dedicated to the testing, design and manufacture of MUAS propulsion systems. The section is focused on developing new and exciting capabilities within the team, including our own motors, controllers and propellers.",
     heroVideo: placeholderVideo,
     leads: [
       { name: "Oliver Bassily", image: "/images/headshots/oliver-bas.png" },
