@@ -60,6 +60,7 @@ export const drones: Drone[] = [
     description: [
       "IBIS is a MUAS development aircraft used to explore dependable flight systems, payload integration, and team flight operations.",
     ],
+    heroImage: "/images/drones/ibis.png",
     features: [
       { label: "Payload Capacity", value: "TBC" },
       { label: "Range", value: "TBC" },
@@ -70,7 +71,11 @@ export const drones: Drone[] = [
       { label: "Length", value: "TBC" },
       { label: "Mass", value: "TBC" },
     ],
-    gallery: placeholderGallery,
+    gallery: [
+      "/images/drones/ibis/ibis-1.jpg",
+      "/images/drones/ibis/ibis-2.jpg",
+      "/images/drones/ibis/ibis-3.jpg",
+    ],
   },
   {
     slug: "currawong",

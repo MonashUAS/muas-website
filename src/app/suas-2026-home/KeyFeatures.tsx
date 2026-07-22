@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Bounds,
@@ -18,10 +18,14 @@ import type { KeyFeature } from "./key-features-data";
 
 import LoadingScreen from "./LoadingScreen";
 
+const sectionHeadingClass =
+  "text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white";
+
 const defaultMedia: KeyFeature["media"] = {
   src: "/models/redback.glb",
   type: "model",
 };
+const defaultMobileFeatureTitle = keyFeatures[0]?.title ?? null;
 
 // Tune MODEL_FRAME_MARGIN down to zoom in on initial load; tune it up to show more space around the model.
 const MODEL_FRAME_MARGIN = 0.8;
@@ -70,6 +74,19 @@ function ModelCanvas({ src }: { src: string }) {
   );
 }
 
+function StaticModelFallback() {
+  return (
+    <Image
+      src="/models/redback.png"
+      alt="Redback rendering"
+      fill
+      sizes="(max-width: 1024px) 100vw, 50vw"
+      className="object-contain p-4 md:p-12"
+      draggable={false}
+    />
+  );
+}
+
 // Plays MP4 feature media automatically inside the same viewer frame.
 function FeatureVideo({ src }: { src: string }) {
   return (
@@ -90,16 +107,19 @@ export function ModelViewer({
   className,
   media,
   isDesktop,
+  canUseWebGL,
   isDissolving = false,
 }: {
   className?: string;
   media: KeyFeature["media"];
   isDesktop: boolean;
+  canUseWebGL: boolean;
   isDissolving?: boolean;
 }) {
   const { progress } = useProgress();
   const modelSrc = media.type === "model" ? media.src : defaultMedia.src;
-  const isModelLoading = media.type === "model" && progress < 100;
+  const canRenderModelCanvas = isDesktop && canUseWebGL;
+  const isModelLoading = canRenderModelCanvas && media.type === "model" && progress < 100;
 
   useSuppressKnownThreeNoise();
 
@@ -115,7 +135,7 @@ export function ModelViewer({
           isDesktop ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        {isDesktop && (
+        {canRenderModelCanvas ? (
           <>
             <ModelCanvas src={modelSrc} />
             <ModelInteractionMask />
@@ -126,6 +146,8 @@ export function ModelViewer({
               <span>Scroll to zoom</span>
             </div>
           </>
+        ) : (
+          isDesktop && <StaticModelFallback />
         )}
       </div>
 
@@ -135,16 +157,7 @@ export function ModelViewer({
           !isDesktop ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        {!isDesktop && (
-          <Image
-            src="/models/redback.png"
-            alt="Redback rendering"
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-contain p-4 md:p-12"
-            draggable={false}
-          />
-        )}
+        {!isDesktop && <StaticModelFallback />}
       </div>
 
       {/* OVERLAY VIDEO LAYER: Crossfades smoothly over base layers */}
@@ -156,6 +169,49 @@ export function ModelViewer({
         {media.type === "video" && <FeatureVideo src={media.src} />}
       </div>
     </div>
+  );
+}
+
+let webGLSupport: boolean | null = null;
+
+function supportsWebGL() {
+  if (typeof window === "undefined") return false;
+  if (webGLSupport !== null) return webGLSupport;
+
+  try {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("webgl2", {
+      alpha: true,
+      depth: true,
+      stencil: false,
+      antialias: true,
+      premultipliedAlpha: true,
+      preserveDrawingBuffer: false,
+      powerPreference: "default",
+      failIfMajorPerformanceCaveat: false,
+    });
+
+    webGLSupport = Boolean(context);
+    return webGLSupport;
+  } catch {
+    webGLSupport = false;
+    return false;
+  }
+}
+
+function useIsMounted() {
+  return useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
+}
+
+function useWebGLSupport() {
+  return useSyncExternalStore(
+    () => () => undefined,
+    supportsWebGL,
+    () => false,
   );
 }
 
@@ -225,15 +281,19 @@ export function KeyFeatures() {
   const [displayedFeature, setDisplayedFeature] = useState<string | null>(null);
   const [isDissolving, setIsDissolving] = useState(false);
   const transitionTimer = useRef<number | null>(null);
+  const mobileSwipeStartRef = useRef<{ x: number; y: number } | null>(null);
+  const lastMobileSwipeAtRef = useRef(0);
 
   const displayedActiveFeature = useMemo(
     () => keyFeatures.find((feature) => feature.title === displayedFeature),
     [displayedFeature],
   );
+  const mobileActiveFeature = displayedActiveFeature ?? keyFeatures[0] ?? null;
   const displayedMedia = displayedActiveFeature?.media ?? defaultMedia;
+  const mobileMedia = mobileActiveFeature?.media ?? defaultMedia;
 
-  const [isDesktop, setIsDesktop] = useState(true);
-  const [mounted, setMounted] = useState(false);
+  const canUseWebGL = useWebGLSupport();
+  const mounted = useIsMounted();
 
   useEffect(() => {
     return () => {
@@ -241,15 +301,6 @@ export function KeyFeatures() {
         window.clearTimeout(transitionTimer.current);
       }
     };
-  }, []);
-
-  useEffect(() => {
-    setMounted(true);
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
-    setIsDesktop(mediaQuery.matches);
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
   const toggleFeature = (title: string | null) => {
@@ -269,129 +320,256 @@ export function KeyFeatures() {
     }, 400);
   };
 
+  const moveFeature = (direction: -1 | 1) => {
+    const currentTitle =
+      expandedFeature ?? displayedFeature ?? defaultMobileFeatureTitle;
+    const currentIndex = keyFeatures.findIndex((feature) => feature.title === currentTitle);
+    const safeIndex = currentIndex >= 0 ? currentIndex : 0;
+    const nextIndex =
+      (safeIndex + direction + keyFeatures.length) % keyFeatures.length;
+
+    toggleFeature(keyFeatures[nextIndex].title);
+  };
+
   const handlePrevFeature = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!expandedFeature) return;
-    const idx = keyFeatures.findIndex((f) => f.title === expandedFeature);
-    const prevIdx = idx <= 0 ? keyFeatures.length - 1 : idx - 1;
-    toggleFeature(keyFeatures[prevIdx].title);
+    moveFeature(-1);
   };
 
   const handleNextFeature = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!expandedFeature) return;
-    const idx = keyFeatures.findIndex((f) => f.title === expandedFeature);
-    const nextIdx = idx >= keyFeatures.length - 1 ? 0 : idx + 1;
-    toggleFeature(keyFeatures[nextIdx].title);
+    moveFeature(1);
+  };
+
+  const startMobileSwipe = (x: number, y: number) => {
+    mobileSwipeStartRef.current = {
+      x,
+      y,
+    };
+  };
+
+  const finishMobileSwipe = (x: number, y: number) => {
+    const start = mobileSwipeStartRef.current;
+    mobileSwipeStartRef.current = null;
+
+    if (!start) return;
+    if (Date.now() - lastMobileSwipeAtRef.current < 350) return;
+
+    const deltaX = x - start.x;
+    const deltaY = y - start.y;
+    const isHorizontalSwipe =
+      Math.abs(deltaX) > 56 && Math.abs(deltaX) > Math.abs(deltaY) * 1.35;
+
+    if (!isHorizontalSwipe) return;
+
+    lastMobileSwipeAtRef.current = Date.now();
+    moveFeature(deltaX < 0 ? 1 : -1);
+  };
+
+  const handleMobilePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse") return;
+
+    startMobileSwipe(event.clientX, event.clientY);
+  };
+
+  const handleMobilePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    finishMobileSwipe(event.clientX, event.clientY);
+  };
+
+  const handleMobileTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+
+    startMobileSwipe(touch.clientX, touch.clientY);
+  };
+
+  const handleMobileTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+
+    finishMobileSwipe(touch.clientX, touch.clientY);
   };
 
   return (
     <section
       id="key-features"
-      className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-12 pt-12 text-white md:pb-24 lg:pb-[calc(9rem+20px)] lg:pt-20"
+      className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-8 pt-12 text-white md:pb-10 lg:pb-8 lg:pt-14"
     >
-      {/* MOBILE / VERTICAL TABLET VIEW (Hidden on Desktop) */}
-      <div className="flex w-full flex-col lg:hidden">
-        <h2 className="mb-4 px-5 text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white sm:px-12 md:mb-8">
+      {/* MOBILE CAROUSEL VIEW (Hidden on Tablet/Desktop) */}
+      <div
+        className="flex w-full touch-pan-y flex-col px-4 sm:px-8 md:hidden"
+        onPointerDown={handleMobilePointerDown}
+        onPointerUp={handleMobilePointerUp}
+        onTouchStart={handleMobileTouchStart}
+        onTouchEnd={handleMobileTouchEnd}
+      >
+        <h2 className={`mb-4 text-center ${sectionHeadingClass}`}>
           Key Features
         </h2>
 
-        <div className="relative w-full overflow-hidden h-[calc(100svh-12rem)] min-h-[550px] max-h-[850px] md:min-h-[700px] md:max-h-[1100px]">
+        <div className="mx-auto w-full max-w-3xl">
           {mounted && (
             <ModelViewer
               isDesktop={false}
-              media={displayedMedia}
+              canUseWebGL={canUseWebGL}
+              media={mobileMedia}
               isDissolving={isDissolving}
-              className="absolute inset-0 h-full w-full"
+              className="relative h-[260px] w-full sm:h-[340px]"
             />
           )}
+        </div>
 
+        {mobileActiveFeature ? (
           <div
-            className={`absolute right-4 top-4 z-40 transition-all duration-400 ease-out md:right-8 md:top-8 ${
-              displayedFeature && !isDissolving
-                ? "translate-y-0 opacity-100"
-                : "pointer-events-none -translate-y-4 opacity-0"
+            id={`${getFeaturePanelId(mobileActiveFeature.title)}-mobile`}
+            className={`mx-auto mt-4 w-full max-w-2xl transition-all duration-400 ease-out ${
+              isDissolving ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"
             }`}
           >
-            <button
-              onClick={() => toggleFeature(null)}
-              className="grid size-10 place-items-center rounded-full border border-red-300 bg-red-900/55 text-white backdrop-blur-md transition-colors hover:bg-red-800 md:size-12"
-              aria-label="Close feature details"
-            >
-              <Minus className="size-5 md:size-6" />
-            </button>
+            <div className="flex items-stretch justify-center gap-2">
+              <button
+                onClick={handlePrevFeature}
+                className="flex min-h-12 flex-none items-center justify-center px-1.5 transition-colors hover:text-white/70"
+                aria-label="Previous Feature"
+              >
+                <ChevronLeft className="size-7 text-white" />
+              </button>
+
+              <div className="flex min-h-[9.5rem] flex-1 flex-col justify-center rounded-[1.25rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-4 py-4 shadow-2xl backdrop-blur-md">
+                <h3 className="mb-1.5 text-sm font-bold text-white sm:text-base">
+                  {mobileActiveFeature.title}
+                </h3>
+                <p className="text-xs leading-relaxed text-white/90 sm:text-sm">
+                  {mobileActiveFeature.body}
+                </p>
+              </div>
+
+              <button
+                onClick={handleNextFeature}
+                className="flex min-h-12 flex-none items-center justify-center px-1.5 transition-colors hover:text-white/70"
+                aria-label="Next Feature"
+              >
+                <ChevronRight className="size-7 text-white" />
+              </button>
+            </div>
           </div>
+        ) : null}
+      </div>
 
+      {/* TABLET VIEW (Hidden on Mobile/Desktop) */}
+      <div className="hidden w-full flex-col px-4 sm:px-8 md:flex md:px-12 lg:hidden">
+        <h2 className={`mb-6 text-center ${sectionHeadingClass}`}>
+          Key Features
+        </h2>
+
+        <div className="mx-auto w-full max-w-3xl">
+          {mounted && (
+            <ModelViewer
+              isDesktop={false}
+              canUseWebGL={canUseWebGL}
+              media={displayedMedia}
+              isDissolving={isDissolving}
+              className="relative h-[430px] w-full"
+            />
+          )}
+        </div>
+
+        <nav
+          aria-label="Explore key features"
+          className="mx-auto mt-6 flex w-full max-w-3xl flex-wrap justify-center gap-3"
+        >
+          {keyFeatures.map((feature) => {
+            const isExpanded = expandedFeature === feature.title;
+
+            return (
+              <button
+                key={feature.title}
+                type="button"
+                onClick={() => toggleFeature(isExpanded ? null : feature.title)}
+                className={`flex min-h-12 shrink-0 items-center gap-1.5 rounded-full border px-6 py-3 text-base font-medium backdrop-blur-md transition-colors duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 ${
+                  isExpanded
+                    ? "border-red-300 bg-red-900/55 text-white"
+                    : "border-red-700 bg-black/60 text-white/80 hover:bg-red-900/60"
+                }`}
+                aria-expanded={isExpanded}
+                aria-controls={`${getFeaturePanelId(feature.title)}-mobile`}
+              >
+                {feature.title}
+                {isExpanded ? (
+                  <Minus className="size-5" aria-hidden />
+                ) : (
+                  <Plus className="size-5" aria-hidden />
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        {displayedFeature && displayedActiveFeature ? (
           <div
-            className={`absolute inset-x-0 bottom-6 z-30 px-4 transition-all duration-400 ease-out sm:px-8 md:bottom-10 md:px-16 ${
-              isDissolving ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"
+            id={`${getFeaturePanelId(displayedActiveFeature.title)}-mobile`}
+            className={`mx-auto mt-4 w-full max-w-2xl transition-all duration-400 ease-out md:mt-5 ${
+              isDissolving ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"
             }`}
           >
-            {displayedFeature && displayedActiveFeature ? (
-              <div className="mx-auto flex w-full max-w-2xl items-center justify-between">
-                <button
-                  onClick={handlePrevFeature}
-                  className="flex flex-none items-center justify-center px-3 transition-colors hover:text-white/70 sm:px-5 md:px-6"
-                  aria-label="Previous Feature"
-                >
-                  <ChevronLeft className="size-6 text-white md:size-8" />
-                </button>
+            <div className="flex items-stretch justify-center gap-2 sm:gap-4">
+              <button
+                onClick={handlePrevFeature}
+                className="flex flex-none items-center justify-center px-4 transition-colors hover:text-white/70"
+                aria-label="Previous Feature"
+              >
+                <ChevronLeft className="size-8 text-white" />
+              </button>
 
-                <div className="flex-1 rounded-[2rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-4 py-4 shadow-2xl backdrop-blur-md sm:px-6 md:py-6">
-                  <h3 className="mb-1.5 text-sm font-bold text-white sm:text-base md:mb-2 md:text-lg">
+              <div className="flex-1 rounded-[1.25rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-6 py-5 shadow-2xl backdrop-blur-md">
+                <div className="mb-2 flex items-start justify-between gap-3">
+                  <h3 className="text-lg font-bold text-white">
                     {displayedActiveFeature.title}
                   </h3>
-                  <p className="text-xs leading-relaxed text-white/90 sm:text-sm md:text-base">
-                    {displayedActiveFeature.body}
-                  </p>
-                </div>
-
-                <button
-                  onClick={handleNextFeature}
-                  className="flex flex-none items-center justify-center px-3 transition-colors hover:text-white/70 sm:px-5 md:px-6"
-                  aria-label="Next Feature"
-                >
-                  <ChevronRight className="size-6 text-white md:size-8" />
-                </button>
-              </div>
-            ) : (
-              <nav
-                aria-label="Explore key features"
-                className="mx-auto flex w-full max-w-max gap-2 overflow-x-auto sm:gap-3"
-              >
-                {keyFeatures.map((feature) => (
                   <button
-                    key={feature.title}
-                    type="button"
-                    onClick={() => toggleFeature(feature.title)}
-                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-red-700 bg-black/60 px-4 py-2.5 text-sm font-medium text-white/80 backdrop-blur-md transition-colors duration-300 hover:bg-red-900/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 sm:text-base md:px-6 md:py-3 md:text-lg"
+                    onClick={() => toggleFeature(null)}
+                    className="grid size-9 shrink-0 place-items-center rounded-full border border-red-300/50 bg-red-900/35 text-white transition-colors hover:bg-red-800"
+                    aria-label="Close feature details"
                   >
-                    {feature.title}
-                    <Plus className="size-4 md:size-5" aria-hidden />
+                    <Minus className="size-5" />
                   </button>
-                ))}
-              </nav>
-            )}
+                </div>
+                <p className="text-base leading-relaxed text-white/90">
+                  {displayedActiveFeature.body}
+                </p>
+              </div>
+
+              <button
+                onClick={handleNextFeature}
+                className="flex flex-none items-center justify-center px-4 transition-colors hover:text-white/70"
+                aria-label="Next Feature"
+              >
+                <ChevronRight className="size-8 text-white" />
+              </button>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
 
       {/* DESKTOP VIEW (Side-by-side, Hidden on Mobile) */}
-      <div className="relative mx-auto hidden min-h-[680px] w-full max-w-7xl px-14 lg:block lg:min-h-[720px]">
+      <div className="relative mx-auto hidden w-full max-w-[1720px] px-5 sm:px-8 lg:px-12 lg:block">
         {mounted && (
-          <ModelViewer
-            isDesktop={true}
-            className="absolute inset-y-0 right-[calc(50%-50vw)] z-0 h-full w-[75vw]"
-            media={displayedMedia}
-            isDissolving={isDissolving}
-          />
+          <div className="absolute inset-y-0 right-0 z-0 h-full w-3/4">
+            <ModelViewer
+              isDesktop={true}
+              canUseWebGL={canUseWebGL}
+              className="h-full w-full"
+              media={displayedMedia}
+              isDissolving={isDissolving}
+            />
+          </div>
         )}
 
-        <div className="relative z-10 max-w-[31rem] pt-16">
-          <h2 className="mb-10 pb-1 text-left text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white">
+        <div className="relative z-10 max-w-[31rem] pt-10">
+          <h2 className={`mb-8 text-left ${sectionHeadingClass}`}>
             Key Features
           </h2>
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4">
             {keyFeatures.map((feature) => {
               const isExpanded = expandedFeature === feature.title;
               const panelId = getFeaturePanelId(feature.title) + "-desktop";
@@ -400,7 +578,7 @@ export function KeyFeatures() {
                 <div key={feature.title} className="grid grid-cols-[1fr_auto] gap-3">
                   <button
                     type="button"
-                    className={`h-12 rounded-full border px-5 text-left text-subtitle backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
+                    className={`h-12 border px-5 text-left text-subtitle backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
                       isExpanded
                         ? "border-red-300 bg-red-900/55 text-white"
                         : "border-red-700 bg-black/45 text-white/80 hover:bg-red-900/55 hover:text-white"
@@ -414,7 +592,7 @@ export function KeyFeatures() {
 
                   <button
                     type="button"
-                    className={`grid size-12 place-items-center rounded-full border text-white backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
+                    className={`grid size-12 place-items-center border text-white backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
                       isExpanded
                         ? "border-red-300 bg-red-900/55"
                         : "border-red-700 bg-black/45 hover:bg-red-900/55"
@@ -438,7 +616,7 @@ export function KeyFeatures() {
                     }`}
                   >
                     <div className="min-h-0">
-                      <div className="rounded-[1.25rem] border border-red-300 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-5 pb-5 pt-4 text-b1 leading-6 text-white backdrop-blur-md">
+                      <div className=" border border-red-300 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-5 pb-5 pt-4 text-b1 leading-6 text-white backdrop-blur-md">
                         {feature.body}
                       </div>
                     </div>
