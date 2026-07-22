@@ -13,6 +13,7 @@ import {
 const semanticTextSelector = "h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption";
 const rootSelector = ".page-dissolve-shell, #site-footer";
 const rangeHighlightName = "search-active-range-highlight";
+const rangeOverlayId = "search-active-range-highlight-overlay";
 
 function getSearchRoots() {
   const roots = Array.from(
@@ -130,7 +131,7 @@ function getTextPosition(
   element: HTMLElement,
   offset: number,
 ): { node: Text; offset: number } | null {
-  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+  const walker = window.document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
   let currentOffset = 0;
   let node = walker.nextNode();
 
@@ -191,7 +192,7 @@ function getRangeForRequest(
     return null;
   }
 
-  const range = document.createRange();
+  const range = window.document.createRange();
   range.setStart(start.node, start.offset);
   range.setEnd(end.node, end.offset);
 
@@ -203,40 +204,38 @@ function applyCssRangeHighlight(
   request: SearchRangeHighlightRequest,
   highlightName: string,
 ) {
-  const cssHighlights = CSS as typeof CSS & {
-    highlights?: {
-      delete: (name: string) => void;
-      set: (name: string, highlight: unknown) => void;
-    };
-  };
-  const HighlightConstructor = (
-    window as typeof window & { Highlight?: new (range: Range) => unknown }
-  ).Highlight;
-
-  if (!cssHighlights.highlights || !HighlightConstructor) {
-    return false;
-  }
-
   const range = getRangeForRequest(element, request);
 
   if (!range) {
     return false;
   }
 
-  if (!document.getElementById("search-range-highlight-style")) {
-    const style = document.createElement("style");
-    style.id = "search-range-highlight-style";
-    style.textContent = `
-      ::highlight(${highlightName}) {
-        background-color: rgb(var(--search-highlight-color) / 0.46);
-        color: inherit;
-      }
-    `;
-    document.head.append(style);
+  const rects = Array.from(range.getClientRects()).filter(
+    (rect) => rect.width > 0 && rect.height > 0,
+  );
+
+  if (rects.length === 0) {
+    return false;
   }
 
-  cssHighlights.highlights.delete(highlightName);
-  cssHighlights.highlights.set(highlightName, new HighlightConstructor(range));
+  CSS.highlights?.delete(highlightName);
+  window.document.getElementById(rangeOverlayId)?.remove();
+
+  const overlay = window.document.createElement("div");
+  overlay.id = rangeOverlayId;
+  overlay.setAttribute("aria-hidden", "true");
+
+  for (const rect of rects) {
+    const segment = window.document.createElement("span");
+    segment.className = "search-range-highlight-overlay";
+    segment.style.left = `${rect.left}px`;
+    segment.style.top = `${rect.top}px`;
+    segment.style.width = `${rect.width}px`;
+    segment.style.height = `${rect.height}px`;
+    overlay.append(segment);
+  }
+
+  window.document.body.append(overlay);
   return true;
 }
 
@@ -245,9 +244,9 @@ export function SearchDomTargetRegistrar() {
   const { registerSearchTarget } = useSearchNavigation();
 
   useEffect(() => {
-    const document = searchDocuments.find((entry) => entry.route === pathname);
+    const searchDocument = searchDocuments.find((entry) => entry.route === pathname);
 
-    if (!document) {
+    if (!searchDocument) {
       return;
     }
 
@@ -295,7 +294,7 @@ export function SearchDomTargetRegistrar() {
         !element.dataset.searchTargetId &&
         isSearchVisible(element),
     );
-    const semanticEntries = getSemanticTextEntries(document.targets);
+    const semanticEntries = getSemanticTextEntries(searchDocument.targets);
     const consumedElements = new WeakSet<HTMLElement>();
 
     for (const entry of semanticEntries) {
@@ -346,6 +345,7 @@ export function SearchDomTargetRegistrar() {
             };
 
             cssHighlights.highlights?.delete(rangeHighlightName);
+            window.document.getElementById(rangeOverlayId)?.remove();
           },
         }),
       );
@@ -353,7 +353,7 @@ export function SearchDomTargetRegistrar() {
       registeredIds.add(entry.highlightTargetId);
     }
 
-    for (const target of document.targets) {
+    for (const target of searchDocument.targets) {
       if (registeredIds.has(target.id)) {
         continue;
       }

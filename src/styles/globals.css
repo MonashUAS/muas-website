@@ -191,15 +191,29 @@
 }
 
 @keyframes search-highlight-pulse {
-  0%,
-  100% {
-    background-color: rgb(var(--search-highlight-color) / 0.42);
-    box-shadow: 0 0 0 0 rgb(var(--search-highlight-color) / 0.2);
+  0% {
+    background-color: rgb(var(--search-highlight-color) / 0);
+    box-shadow: 0 0 0 0 rgb(var(--search-highlight-color) / 0);
   }
 
-  50% {
-    background-color: rgb(var(--search-highlight-color) / 0.58);
-    box-shadow: 0 0 0 4px rgb(var(--search-highlight-color) / 0.18);
+  18% {
+    background-color: rgb(var(--search-highlight-color) / 0.52);
+    box-shadow: 0 0 0 2px rgb(var(--search-highlight-color) / 0.16);
+  }
+
+  46% {
+    background-color: rgb(var(--search-highlight-color) / 0.34);
+    box-shadow: 0 0 0 5px rgb(var(--search-highlight-color) / 0.1);
+  }
+
+  72% {
+    background-color: rgb(var(--search-highlight-color) / 0.5);
+    box-shadow: 0 0 0 3px rgb(var(--search-highlight-color) / 0.12);
+  }
+
+  100% {
+    background-color: rgb(var(--search-highlight-color) / 0);
+    box-shadow: 0 0 0 0 rgb(var(--search-highlight-color) / 0);
   }
 }
 
@@ -209,7 +223,7 @@
   padding-inline: 0.12rem;
   background-color: rgb(var(--search-highlight-color) / 0.42);
   box-shadow: 0 0 0 0 rgb(var(--search-highlight-color) / 0.2);
-  animation: search-highlight-pulse 0.9s ease-in-out 2;
+  animation: search-highlight-pulse 2.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   transition:
     background-color 0.7s ease,
     box-shadow 0.7s ease;
@@ -222,19 +236,32 @@
 }
 
 @keyframes search-target-ring {
-  0%,
-  100% {
+  0% {
+    outline-color: transparent;
+    box-shadow:
+      0 0 0 0 rgb(var(--search-highlight-color) / 0),
+      0 0 0 rgb(var(--search-highlight-color) / 0);
+  }
+
+  18% {
     outline-color: rgb(var(--search-highlight-color) / 0.86);
     box-shadow:
       0 0 0 4px rgb(var(--search-highlight-color) / 0.2),
       0 0 34px rgb(var(--search-highlight-color) / 0.22);
   }
 
-  50% {
+  48% {
     outline-color: rgb(var(--search-highlight-color) / 0.98);
     box-shadow:
       0 0 0 7px rgb(var(--search-highlight-color) / 0.2),
       0 0 44px rgb(var(--search-highlight-color) / 0.32);
+  }
+
+  100% {
+    outline-color: transparent;
+    box-shadow:
+      0 0 0 0 rgb(var(--search-highlight-color) / 0),
+      0 0 0 rgb(var(--search-highlight-color) / 0);
   }
 }
 
@@ -244,7 +271,7 @@
   box-shadow:
     0 0 0 4px rgb(var(--search-highlight-color) / 0.2),
     0 0 34px rgb(var(--search-highlight-color) / 0.22);
-  animation: search-target-ring 1s ease-in-out 2;
+  animation: search-target-ring 2.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   transition:
     outline-color 700ms ease,
     box-shadow 700ms ease;
@@ -262,7 +289,7 @@
   box-shadow:
     0 0 0 3px rgb(var(--search-highlight-color) / 0.18),
     0 0 24px rgb(var(--search-highlight-color) / 0.2);
-  animation: search-highlight-pulse 0.9s ease-in-out 2;
+  animation: search-highlight-pulse 2.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   transition:
     background-color 700ms ease,
     box-shadow 700ms ease;
@@ -280,7 +307,7 @@
   box-shadow: 0 0 0 2px rgb(var(--search-highlight-color) / 0.16);
   color: inherit;
   pointer-events: none;
-  animation: search-highlight-pulse 0.9s ease-in-out 2;
+  animation: search-highlight-pulse 2.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   transition:
     background-color 700ms ease,
     box-shadow 700ms ease;
@@ -292,10 +319,21 @@
   box-shadow: none;
 }
 
+.search-range-highlight-overlay {
+  position: fixed;
+  z-index: 9999;
+  border-radius: 0.18rem;
+  background-color: rgb(var(--search-highlight-color) / 0.46);
+  box-shadow: 0 0 0 2px rgb(var(--search-highlight-color) / 0.16);
+  pointer-events: none;
+  animation: search-highlight-pulse 2.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .search-target-highlight,
   .search-text-highlight,
-  .search-text-range-highlight {
+  .search-text-range-highlight,
+  .search-range-highlight-overlay {
     animation: none;
     transition: none;
   }

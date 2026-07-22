@@ -28,6 +28,7 @@ import {
 const HIGHLIGHT_MS = 2600;
 const TARGET_WAIT_MS = 4500;
 const PROVIDER_RANGE_HIGHLIGHT_NAME = "search-active-range-highlight";
+const PROVIDER_RANGE_OVERLAY_ID = "search-active-range-highlight-overlay";
 
 type SearchController = {
   reveal: (state: SearchRevealRequest) => void | Promise<void>;
@@ -212,24 +213,13 @@ function getCssHighlights() {
   }).highlights;
 }
 
-function ensureRangeHighlightStyle() {
-  if (document.getElementById("search-range-highlight-style")) {
-    return;
-  }
-
-  const style = document.createElement("style");
-  style.id = "search-range-highlight-style";
-  style.textContent = `
-    ::highlight(${PROVIDER_RANGE_HIGHLIGHT_NAME}) {
-      background-color: rgb(var(--search-highlight-color) / 0.46);
-      color: inherit;
-    }
-  `;
-  document.head.append(style);
+function deleteRangeOverlay() {
+  window.document.getElementById(PROVIDER_RANGE_OVERLAY_ID)?.remove();
 }
 
 function deleteCssHighlight(name: string) {
   getCssHighlights()?.delete(name);
+  deleteRangeOverlay();
 }
 
 function getRangeForRequest(
@@ -284,24 +274,37 @@ function applyElementRangeHighlight(
   element: HTMLElement,
   request: SearchRangeHighlightRequest,
 ) {
-  const highlights = getCssHighlights();
-  const HighlightConstructor = (
-    window as typeof window & { Highlight?: new (range: Range) => unknown }
-  ).Highlight;
-
-  if (!highlights || !HighlightConstructor) {
-    return false;
-  }
-
   const range = getRangeForRequest(element, request);
 
   if (!range) {
     return false;
   }
 
-  ensureRangeHighlightStyle();
-  highlights.delete(PROVIDER_RANGE_HIGHLIGHT_NAME);
-  highlights.set(PROVIDER_RANGE_HIGHLIGHT_NAME, new HighlightConstructor(range));
+  const rects = Array.from(range.getClientRects()).filter(
+    (rect) => rect.width > 0 && rect.height > 0,
+  );
+
+  if (rects.length === 0) {
+    return false;
+  }
+
+  deleteCssHighlight(PROVIDER_RANGE_HIGHLIGHT_NAME);
+
+  const overlay = document.createElement("div");
+  overlay.id = PROVIDER_RANGE_OVERLAY_ID;
+  overlay.setAttribute("aria-hidden", "true");
+
+  for (const rect of rects) {
+    const segment = document.createElement("span");
+    segment.className = "search-range-highlight-overlay";
+    segment.style.left = `${rect.left}px`;
+    segment.style.top = `${rect.top}px`;
+    segment.style.width = `${rect.width}px`;
+    segment.style.height = `${rect.height}px`;
+    overlay.append(segment);
+  }
+
+  document.body.append(overlay);
   return true;
 }
 
