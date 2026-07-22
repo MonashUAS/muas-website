@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { SearchableText } from "@/global-components/search/searchable-text";
 import {
   redbackFrames,
   SCROLL_SMOOTHING,
@@ -169,21 +170,27 @@ export function HomepageRedbackParallax() {
           }}
         >
           <div className="max-w-xl">
-            <h2
+            <SearchableText
+              as="h2"
               id="redback-homepage-heading"
+              searchId="home-redback-teaser-heading"
               className="text-[clamp(3rem,7vw,6.8rem)] font-medium leading-[0.9] tracking-[-0.05em] text-white"
             >
               Introducing Redback
-            </h2>
+            </SearchableText>
 
-            <p className="mt-7 max-w-lg text-b1 leading-7 text-blue-50/82 sm:text-subtitle">
-              Built for SUAS 2026, Redback is MUAS&apos; newest custom
-              quadcopter, designed for autonomous flight, aerial mapping, payload
-              delivery, endurance, and transportability.
-            </p>
+            <SearchableText
+              as="p"
+              searchId="home-redback-teaser-copy"
+              className="mt-7 max-w-lg text-b1 leading-7 text-blue-50/82 sm:text-subtitle"
+            >
+              {"Built for SUAS 2026, Redback is MUAS' newest custom quadcopter, designed for autonomous flight, aerial mapping, payload delivery, endurance, and transportability."}
+            </SearchableText>
 
             <Link
               href="/suas-2026-home"
+              data-search-target-id="home-redback-teaser-cta"
+              data-search-highlight-mode="text"
               className="mt-9 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-b1 text-blue-900 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
             >
               Learn More

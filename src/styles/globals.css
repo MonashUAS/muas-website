@@ -35,6 +35,8 @@
   --color-red-800: #760f0f;
   --color-red-900: #5a0c0c;
 
+  --search-highlight-color: 228 197 106;
+
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
@@ -191,13 +193,13 @@
 @keyframes search-highlight-pulse {
   0%,
   100% {
-    background-color: rgb(228 197 106 / 0.42);
-    box-shadow: 0 0 0 0 rgb(228 197 106 / 0.2);
+    background-color: rgb(var(--search-highlight-color) / 0.42);
+    box-shadow: 0 0 0 0 rgb(var(--search-highlight-color) / 0.2);
   }
 
   50% {
-    background-color: rgb(228 197 106 / 0.58);
-    box-shadow: 0 0 0 4px rgb(228 197 106 / 0.18);
+    background-color: rgb(var(--search-highlight-color) / 0.58);
+    box-shadow: 0 0 0 4px rgb(var(--search-highlight-color) / 0.18);
   }
 }
 
@@ -205,8 +207,8 @@
   border-radius: 0.2rem;
   color: inherit;
   padding-inline: 0.12rem;
-  background-color: rgb(228 197 106 / 0.42);
-  box-shadow: 0 0 0 0 rgb(228 197 106 / 0.2);
+  background-color: rgb(var(--search-highlight-color) / 0.42);
+  box-shadow: 0 0 0 0 rgb(var(--search-highlight-color) / 0.2);
   animation: search-highlight-pulse 0.9s ease-in-out 2;
   transition:
     background-color 0.7s ease,
@@ -219,10 +221,97 @@
   box-shadow: none !important;
 }
 
+@keyframes search-target-ring {
+  0%,
+  100% {
+    outline-color: rgb(var(--search-highlight-color) / 0.86);
+    box-shadow:
+      0 0 0 4px rgb(var(--search-highlight-color) / 0.2),
+      0 0 34px rgb(var(--search-highlight-color) / 0.22);
+  }
+
+  50% {
+    outline-color: rgb(var(--search-highlight-color) / 0.98);
+    box-shadow:
+      0 0 0 7px rgb(var(--search-highlight-color) / 0.2),
+      0 0 44px rgb(var(--search-highlight-color) / 0.32);
+  }
+}
+
+.search-target-highlight {
+  outline: 2px solid rgb(var(--search-highlight-color) / 0.86);
+  outline-offset: 6px;
+  box-shadow:
+    0 0 0 4px rgb(var(--search-highlight-color) / 0.2),
+    0 0 34px rgb(var(--search-highlight-color) / 0.22);
+  animation: search-target-ring 1s ease-in-out 2;
+  transition:
+    outline-color 700ms ease,
+    box-shadow 700ms ease;
+}
+
+.search-target-highlight-fading {
+  animation: none;
+  outline-color: transparent;
+  box-shadow: none;
+}
+
+.search-text-highlight {
+  border-radius: 0.2rem;
+  background-color: rgb(var(--search-highlight-color) / 0.42);
+  box-shadow:
+    0 0 0 3px rgb(var(--search-highlight-color) / 0.18),
+    0 0 24px rgb(var(--search-highlight-color) / 0.2);
+  animation: search-highlight-pulse 0.9s ease-in-out 2;
+  transition:
+    background-color 700ms ease,
+    box-shadow 700ms ease;
+}
+
+.search-text-highlight-fading {
+  animation: none;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.search-text-range-highlight {
+  border-radius: 0.18rem;
+  background-color: rgb(var(--search-highlight-color) / 0.46);
+  box-shadow: 0 0 0 2px rgb(var(--search-highlight-color) / 0.16);
+  color: inherit;
+  pointer-events: none;
+  animation: search-highlight-pulse 0.9s ease-in-out 2;
+  transition:
+    background-color 700ms ease,
+    box-shadow 700ms ease;
+}
+
+.search-text-range-highlight-fading {
+  animation: none;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-target-highlight,
+  .search-text-highlight,
+  .search-text-range-highlight {
+    animation: none;
+    transition: none;
+  }
+}
+
 .search-match-highlight-reduced {
   animation: none;
-  background-color: rgb(228 197 106 / 0.42);
+  background-color: rgb(var(--search-highlight-color) / 0.42);
   box-shadow: none;
+}
+
+.search-result-snippet-highlight {
+  border-radius: 0.2rem;
+  background-color: rgb(var(--search-highlight-color) / 0.3);
+  color: inherit;
+  padding-inline: 0.12rem;
 }
 
 /* Route shell opacity is driven by PageDissolveTransition (exit → navigate → enter). */

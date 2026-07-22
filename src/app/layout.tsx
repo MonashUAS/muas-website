@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Footer } from "@/global-components/layout/footer";
 import NavBar from "@/global-components/layout/sidebar/Sidebar";
-import { SearchMatchHighlight } from "@/global-components/search-match-highlight";
+import { SearchDomTargetRegistrar } from "@/global-components/search/search-dom-target-registrar";
+import { SearchNavigationProvider } from "@/global-components/search/search-navigation-provider";
 import { PageDissolveTransition } from "@/global-components/transitions/page-dissolve-transition";
 import "@/styles/globals.css";
 
@@ -41,17 +42,19 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full bg-background">
       <body className="flex min-h-dvh flex-col bg-background text-foreground antialiased">
-        <NavBar />
         <Suspense fallback={null}>
-          <SearchMatchHighlight />
+          <SearchNavigationProvider>
+            <NavBar />
+            <SearchDomTargetRegistrar />
+            {/* Offset page content below the fixed top navigation bar. */}
+            <div className="flex min-h-dvh flex-1 flex-col bg-background pt-20">
+              <main className="flex w-full flex-1 flex-col bg-background">
+                <PageDissolveTransition>{children}</PageDissolveTransition>
+              </main>
+              <Footer />
+            </div>
+          </SearchNavigationProvider>
         </Suspense>
-        {/* Offset page content below the fixed top navigation bar. */}
-        <div className="flex min-h-dvh flex-1 flex-col bg-background pt-20">
-          <main className="flex w-full flex-1 flex-col bg-background">
-            <PageDissolveTransition>{children}</PageDissolveTransition>
-          </main>
-          <Footer />
-        </div>
       </body>
     </html>
   );

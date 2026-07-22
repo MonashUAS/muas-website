@@ -1,9 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { FilterPillNav } from "@/global-components/filter-pill-nav";
+import {
+  useSearchNavigation,
+  useSearchRevealController,
+} from "@/global-components/search/search-navigation-provider";
+import { searchSlug } from "@/lib/search/content";
 import { techSpecPanels } from "./tech-specs-data";
 import type { TechSpecPanelMetric } from "./tech-specs-data";
 
@@ -70,8 +75,11 @@ export function TechSpecs() {
 
   const transitionTimer = useRef<number | null>(null);
   const preloadGeneration = useRef(0);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const { registerSearchTarget } = useSearchNavigation();
 
   const activePanel = techSpecPanels[displayedIndex];
+  const activePanelSlug = searchSlug(activePanel.navTitle);
   const emptyMetricSlotCount = Math.max(
     0,
     metricSlotCount - activePanel.metrics.length,
@@ -88,47 +96,111 @@ export function TechSpecs() {
     };
   }, []);
 
-  const changePanel = (index: number) => {
-    if (index === activeIndex || isDissolving) {
-      return;
-    }
-
-    const nextPanel = techSpecPanels[index];
-    const nextImageSrc = resolvePanelImageSrc(
-      nextPanel.image.src,
-      failedImageSources,
-    );
-
-    setActiveIndex(index);
-    setIsDissolving(true);
-
-    if (transitionTimer.current !== null) {
-      window.clearTimeout(transitionTimer.current);
-    }
-
-    const generation = ++preloadGeneration.current;
-
-    const minimumDissolve = new Promise<void>((resolve) => {
-      transitionTimer.current = window.setTimeout(resolve, dissolveMs);
-    });
-
-    void Promise.all([preloadImage(nextImageSrc), minimumDissolve]).then(() => {
-      if (generation !== preloadGeneration.current) {
+  const changePanel = useCallback(
+    (index: number) => {
+      if (index === activeIndex || isDissolving) {
         return;
       }
 
-      setDisplayedIndex(index);
-      setVisibleImageSrc(nextImageSrc);
+      const nextPanel = techSpecPanels[index];
+      const nextImageSrc = resolvePanelImageSrc(
+        nextPanel.image.src,
+        failedImageSources,
+      );
 
-      window.requestAnimationFrame(() => {
+      setActiveIndex(index);
+      setIsDissolving(true);
+
+      if (transitionTimer.current !== null) {
+        window.clearTimeout(transitionTimer.current);
+      }
+
+      const generation = ++preloadGeneration.current;
+
+      const minimumDissolve = new Promise<void>((resolve) => {
+        transitionTimer.current = window.setTimeout(resolve, dissolveMs);
+      });
+
+      void Promise.all([preloadImage(nextImageSrc), minimumDissolve]).then(() => {
         if (generation !== preloadGeneration.current) {
           return;
         }
 
-        setIsDissolving(false);
+        setDisplayedIndex(index);
+        setVisibleImageSrc(nextImageSrc);
+
+        window.requestAnimationFrame(() => {
+          if (generation !== preloadGeneration.current) {
+            return;
+          }
+
+          setIsDissolving(false);
+        });
+      });
+    },
+    [activeIndex, failedImageSources, isDissolving],
+  );
+
+  const searchController = useMemo(
+    () => ({
+      reveal: (state: {
+        interactions?: Array<{ type: string; groupId: string; value: string }>;
+      }) => {
+        const interaction = state.interactions?.find(
+          (item) =>
+            item.type === "pill" &&
+            item.groupId === "technical-specifications",
+        );
+
+        if (!interaction) {
+          return;
+        }
+
+        const nextIndex = techSpecPanels.findIndex(
+          (panel) => searchSlug(panel.navTitle) === interaction.value,
+        );
+
+        if (nextIndex >= 0) {
+          changePanel(nextIndex);
+        }
+      },
+    }),
+    [changePanel],
+  );
+
+  useSearchRevealController("technical-specifications", searchController);
+
+  useEffect(() => {
+    const root = sectionRef.current;
+
+    if (!root) {
+      return;
+    }
+
+    const cleanups = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-search-target-id]"),
+    ).map((element) => {
+      const id = element.dataset.searchTargetId;
+
+      if (!id) {
+        return () => undefined;
+      }
+
+      return registerSearchTarget(id, {
+        element,
+        highlightMode:
+          element.dataset.searchHighlightMode === "component"
+            ? "component"
+            : "text",
+        isReady: () =>
+          !isDissolving &&
+          element.getClientRects().length > 0 &&
+          element.closest("[aria-hidden='true']") === null,
       });
     });
-  };
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }, [activePanelSlug, isDissolving, registerSearchTarget]);
 
   const handleImageError = () => {
     setFailedImageSources((sources) =>
@@ -142,10 +214,16 @@ export function TechSpecs() {
   return (
     <section
       id="technical-specifications"
+      ref={sectionRef}
       className="scroll-mt-10 bg-black-500 px-6 pb-4 pt-10 text-white sm:pb-8 sm:pt-12 lg:px-14 lg:pb-10 lg:pt-16"
     >
       <div className="mx-auto w-full max-w-7xl">
-        <h2 className={`mb-5 text-center sm:mb-6 lg:mb-8 ${sectionHeadingClass}`}>
+        <h2
+          data-search-target-id="technical-specifications-heading"
+          data-search-managed="true"
+          data-search-highlight-mode="text"
+          className={`mb-5 text-center sm:mb-6 lg:mb-8 ${sectionHeadingClass}`}
+        >
           Technical Specifications
         </h2>
 
@@ -154,6 +232,9 @@ export function TechSpecs() {
           items={techSpecPillItems}
           activeId={String(activeIndex)}
           onSelect={(id) => changePanel(Number(id))}
+          getSearchTargetId={(item) =>
+            `tech-spec-${searchSlug(item.label)}-nav`
+          }
         />
 
         <div
@@ -164,16 +245,33 @@ export function TechSpecs() {
           }`}
         >
           <div className="relative z-10 order-2 flex min-h-0 flex-col py-2 lg:order-1 lg:h-full lg:py-6 lg:pr-10">
-            <h3 className="text-[clamp(1.65rem,5vw,2.4rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white lg:text-[clamp(2rem,3vw,3rem)]">
+            <h3
+              data-search-target-id={`tech-spec-${activePanelSlug}-heading`}
+              data-search-managed="true"
+              data-search-highlight-mode="text"
+              className="text-[clamp(1.65rem,5vw,2.4rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white lg:text-[clamp(2rem,3vw,3rem)]"
+            >
               {activePanel.title}
             </h3>
 
             <div className="mt-3 min-h-[2.85rem] space-y-1 text-sm leading-tight text-white/68 sm:text-base lg:mt-4 lg:min-h-[3.25rem] lg:text-h7">
               {activePanel.kicker ? (
-                <p>{activePanel.kicker}</p>
+                <p
+                  data-search-target-id={`tech-spec-${activePanelSlug}-kicker`}
+                  data-search-managed="true"
+                  data-search-highlight-mode="text"
+                >
+                  {activePanel.kicker}
+                </p>
               ) : null}
 
-              <p>{activePanel.subtitle}</p>
+              <p
+                data-search-target-id={`tech-spec-${activePanelSlug}-subtitle`}
+                data-search-managed="true"
+                data-search-highlight-mode="text"
+              >
+                {activePanel.subtitle}
+              </p>
             </div>
 
             {/*
@@ -195,6 +293,7 @@ export function TechSpecs() {
                 <SpecPanelMetric
                   key={metric.label}
                   metric={metric}
+                  panelSlug={activePanelSlug}
                 />
               ))}
               {Array.from({ length: emptyMetricSlotCount }).map((_, index) => (
@@ -226,18 +325,30 @@ export function TechSpecs() {
 
 function SpecPanelMetric({
   metric,
+  panelSlug,
 }: {
   metric: TechSpecPanelMetric;
+  panelSlug: string;
 }) {
+  const metricSlug = searchSlug(metric.label);
+
   return (
     <div className="flex h-full min-h-0 flex-col justify-between border border-white/10 bg-white/[0.04] p-2.5 shadow-[0_18px_55px_rgba(0,0,0,0.18)] sm:p-3.5 lg:p-4">
       <p
+        data-search-target-id={`tech-spec-${panelSlug}-${metricSlug}-value`}
+        data-search-managed="true"
+        data-search-highlight-mode="text"
         className={`inline-block max-w-full break-words pb-[0.06em] pr-[0.08em] text-[clamp(0.88rem,3.5vw,1.12rem)] font-black leading-[1.02] tracking-tight sm:text-[clamp(0.95rem,2.15vw,1.28rem)] lg:text-[clamp(0.98rem,1.18vw,1.42rem)] ${metricGradientClass}`}
       >
         {metric.value}
       </p>
 
-      <p className="mt-1.5 text-[0.68rem] leading-[1.08] text-white/68 sm:mt-2 sm:text-xs lg:text-sm">
+      <p
+        data-search-target-id={`tech-spec-${panelSlug}-${metricSlug}-label`}
+        data-search-managed="true"
+        data-search-highlight-mode="text"
+        className="mt-1.5 text-[0.68rem] leading-[1.08] text-white/68 sm:mt-2 sm:text-xs lg:text-sm"
+      >
         {metric.label}
       </p>
     </div>

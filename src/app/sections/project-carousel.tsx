@@ -1,12 +1,24 @@
 "use client";
 
 import Image from "next/image";
-import { type PointerEvent, useCallback, useMemo, useRef, useState } from "react";
+import {
+  type PointerEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import type { SectionProject } from "@/app/sections/section-data";
+import {
+  useSearchNavigation,
+  useSearchRevealController,
+} from "@/global-components/search/search-navigation-provider";
 
 type ProjectCarouselProps = {
   projects: SectionProject[];
+  sectionSlug: string;
 };
 
 const carouselTransitionMs = 700;
@@ -14,9 +26,11 @@ const slideGapPx = 24;
 const swipeThresholdPx = 48;
 
 // ProjectCarousel follows the homepage carousel pattern for section project slides.
-export function ProjectCarousel({ projects }: ProjectCarouselProps) {
+export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const dragStartXRef = useRef<number | null>(null);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+  const { registerSearchTarget } = useSearchNavigation();
   const slideIndexes = useMemo(
     () => Array.from({ length: projects.length }, (_, index) => index),
     [projects.length],
@@ -31,6 +45,79 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
     },
     [projects.length],
   );
+
+  useSearchRevealController(
+    `${sectionSlug}-projects-carousel`,
+    useMemo(
+      () => ({
+        reveal: (state) => {
+          const carouselInteraction = state.interactions?.find(
+            (interaction) =>
+              interaction.type === "carousel" &&
+              interaction.groupId === `${sectionSlug}-projects-carousel`,
+          );
+
+          if (
+            !carouselInteraction &&
+            state.carousel?.id !== `${sectionSlug}-projects-carousel`
+          ) {
+            return;
+          }
+
+          const nextIndex = projects.findIndex(
+            (project) =>
+              project.slug ===
+              (carouselInteraction?.value ?? state.carousel?.slideId),
+          );
+
+          if (nextIndex >= 0) {
+            setActiveIndex(nextIndex);
+          }
+        },
+      }),
+      [projects, sectionSlug],
+    ),
+  );
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    const activeProject = projects[activeIndex];
+
+    if (!carousel || !activeProject) {
+      return;
+    }
+
+    const targetIds = [
+      {
+        id: `${sectionSlug}-project-${activeProject.slug}`,
+        mode: "component" as const,
+      },
+      {
+        id: `${sectionSlug}-project-${activeProject.slug}-heading`,
+        mode: "text" as const,
+      },
+      {
+        id: `${sectionSlug}-project-${activeProject.slug}-description`,
+        mode: "text" as const,
+      },
+    ];
+    const cleanups = targetIds.flatMap(({ id, mode }) => {
+      const element = carousel.querySelector<HTMLElement>(
+        `[data-search-target-id="${id}"]`,
+      );
+
+      return element
+        ? [
+            registerSearchTarget(id, {
+              element,
+              highlightMode: mode,
+            }),
+          ]
+        : [];
+    });
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }, [activeIndex, projects, registerSearchTarget, sectionSlug]);
 
   const goToPreviousSlide = () => {
     navigateToSlide(activeIndex - 1);
@@ -77,6 +164,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
     >
       <div className="relative px-10 sm:px-12 lg:px-14">
         <div
+          ref={carouselRef}
           className="overflow-hidden rounded-[1.5rem] border border-white/12 bg-white/[0.045]"
           onPointerCancel={() => {
             dragStartXRef.current = null;
@@ -96,8 +184,14 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
               <div
                 className="h-[min(70svh,36rem)] shrink-0 basis-full overflow-hidden rounded-[1.5rem] sm:h-[min(72svh,38rem)] lg:h-[min(68svh,40rem)]"
                 key={project.name}
+                data-search-target-id={`${sectionSlug}-project-${project.slug}`}
+                data-search-managed="true"
               >
-                <ProjectSlide index={index} project={project} />
+                <ProjectSlide
+                  index={index}
+                  project={project}
+                  sectionSlug={sectionSlug}
+                />
               </div>
             ))}
           </div>
@@ -147,10 +241,11 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
 type ProjectSlideProps = {
   index: number;
   project: SectionProject;
+  sectionSlug: string;
 };
 
 // ProjectSlide keeps every project inside one fixed-size card layout.
-function ProjectSlide({ index, project }: ProjectSlideProps) {
+function ProjectSlide({ index, project, sectionSlug }: ProjectSlideProps) {
   return (
     <article className="grid h-full grid-rows-[minmax(0,1.15fr)_minmax(0,0.85fr)] bg-[linear-gradient(155deg,rgba(255,255,255,0.08)_0%,rgba(84,134,200,0.09)_44%,rgba(0,31,73,0.38)_100%)] text-white lg:grid-cols-[minmax(0,0.58fr)_minmax(320px,0.42fr)] lg:grid-rows-none">
       <div className="relative min-h-0 overflow-hidden bg-blue-900">
@@ -171,9 +266,20 @@ function ProjectSlide({ index, project }: ProjectSlideProps) {
 
       <div className="flex min-h-0 flex-col justify-center overflow-hidden p-6 sm:p-8 lg:p-10">
         <h3 className="shrink-0 break-words text-h6 font-medium leading-[0.95] tracking-[-0.05em] text-white sm:text-h5 lg:text-h4">
-          {project.name}
+          <span
+            data-search-target-id={`${sectionSlug}-project-${project.slug}-heading`}
+            data-search-managed="true"
+            data-search-highlight-mode="text"
+          >
+            {project.name}
+          </span>
         </h3>
-        <p className="mt-5 min-h-0 overflow-hidden text-b2 leading-relaxed text-blue-50/78 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:6] sm:text-b1 sm:[-webkit-line-clamp:8] lg:[-webkit-line-clamp:12]">
+        <p
+          data-search-target-id={`${sectionSlug}-project-${project.slug}-description`}
+          data-search-managed="true"
+          data-search-highlight-mode="text"
+          className="mt-5 min-h-0 overflow-hidden text-b2 leading-relaxed text-blue-50/78 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:6] sm:text-b1 sm:[-webkit-line-clamp:8] lg:[-webkit-line-clamp:12]"
+        >
           {project.description}
         </p>
       </div>

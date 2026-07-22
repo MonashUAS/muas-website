@@ -1,7 +1,11 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  useSearchNavigation,
+  useSearchTarget,
+} from "@/global-components/search/search-navigation-provider";
 import type { Drone } from "./drone-data";
 import { DroneImageCarousel } from "./drone-image-carousel";
 import { DroneVisual } from "./drone-visual";
@@ -16,6 +20,36 @@ type DroneDetailsModalProps = {
 export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const modalRef = useRef<HTMLElement | null>(null);
+  const { registerSearchTarget } = useSearchNavigation();
+
+  useSearchTarget(`drone-${drone.slug}`, modalRef);
+
+  useEffect(() => {
+    if (!modalRef.current) {
+      return;
+    }
+
+    const cleanups = Array.from(
+      modalRef.current.querySelectorAll<HTMLElement>("[data-search-target-id]"),
+    ).flatMap((element) => {
+      const targetId = element.dataset.searchTargetId;
+
+      return targetId && targetId !== `drone-${drone.slug}`
+        ? [
+            registerSearchTarget(targetId, {
+              element,
+              highlightMode:
+                element.dataset.searchHighlightMode === "text"
+                  ? "text"
+                  : "component",
+            }),
+          ]
+        : [];
+    });
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }, [drone.slug, registerSearchTarget]);
 
   // Locks the page behind the modal and starts the reveal animation.
   useEffect(() => {
@@ -44,6 +78,8 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
     >
       {/* modal content */}
       <article
+        ref={modalRef}
+        data-search-target-id={`drone-${drone.slug}`}
         className="relative mx-auto min-h-[calc(100vh-4rem)] max-w-6xl border-2 border-blue-500 bg-white px-6 py-14 text-center shadow-2xl transition-[clip-path,transform] duration-800 ease-out sm:px-12 lg:px-24"
         style={{
           clipPath: isOpen && !isClosing ? "inset(0 0 0 0)" : "inset(0 0 100% 0)",
@@ -59,13 +95,23 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
           <X aria-hidden size={34} strokeWidth={3} />
         </button>
 
-        <h2 className="text-h5 font-black uppercase leading-none text-blue-900 sm:text-h4 tracking-[-0.05em]">
+        <h2
+          data-search-target-id={`drone-${drone.slug}-heading`}
+          data-search-highlight-mode="text"
+          className="text-h5 font-black uppercase leading-none text-blue-900 sm:text-h4 tracking-[-0.05em]"
+        >
           {drone.name}.
         </h2>
 
         <div className="mx-auto mt-8 max-w-2xl space-y-5 text-b2 text-black-500 sm:text-b1">
-          {drone.description.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+          {drone.description.map((paragraph, index) => (
+            <p
+              key={paragraph}
+              data-search-target-id={`drone-${drone.slug}-description-${index}`}
+              data-search-highlight-mode="text"
+            >
+              {paragraph}
+            </p>
           ))}
         </div>
 
@@ -74,8 +120,16 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
         </div>
 
         <div className="mx-auto mt-10 grid max-w-4xl gap-10 sm:grid-cols-2 ">
-          <SpecList specs={drone.features} title="Key Features" />
-          <SpecList specs={drone.dimensions} title="Dimensions" />
+          <SpecList
+            specs={drone.features}
+            title="Key Features"
+            searchPrefix={`drone-${drone.slug}-feature`}
+          />
+          <SpecList
+            specs={drone.dimensions}
+            title="Dimensions"
+            searchPrefix={`drone-${drone.slug}-dimension`}
+          />
         </div>
 
         {drone.gallery ? <DroneImageCarousel drone={drone} images={drone.gallery} /> : null}

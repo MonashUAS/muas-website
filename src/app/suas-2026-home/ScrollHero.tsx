@@ -6,6 +6,7 @@ import {
   type ScrollHeroLine,
   type TextWindow,
 } from "./scroll-hero-data";
+import { searchSlug } from "@/lib/search/content";
 import LoadingScreen from "./LoadingScreen"
 
 const FRAME_COUNT = 420;
@@ -18,6 +19,12 @@ const SCROLL_LENGTH_VH = 1200;
 // Adjust this percentage to fine-tune the animation pan between frames 160 and 342.
 // 0% is the absolute left edge, 50% is dead center. 
 const ANIMATION_PAN_OFFSET = "35%";
+
+function getLineText(line: ScrollHeroLine) {
+  return typeof line === "string"
+    ? line
+    : line.segments.map((segment) => segment.text).join("");
+}
 
 // ScrollHero maps scroll progress to a frame sequence and timed copy overlays.
 export function ScrollHero() {
@@ -153,7 +160,12 @@ function ScrollHeroText({
         className={`${copy.className} ${gradientGuardClass} font-medium leading-tight tracking-tighter ${textColorClass}`}
       >
         {copy.lines.map((line, index) => (
-          <span key={index} className="block">
+          <span
+            key={index}
+            className="block"
+            data-search-target-id={`suas-hero-${copy.key}-${searchSlug(getLineText(line))}`}
+            data-search-highlight-mode="text"
+          >
             <ScrollHeroLineText line={line} />
           </span>
         ))}

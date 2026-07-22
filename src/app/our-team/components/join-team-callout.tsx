@@ -4,7 +4,10 @@ import { temporaryImage } from "../data/team-data";
 
 export function JoinTeamCallout() {
   return (
-    <section className="relative overflow-hidden border-t border-white/10 py-16 sm:py-20 lg:py-24">
+    <section
+      id="join-team-callout"
+      className="relative overflow-hidden border-t border-white/10 py-16 sm:py-20 lg:py-24"
+    >
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_45%,rgba(0,74,173,0.22),transparent_34%)]" />
 
       <div className="mx-auto w-full max-w-[1720px] px-5 sm:px-8 lg:px-12">
@@ -38,6 +41,8 @@ export function JoinTeamCallout() {
 
               <Link
                 href="/recruitment"
+                data-search-target-id="join-team-callout-cta"
+                data-search-highlight-mode="text"
                 className="group mt-9 inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-white px-7 py-3 text-b1 font-bold text-blue-900 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
               >
                 Apply now

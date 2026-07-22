@@ -22,6 +22,7 @@ export function Projects() {
     () =>
       projects.map((project) => ({
         key: project.slug,
+        searchTargetId: `redback-project-${project.slug}`,
         content: <ProjectSlide project={project} />,
       })),
     [],
@@ -58,6 +59,7 @@ export function Projects() {
               }
               initialIndex={INITIAL_PROJECT_INDEX}
               onActiveIndexChange={handleActiveIndexChange}
+              searchControllerId="redback-projects-carousel"
             />
           </div>
 

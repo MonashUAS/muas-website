@@ -2,54 +2,10 @@
 
 import type { FormEvent } from "react";
 import { useState } from "react";
-import {
-  LuArrowUpRight,
-  LuFacebook,
-  LuInstagram,
-  LuLinkedin,
-  LuMail,
-  LuYoutube,
-} from "react-icons/lu";
+import { LuArrowUpRight } from "react-icons/lu";
+import { socialCards } from "./contact-data";
 
 type SubmissionState = "idle" | "loading" | "success" | "error";
-
-const socialCards = [
-  {
-    label: "Facebook",
-    action: "Follow us",
-    href: "https://www.facebook.com/MonashUAS/",
-    icon: LuFacebook,
-    external: true,
-  },
-  {
-    label: "Instagram",
-    action: "Follow us",
-    href: "https://www.instagram.com/monash.uas/",
-    icon: LuInstagram,
-    external: true,
-  },
-  {
-    label: "LinkedIn",
-    action: "Connect with us",
-    href: "https://au.linkedin.com/company/monashuas",
-    icon: LuLinkedin,
-    external: true,
-  },
-  {
-    label: "YouTube",
-    action: "Subscribe",
-    href: "https://www.youtube.com/@MonashUAS",
-    icon: LuYoutube,
-    external: true,
-  },
-  {
-    label: "Email",
-    action: "contact@monashuas.org",
-    href: "mailto:contact@monashuas.org",
-    icon: LuMail,
-    external: false,
-  },
-];
 
 export default function ContactUsPage() {
   const [submissionState, setSubmissionState] =
@@ -109,7 +65,12 @@ export default function ContactUsPage() {
         <div className="relative mx-auto flex w-full max-w-[1720px] flex-1 flex-col px-5 sm:px-8 lg:px-12">
           <div className="shrink-0">
             <h1 className="text-[clamp(3.35rem,9vw,6.5rem)] font-medium leading-[0.86] tracking-[-0.06em] text-white">
-              Get in Touch
+              <span
+                data-search-target-id="contact-heading"
+                data-search-highlight-mode="text"
+              >
+                Get in Touch
+              </span>
             </h1>
           </div>
 
@@ -151,7 +112,12 @@ export default function ContactUsPage() {
                 htmlFor="message"
               >
                 <span className="text-[0.68rem] font-medium uppercase tracking-[0.18em] text-blue-50/62 sm:text-b2">
-                  Message
+                  <span
+                    data-search-target-id="contact-field-message"
+                    data-search-highlight-mode="text"
+                  >
+                    Message
+                  </span>
                 </span>
 
                 <textarea
@@ -166,6 +132,8 @@ export default function ContactUsPage() {
               <button
                 type="submit"
                 disabled={submissionState === "loading"}
+                data-search-target-id="contact-submit"
+                data-search-highlight-mode="text"
                 className="mt-3 inline-flex min-h-10 w-fit shrink-0 items-center justify-center rounded-full bg-white px-5 text-b1 font-medium text-blue-950 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 disabled:cursor-not-allowed disabled:bg-white/60 disabled:text-blue-950/70 motion-reduce:transition-none sm:mt-4 sm:px-6"
               >
                 {submissionState === "loading"
@@ -211,7 +179,12 @@ export default function ContactUsPage() {
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <h2 className="text-[clamp(2.6rem,6vw,5.4rem)] font-medium leading-[0.9] tracking-[-0.05em]">
-              Find Us Online
+              <span
+                data-search-target-id="find-us-online-heading"
+                data-search-highlight-mode="text"
+              >
+                Find Us Online
+              </span>
             </h2>
           </div>
 
@@ -223,6 +196,7 @@ export default function ContactUsPage() {
                 <a
                   key={card.label}
                   href={card.href}
+                  data-search-target-id={`contact-${card.label.toLowerCase()}`}
                   target={card.external ? "_blank" : undefined}
                   rel={card.external ? "noopener noreferrer" : undefined}
                   className="group flex min-h-28 flex-col justify-between rounded-[1.25rem] border border-white/10 bg-white/[0.055] p-4 text-white outline-none transition-[transform,background-color,border-color] duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.085] focus-visible:-translate-y-1 focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none sm:min-h-40 sm:p-5 lg:min-h-48"
@@ -242,10 +216,19 @@ export default function ContactUsPage() {
 
                   <div>
                     <h3 className="text-b1 font-medium tracking-[-0.03em] sm:text-subtitle lg:text-h6">
-                      {card.label}
+                      <span
+                        data-search-target-id={`contact-${card.label.toLowerCase()}-label`}
+                        data-search-highlight-mode="text"
+                      >
+                        {card.label}
+                      </span>
                     </h3>
 
-                    <p className="mt-1 text-sm leading-5 text-blue-50/64 sm:mt-1.5 sm:text-b1">
+                    <p
+                      data-search-target-id={`contact-${card.label.toLowerCase()}-action`}
+                      data-search-highlight-mode="text"
+                      className="mt-1 text-sm leading-5 text-blue-50/64 sm:mt-1.5 sm:text-b1"
+                    >
                       {card.action}
                     </p>
                   </div>
@@ -279,7 +262,12 @@ function ContactField({
   return (
     <label className="block" htmlFor={id}>
       <span className="text-[0.68rem] font-medium uppercase tracking-[0.18em] text-blue-50/62 sm:text-b2">
-        {label}
+        <span
+          data-search-target-id={`contact-field-${id}`}
+          data-search-highlight-mode="text"
+        >
+          {label}
+        </span>
       </span>
 
       <input

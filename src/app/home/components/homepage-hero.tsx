@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { SearchableText } from "@/global-components/search/searchable-text";
 import { heroSlides } from "../data/hero-slides";
 import { usePrefersReducedMotion } from "../utils/use-prefers-reduced-motion";
 
@@ -141,19 +142,27 @@ export function HomepageHero() {
           className="h-auto w-[190px] sm:w-[240px] lg:w-[280px]"
         />
 
-<p className="mt-8 text-[clamp(2.4rem,7vw,5.6rem)] font-black leading-[0.95] tracking-[-0.05em] text-white">
+        <SearchableText
+          as="p"
+          searchId="home-hero-heading"
+          className="mt-8 text-[clamp(2.4rem,7vw,5.6rem)] font-black leading-[0.95] tracking-[-0.05em] text-white"
+        >
           Redefining Drone Technology
-        </p>
+        </SearchableText>
 
         <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
           <Link
             href="/our-drones"
+            data-search-target-id="home-hero-explore-drones"
+            data-search-highlight-mode="text"
             className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-b1 text-blue-900 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
           >
             Explore Our Drones
           </Link>
           <Link
             href="/recruitment"
+            data-search-target-id="home-hero-join-team"
+            data-search-highlight-mode="text"
             className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#051b5e] px-6 text-b1 text-white transition-colors duration-300 hover:bg-[#0b2a7a] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
           >
             Join The Team
