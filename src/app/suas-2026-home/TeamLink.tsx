@@ -59,7 +59,7 @@ export function TeamLink() {
   return (
     <section
       id="redback-team-link"
-      className="relative flex min-h-[calc(100vh-5rem)] scroll-mt-20 items-center justify-center bg-black-500 py-16 sm:py-20 lg:py-24"
+      className="relative flex min-h-[72svh] scroll-mt-20 items-center justify-center bg-black-500 pb-14 pt-8 sm:min-h-[76svh] sm:pb-16 sm:pt-10 lg:min-h-[82svh] lg:pb-20 lg:pt-12"
     >
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_45%,rgba(0,74,173,0.22),transparent_34%)]" />
 

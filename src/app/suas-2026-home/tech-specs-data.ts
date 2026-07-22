@@ -98,8 +98,8 @@ export const techSpecPanels: TechSpecPanel[] = [
       { label: "Motor Model", value: "M6C10-150KV" },
       { label: "ESC Rating", value: "60A" },
       { label: "Propellor Size", value: "21'" },
-      { label: "Propulsion Battery Capacity", value: "599.4Wh (6 x 99.9Wh)" },
-      { label: "Avionics Battery Capacity", value: "32.56Wh (2.2 x 14.8Wh)" },
+      { label: "Propulsion Battery", value: "599.4Wh (6 x 99.9Wh)" },
+      { label: "Avionics Battery", value: "32.56Wh (2.2 x 14.8Wh)" },
     ],
   },
   {
@@ -112,8 +112,8 @@ export const techSpecPanels: TechSpecPanel[] = [
     },
     metrics: [
       { label: "Camera", value: "SIYI A8 Mini Gimbal Camera" },
-      { label: "Object Detection Model", value: "YOLOv8" },
-      { label: "Risk Mapping Software", value: "Microsoft Image Composite Editor (MICE) and Open Drone Model (ODM)" },
+      { label: "Detection Model", value: "YOLOv8" },
+      { label: "Mapping Software", value: "Microsoft Image Composite Editor (MICE) and Open Drone Model (ODM)" },
       { label: "Ground Sample Distance", value: "6cm/pixel" },
       { label: "Map Resolution", value: "1920 x 1080p" },
     ],
@@ -127,7 +127,7 @@ export const techSpecPanels: TechSpecPanel[] = [
       alt: "Redback lifeline payload delivery detail",
     },
     metrics: [
-      { label: "Payload Delivery System", value: "Tethered with electromagnetic braking" },
+      { label: "Tethered Payload Delivery System", value: "Electromagnetic Braking" },
       { label: "Payload Capacity", value: "14.5oz (410g)" },
     ],
   },

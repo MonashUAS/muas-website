@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Bounds,
@@ -17,6 +17,9 @@ import { keyFeatures } from "./key-features-data";
 import type { KeyFeature } from "./key-features-data";
 
 import LoadingScreen from "./LoadingScreen";
+
+const sectionHeadingClass =
+  "text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white";
 
 const defaultMedia: KeyFeature["media"] = {
   src: "/models/redback.glb",
@@ -70,6 +73,19 @@ function ModelCanvas({ src }: { src: string }) {
   );
 }
 
+function StaticModelFallback() {
+  return (
+    <Image
+      src="/models/redback.png"
+      alt="Redback rendering"
+      fill
+      sizes="(max-width: 1024px) 100vw, 50vw"
+      className="object-contain p-4 md:p-12"
+      draggable={false}
+    />
+  );
+}
+
 // Plays MP4 feature media automatically inside the same viewer frame.
 function FeatureVideo({ src }: { src: string }) {
   return (
@@ -90,16 +106,19 @@ export function ModelViewer({
   className,
   media,
   isDesktop,
+  canUseWebGL,
   isDissolving = false,
 }: {
   className?: string;
   media: KeyFeature["media"];
   isDesktop: boolean;
+  canUseWebGL: boolean;
   isDissolving?: boolean;
 }) {
   const { progress } = useProgress();
   const modelSrc = media.type === "model" ? media.src : defaultMedia.src;
-  const isModelLoading = media.type === "model" && progress < 100;
+  const canRenderModelCanvas = isDesktop && canUseWebGL;
+  const isModelLoading = canRenderModelCanvas && media.type === "model" && progress < 100;
 
   useSuppressKnownThreeNoise();
 
@@ -115,7 +134,7 @@ export function ModelViewer({
           isDesktop ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        {isDesktop && (
+        {canRenderModelCanvas ? (
           <>
             <ModelCanvas src={modelSrc} />
             <ModelInteractionMask />
@@ -126,6 +145,8 @@ export function ModelViewer({
               <span>Scroll to zoom</span>
             </div>
           </>
+        ) : (
+          isDesktop && <StaticModelFallback />
         )}
       </div>
 
@@ -135,16 +156,7 @@ export function ModelViewer({
           !isDesktop ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        {!isDesktop && (
-          <Image
-            src="/models/redback.png"
-            alt="Redback rendering"
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-contain p-4 md:p-12"
-            draggable={false}
-          />
-        )}
+        {!isDesktop && <StaticModelFallback />}
       </div>
 
       {/* OVERLAY VIDEO LAYER: Crossfades smoothly over base layers */}
@@ -156,6 +168,49 @@ export function ModelViewer({
         {media.type === "video" && <FeatureVideo src={media.src} />}
       </div>
     </div>
+  );
+}
+
+let webGLSupport: boolean | null = null;
+
+function supportsWebGL() {
+  if (typeof window === "undefined") return false;
+  if (webGLSupport !== null) return webGLSupport;
+
+  try {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("webgl2", {
+      alpha: true,
+      depth: true,
+      stencil: false,
+      antialias: true,
+      premultipliedAlpha: true,
+      preserveDrawingBuffer: false,
+      powerPreference: "default",
+      failIfMajorPerformanceCaveat: false,
+    });
+
+    webGLSupport = Boolean(context);
+    return webGLSupport;
+  } catch {
+    webGLSupport = false;
+    return false;
+  }
+}
+
+function useIsMounted() {
+  return useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
+}
+
+function useWebGLSupport() {
+  return useSyncExternalStore(
+    () => () => undefined,
+    supportsWebGL,
+    () => false,
   );
 }
 
@@ -232,8 +287,8 @@ export function KeyFeatures() {
   );
   const displayedMedia = displayedActiveFeature?.media ?? defaultMedia;
 
-  const [isDesktop, setIsDesktop] = useState(true);
-  const [mounted, setMounted] = useState(false);
+  const canUseWebGL = useWebGLSupport();
+  const mounted = useIsMounted();
 
   useEffect(() => {
     return () => {
@@ -241,15 +296,6 @@ export function KeyFeatures() {
         window.clearTimeout(transitionTimer.current);
       }
     };
-  }, []);
-
-  useEffect(() => {
-    setMounted(true);
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
-    setIsDesktop(mediaQuery.matches);
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
   const toggleFeature = (title: string | null) => {
@@ -288,11 +334,11 @@ export function KeyFeatures() {
   return (
     <section
       id="key-features"
-      className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-12 pt-12 text-white md:pb-24 lg:pb-[calc(9rem+20px)] lg:pt-20"
+      className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-8 pt-12 text-white md:pb-10 lg:pb-8 lg:pt-14"
     >
       {/* MOBILE / VERTICAL TABLET VIEW (Hidden on Desktop) */}
       <div className="flex w-full flex-col lg:hidden">
-        <h2 className="mb-4 px-5 text-center text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white sm:px-12 md:mb-8">
+        <h2 className={`mb-5 px-5 text-center sm:px-12 md:mb-8 ${sectionHeadingClass}`}>
           Key Features
         </h2>
 
@@ -300,6 +346,7 @@ export function KeyFeatures() {
           {mounted && (
             <ModelViewer
               isDesktop={false}
+              canUseWebGL={canUseWebGL}
               media={displayedMedia}
               isDissolving={isDissolving}
               className="absolute inset-0 h-full w-full"
@@ -357,14 +404,14 @@ export function KeyFeatures() {
             ) : (
               <nav
                 aria-label="Explore key features"
-                className="mx-auto flex w-full max-w-max gap-2 overflow-x-auto sm:gap-3"
+                className="mx-auto flex w-full max-w-3xl flex-wrap justify-center gap-2 sm:gap-3"
               >
                 {keyFeatures.map((feature) => (
                   <button
                     key={feature.title}
                     type="button"
                     onClick={() => toggleFeature(feature.title)}
-                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-red-700 bg-black/60 px-4 py-2.5 text-sm font-medium text-white/80 backdrop-blur-md transition-colors duration-300 hover:bg-red-900/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 sm:text-base md:px-6 md:py-3 md:text-lg"
+                    className="flex min-h-10 shrink-0 items-center gap-1.5 rounded-full border border-red-700 bg-black/60 px-3.5 py-2 text-xs font-medium text-white/80 backdrop-blur-md transition-colors duration-300 hover:bg-red-900/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 sm:px-4 sm:py-2.5 sm:text-sm md:min-h-12 md:px-6 md:py-3 md:text-base"
                   >
                     {feature.title}
                     <Plus className="size-4 md:size-5" aria-hidden />
@@ -382,6 +429,7 @@ export function KeyFeatures() {
           <div className="absolute inset-y-0 right-0 z-0 h-full w-3/4">
             <ModelViewer
               isDesktop={true}
+              canUseWebGL={canUseWebGL}
               className="h-full w-full"
               media={displayedMedia}
               isDissolving={isDissolving}
@@ -389,11 +437,11 @@ export function KeyFeatures() {
           </div>
         )}
 
-        <div className="relative z-10 max-w-[31rem] pt-16">
-          <h2 className="mb-10 pb-1 text-left text-[clamp(1.5rem,3vw,3rem)] font-medium leading-tight tracking-tighter text-white">
+        <div className="relative z-10 max-w-[31rem] pt-10">
+          <h2 className={`mb-8 text-left ${sectionHeadingClass}`}>
             Key Features
           </h2>
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4">
             {keyFeatures.map((feature) => {
               const isExpanded = expandedFeature === feature.title;
               const panelId = getFeaturePanelId(feature.title) + "-desktop";
