@@ -1,6 +1,11 @@
+import {
+  portraits,
+  type PortraitImage,
+} from "@/app/our-team/data/portrait-assets";
+
 export type SectionLead = {
   name: string;
-  image: string;
+  image: PortraitImage;
 };
 
 export type SectionProject = {
@@ -20,7 +25,6 @@ export type TeamSection = {
 };
 
 const placeholderVideo = "/videos/placeholder-vid.mov";
-const placeholderLead = "/images/headshots/sumi-b.png";
 const placeholderProjectImages = [
   "/images/homepage/composites.jpg",
   "/images/homepage/flight-monitor.jpg",
@@ -44,8 +48,8 @@ export const sections: TeamSection[] = [
       "The Aerostructures team is responsible for the design, manufacture and maintenance of the Monash UAS airframes. The team utilises the latest composite technology and manufacturing techniques in order to produce aircraft that are lighter and stronger, while providing members of the team the opportunity to work with and learn about methods that are utilised more and more in the Aerospace industry.",
     heroVideo: placeholderVideo,
     leads: [
-      { name: "Lochlan Challis", image: "/images/headshots/lochlan-c.png" },
-      { name: "Chee Yong", image: "/images/headshots/chee-y.png" },
+      { name: "Lochlan Challis", image: portraits.lochlanChallis },
+      { name: "Chee Yong", image: portraits.cheeYong },
     ],
     projects: [
       {
@@ -88,8 +92,8 @@ export const sections: TeamSection[] = [
       "The Avionics section is responsible for the design and implementation of our aircraft onboard electrical, flight control and communications systems, as well as ground-based support hardware.",
     heroVideo: placeholderVideo,
     leads: [
-      { name: "Yogita Anand", image: "/images/headshots/yogita-a.png" },
-      { name: "Izaak Estandarte", image: "/images/headshots/izaak-e.png" },
+      { name: "Yogita Anand", image: portraits.yogitaAnand },
+      { name: "Izaak Estandarte", image: portraits.izaakEstandarte },
     ],
     projects: [
       {
@@ -132,8 +136,8 @@ export const sections: TeamSection[] = [
       "The Flight Operations section is responsible for the final construction and mission management of the Monash UAS' aircrafts. The team is involved in flight testing, integration and wiring of aerostructures and avionics components into the functional aircrafts, as well as the design of ground station equipment, procedures and piloting.",
     heroVideo: placeholderVideo,
     leads: [
-      { name: "Alexi Rampono", image: "/images/headshots/alexi-r.png" },
-      { name: "Alistair Mclennan", image: "/images/headshots/alistair-m.png" },
+      { name: "Alexi Rampono", image: portraits.alexiRampono },
+      { name: "Alistair Mclennan", image: portraits.alastairMclennan },
     ],
     projects: [
       {
@@ -175,7 +179,7 @@ export const sections: TeamSection[] = [
     description:
       "Operations supports the people, planning, outreach, sponsorship, logistics, and communications that allow MUAS to deliver complex aircraft projects.",
     heroVideo: placeholderVideo,
-    leads: [{ name: "Sumi Bandara", image: "/images/headshots/sumi-b.png" }],
+    leads: [{ name: "Sumi Bandara", image: portraits.sumiBandara }],
     projects: [
       {
         name: "Marketing",
@@ -217,8 +221,8 @@ export const sections: TeamSection[] = [
       "The propulsion section is dedicated to the testing, design and manufacture of MUAS propulsion systems. The section is focused on developing new and exciting capabilities within the team, including our own motors, controllers and propellers.",
     heroVideo: placeholderVideo,
     leads: [
-      { name: "Oliver Bassily", image: "/images/headshots/oliver-bas.png" },
-      { name: "Julian Nosiara", image: "/images/headshots/julian-n.png" },
+      { name: "Oliver Bassily", image: portraits.oliverBassily },
+      { name: "Julian Nosiara", image: portraits.julianNosiara },
     ],
     projects: [
       {

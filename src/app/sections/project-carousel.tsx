@@ -157,6 +157,7 @@ function ProjectSlide({ index, project }: ProjectSlideProps) {
         <Image
           alt={`${project.name} project`}
           className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          decoding="async"
           draggable={false}
           fill
           priority={index === 0}

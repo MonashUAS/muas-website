@@ -1,14 +1,37 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { TeamMember, TeamSection } from "../data/team-data";
 import { teamSections } from "../data/team-data";
 import { MemberCard } from "./member-card";
+
+const dissolveMs = 180;
+
+function preloadMemberImages(members: TeamMember[]) {
+  return Promise.all(
+    members.map(
+      (member) =>
+        new Promise<void>((resolve) => {
+          const image = new window.Image();
+          image.decoding = "async";
+          image.onload = () => resolve();
+          image.onerror = () => resolve();
+          image.src = member.image.src;
+
+          if (image.complete) {
+            resolve();
+          }
+        }),
+    ),
+  );
+}
 
 export function ManagementTeam() {
   const [activeSectionId, setActiveSectionId] = useState("all");
   const [displayedSectionId, setDisplayedSectionId] = useState("all");
   const [isDissolving, setIsDissolving] = useState(false);
   const transitionTimer = useRef<number | null>(null);
+  const preloadGeneration = useRef(0);
 
   const displayedSection =
     teamSections.find((section) => section.id === displayedSectionId) ??
@@ -19,13 +42,19 @@ export function ManagementTeam() {
       if (transitionTimer.current !== null) {
         window.clearTimeout(transitionTimer.current);
       }
+
+      preloadGeneration.current += 1;
     };
   }, []);
 
   const changeSection = (sectionId: string) => {
-    if (sectionId === activeSectionId) {
+    if (sectionId === activeSectionId || isDissolving) {
       return;
     }
+
+    const nextSection =
+      teamSections.find((section) => section.id === sectionId) ??
+      teamSections[0];
 
     setActiveSectionId(sectionId);
     setIsDissolving(true);
@@ -34,13 +63,30 @@ export function ManagementTeam() {
       window.clearTimeout(transitionTimer.current);
     }
 
-    transitionTimer.current = window.setTimeout(() => {
+    const generation = ++preloadGeneration.current;
+
+    const minimumDissolve = new Promise<void>((resolve) => {
+      transitionTimer.current = window.setTimeout(resolve, dissolveMs);
+    });
+
+    void Promise.all([
+      preloadMemberImages(nextSection.members),
+      minimumDissolve,
+    ]).then(() => {
+      if (generation !== preloadGeneration.current) {
+        return;
+      }
+
       setDisplayedSectionId(sectionId);
 
       window.requestAnimationFrame(() => {
+        if (generation !== preloadGeneration.current) {
+          return;
+        }
+
         setIsDissolving(false);
       });
-    }, 180);
+    });
   };
 
   return (
@@ -84,27 +130,39 @@ export function ManagementTeam() {
           })}
         </nav>
 
-        <div
-          className={`transition-all duration-200 ease-out motion-reduce:transition-none ${
-            isDissolving
-              ? "translate-y-1 opacity-0 blur-[3px]"
-              : "translate-y-0 opacity-100 blur-0"
-          }`}
-        >
-          <p className="mx-auto mt-8 max-w-5xl text-center text-b2 leading-relaxed text-blue-50 sm:text-b1">
-            {displayedSection.description}
-          </p>
-
-          <div className="mx-auto mt-10 flex max-w-[1280px] flex-wrap justify-center gap-7">
-            {displayedSection.members.map((member) => (
-              <MemberCard
-                key={`${displayedSection.id}-${member.name}`}
-                member={member}
-              />
-            ))}
-          </div>
-        </div>
+        <TeamSectionPanel
+          isDissolving={isDissolving}
+          section={displayedSection}
+        />
       </div>
     </section>
+  );
+}
+
+function TeamSectionPanel({
+  isDissolving,
+  section,
+}: {
+  isDissolving: boolean;
+  section: TeamSection;
+}) {
+  return (
+    <div
+      className={`transition-all duration-200 ease-out motion-reduce:transition-none ${
+        isDissolving
+          ? "translate-y-1 opacity-0 blur-[3px]"
+          : "translate-y-0 opacity-100 blur-0"
+      }`}
+    >
+      <p className="mx-auto mt-8 max-w-5xl text-center text-b2 leading-relaxed text-blue-50 sm:text-b1">
+        {section.description}
+      </p>
+
+      <div className="mx-auto mt-10 flex max-w-[1280px] flex-wrap justify-center gap-7">
+        {section.members.map((member) => (
+          <MemberCard key={member.name} member={member} />
+        ))}
+      </div>
+    </div>
   );
 }

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
+import { FilterPillNav } from "@/global-components/filter-pill-nav";
 import { techSpecPanels } from "./tech-specs-data";
 import type { TechSpecPanelMetric } from "./tech-specs-data";
 
@@ -19,6 +20,33 @@ const sectionHeadingClass =
   "text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white";
 
 const metricSlotCount = 5;
+const dissolveMs = 180;
+
+const techSpecPillItems = techSpecPanels.map((panel, index) => ({
+  id: String(index),
+  label: panel.navTitle,
+}));
+
+function resolvePanelImageSrc(
+  src: string,
+  failedImageSources: string[],
+): string {
+  return failedImageSources.includes(src) ? fallbackTechSpecImage : src;
+}
+
+function preloadImage(src: string) {
+  return new Promise<void>((resolve) => {
+    const image = new window.Image();
+    image.decoding = "async";
+    image.onload = () => resolve();
+    image.onerror = () => resolve();
+    image.src = src;
+
+    if (image.complete) {
+      resolve();
+    }
+  });
+}
 
 // Renders the selectable Redback technical specification panels with
 // fade/dissolve transitions.
@@ -33,8 +61,15 @@ export function TechSpecs() {
   const [failedImageSources, setFailedImageSources] = useState<string[]>(
     [],
   );
+  const [visibleImageSrc, setVisibleImageSrc] = useState(() =>
+    resolvePanelImageSrc(
+      techSpecPanels[initialPanelIndex].image.src,
+      [],
+    ),
+  );
 
   const transitionTimer = useRef<number | null>(null);
+  const preloadGeneration = useRef(0);
 
   const activePanel = techSpecPanels[displayedIndex];
   const emptyMetricSlotCount = Math.max(
@@ -42,23 +77,27 @@ export function TechSpecs() {
     metricSlotCount - activePanel.metrics.length,
   );
 
-  const imageSrc = failedImageSources.includes(activePanel.image.src)
-    ? fallbackTechSpecImage
-    : activePanel.image.src;
-
   // Clear the transition timer if the component unmounts.
   useEffect(() => {
     return () => {
       if (transitionTimer.current !== null) {
         window.clearTimeout(transitionTimer.current);
       }
+
+      preloadGeneration.current += 1;
     };
   }, []);
 
   const changePanel = (index: number) => {
-    if (index === activeIndex) {
+    if (index === activeIndex || isDissolving) {
       return;
     }
+
+    const nextPanel = techSpecPanels[index];
+    const nextImageSrc = resolvePanelImageSrc(
+      nextPanel.image.src,
+      failedImageSources,
+    );
 
     setActiveIndex(index);
     setIsDissolving(true);
@@ -67,13 +106,28 @@ export function TechSpecs() {
       window.clearTimeout(transitionTimer.current);
     }
 
-    transitionTimer.current = window.setTimeout(() => {
+    const generation = ++preloadGeneration.current;
+
+    const minimumDissolve = new Promise<void>((resolve) => {
+      transitionTimer.current = window.setTimeout(resolve, dissolveMs);
+    });
+
+    void Promise.all([preloadImage(nextImageSrc), minimumDissolve]).then(() => {
+      if (generation !== preloadGeneration.current) {
+        return;
+      }
+
       setDisplayedIndex(index);
+      setVisibleImageSrc(nextImageSrc);
 
       window.requestAnimationFrame(() => {
+        if (generation !== preloadGeneration.current) {
+          return;
+        }
+
         setIsDissolving(false);
       });
-    }, 180);
+    });
   };
 
   const handleImageError = () => {
@@ -82,6 +136,7 @@ export function TechSpecs() {
         ? sources
         : [...sources, activePanel.image.src],
     );
+    setVisibleImageSrc(fallbackTechSpecImage);
   };
 
   return (
@@ -94,30 +149,12 @@ export function TechSpecs() {
           Technical Specifications
         </h2>
 
-        <nav
-          aria-label="Explore technical specifications"
-          className="mx-auto flex w-full max-w-5xl flex-wrap justify-center gap-2 px-1 py-1 sm:gap-3 lg:max-w-max lg:flex-nowrap lg:overflow-x-auto"
-        >
-          {techSpecPanels.map((panel, index) => {
-            const isActive = activeIndex === index;
-
-            return (
-              <button
-                key={panel.navTitle}
-                type="button"
-                onClick={() => changePanel(index)}
-                aria-current={isActive ? "true" : undefined}
-                className={`shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none sm:text-base md:px-4 md:py-2 md:text-lg ${
-                  isActive
-                    ? "border-white bg-white text-black-500"
-                    : "border-white/20 bg-white/[0.05] text-white/75 backdrop-blur-md hover:bg-white/[0.1] hover:text-white"
-                }`}
-              >
-                {panel.navTitle}
-              </button>
-            );
-          })}
-        </nav>
+        <FilterPillNav
+          ariaLabel="Explore technical specifications"
+          items={techSpecPillItems}
+          activeId={String(activeIndex)}
+          onSelect={(id) => changePanel(Number(id))}
+        />
 
         <div
           className={`mt-5 grid grid-cols-1 items-stretch bg-black-500 transition-all duration-200 ease-out motion-reduce:transition-none sm:mt-6 lg:mt-8 lg:h-[34rem] lg:grid-cols-[minmax(22rem,0.86fr)_minmax(0,1fr)] lg:overflow-hidden ${
@@ -172,11 +209,11 @@ export function TechSpecs() {
 
           <div className="relative order-1 mb-4 h-[160px] shrink-0 overflow-hidden bg-black-500 sm:h-[210px] lg:order-2 lg:mb-0 lg:h-full">
             <Image
-              key={activePanel.image.src}
-              src={imageSrc}
+              src={visibleImageSrc}
               alt={activePanel.image.alt}
               fill
               sizes="(min-width: 1024px) 58vw, 100vw"
+              decoding="async"
               className="object-contain object-center"
               onError={handleImageError}
             />

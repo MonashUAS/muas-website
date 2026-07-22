@@ -1,8 +1,15 @@
+import {
+  portraits,
+  type PortraitImage,
+} from "./portrait-assets";
+
+export type TeamMemberImage = PortraitImage;
+
 export type TeamMember = {
   name: string;
   role: string;
   section: string;
-  image: string;
+  image: TeamMemberImage;
   priority?: number;
 };
 
@@ -18,50 +25,67 @@ export const temporaryImage = {
   missionAlt: "Temporary placeholder for Monash UAS members working together",
 };
 
-const teamImage = (filename: string) => `/images/team/${filename}.png`;
+export { defaultPortraitPosition } from "./portrait-assets";
 
 const managementMembers: TeamMember[] = [
   {
     name: "Ethan Liberman",
     role: "Team Lead",
     section: "Management",
-    image: teamImage("EthanLibermanTeamLead"),
+    image: portraits.ethanLiberman,
     priority: 1,
   },
   {
     name: "James Morton",
     role: "Chief Engineer",
     section: "Management",
-    image: teamImage("JamesMortonCheifEng"),
+    image: portraits.jamesMorton,
     priority: 2,
   },
   {
     name: "Oliver Bilston",
     role: "Chief Operating Officer",
     section: "Management",
-    image: teamImage("OliverBilstonCOO"),
+    image: portraits.oliverBilston,
+    priority: 3,
+  },
+];
+
+const auxiliaryMembers: TeamMember[] = [
+  {
+    name: "Alice Barling",
+    role: "Workshop Manager",
+    section: "Auxiliary",
+    image: portraits.aliceBarling,
+    priority: 1,
+  },
+  {
+    name: "James McIntyre",
+    role: "People & Culture",
+    section: "Auxiliary",
+    image: portraits.jamesMcIntyre,
+    priority: 2,
+  },
+  {
+    name: "Claire Zhang",
+    role: "IT Manager",
+    section: "Auxiliary",
+    image: portraits.claireZhang,
     priority: 3,
   },
   {
     name: "Luke Nicholson",
-    role: "Safety",
-    section: "Management",
-    image: teamImage("Luke_SafetyOfficer"),
+    role: "Safety Lead",
+    section: "Auxiliary",
+    image: portraits.lukeNicholson,
     priority: 4,
   },
   {
-    name: "Aanika Quadros",
-    role: "People & Culture",
-    section: "Management",
-    image: teamImage("Aanika"),
-    priority: 5,
-  },
-  {
     name: "Connor Madigan",
-    role: "Finance",
-    section: "Management",
-    image: teamImage("ConnorMadiganFinanceManager"),
-    priority: 6,
+    role: "Finance Officer",
+    section: "Auxiliary",
+    image: portraits.connorMadigan,
+    priority: 5,
   },
 ];
 
@@ -70,13 +94,13 @@ const aerostructuresMembers: TeamMember[] = [
     name: "Lochlan Challis",
     role: "Aerostructures",
     section: "Aerostructures",
-    image: teamImage("LochlanChallisaero"),
+    image: portraits.lochlanChallis,
   },
   {
     name: "Chee Yong",
     role: "Aerostructures",
     section: "Aerostructures",
-    image: teamImage("CheeYongAero"),
+    image: portraits.cheeYong,
   },
 ];
 
@@ -85,13 +109,13 @@ const avionicsMembers: TeamMember[] = [
     name: "Yogita Anand",
     role: "Avionics",
     section: "Avionics",
-    image: teamImage("YogitaAnandAvionics"),
+    image: portraits.yogitaAnand,
   },
   {
     name: "Izaak Estandarte",
     role: "Avionics",
     section: "Avionics",
-    image: teamImage("IzaakEstandarteAvionics"),
+    image: portraits.izaakEstandarte,
   },
 ];
 
@@ -100,7 +124,7 @@ const operationsMembers: TeamMember[] = [
     name: "Sumi Bandara",
     role: "Operations",
     section: "Operations",
-    image: teamImage("SumiBandaraOps"),
+    image: portraits.sumiBandara,
   },
 ];
 
@@ -109,13 +133,13 @@ const propulsionMembers: TeamMember[] = [
     name: "Oliver Bassily",
     role: "Propulsion",
     section: "Propulsion",
-    image: teamImage("OliverBassilyProps"),
+    image: portraits.oliverBassily,
   },
   {
     name: "Julian Nosiara",
     role: "Propulsion",
     section: "Propulsion",
-    image: teamImage("JulianNosiaraProps"),
+    image: portraits.julianNosiara,
   },
 ];
 
@@ -124,13 +148,13 @@ const flightOperationsMembers: TeamMember[] = [
     name: "Alexi Rampono",
     role: "Flight Operations",
     section: "Flight Operations",
-    image: teamImage("AlexiRamponoFlops"),
+    image: portraits.alexiRampono,
   },
   {
     name: "Alastair Mclennan",
     role: "Flight Operations",
     section: "Flight Operations",
-    image: teamImage("AlastairMclennanFlops"),
+    image: portraits.alastairMclennan,
   },
 ];
 
@@ -139,13 +163,13 @@ const leadPilotMembers: TeamMember[] = [
     name: "Adwik Ghosh",
     role: "Lead Pilot",
     section: "Lead Pilots",
-    image: teamImage("AdwikGhoshPilot"),
+    image: portraits.adwikGhosh,
   },
   {
     name: "Tom Machin",
     role: "Lead Pilot",
     section: "Lead Pilots",
-    image: teamImage("TomMachinLeadPilot"),
+    image: portraits.tomMachin,
   },
 ];
 
@@ -157,9 +181,11 @@ const sortMembersByPriority = (members: TeamMember[]) => {
 };
 
 const orderedManagementMembers = sortMembersByPriority(managementMembers);
+const orderedAuxiliaryMembers = sortMembersByPriority(auxiliaryMembers);
 
 const allTeamMembers: TeamMember[] = [
   ...orderedManagementMembers,
+  ...orderedAuxiliaryMembers,
   ...aerostructuresMembers,
   ...avionicsMembers,
   ...operationsMembers,
@@ -173,15 +199,22 @@ export const teamSections: TeamSection[] = [
     id: "all",
     label: "All",
     description:
-      "Meet the 2025 leaders responsible for strategy, engineering, operations, safety, aircraft development and flight delivery across Monash UAS. Together, they coordinate the complete aircraft lifecycle and support more than 100 members across the team.",
+      "Meet the 2026 leaders responsible for strategy, engineering, operations, safety, aircraft development and flight delivery across Monash UAS. Together, they coordinate the complete aircraft lifecycle and support more than 100 members across the team.",
     members: allTeamMembers,
   },
   {
     id: "management",
     label: "Management",
     description:
-      "Our Management Team leads the club and sets the direction for the year, ensuring everything runs smoothly and aligns with compliance requirements. They coordinate sections, oversee major decisions, hold team-wide meetings and keep the wider program focused on its shared priorities.",
+      "Our Management Team leads the team and sets the direction for the year, ensuring everything runs smoothly and aligns with compliance requirements. They coordinate sections, oversee major decisions, hold team-wide meetings and keep the wider program focused on its shared priorities.",
     members: orderedManagementMembers,
+  },
+  {
+    id: "auxiliary",
+    label: "Auxiliary",
+    description:
+      "Auxiliary management supports the team’s day-to-day operations across the workshop, people and culture, IT systems and safety. These roles keep facilities, people processes and compliance running so the wider team can focus on aircraft delivery.",
+    members: orderedAuxiliaryMembers,
   },
   {
     id: "aerostructures",

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { ProjectCarousel } from "@/app/sections/project-carousel";
+import { defaultPortraitPosition } from "@/app/our-team/data/portrait-assets";
 import { AnimatedTextHighlight } from "@/global-components/animated-text-highlight";
 import { headerContentContainerClass } from "@/global-components/layout/sidebar/navbar-classes";
 import { NextDestinationLink } from "@/global-components/next-destination-link";
@@ -91,8 +92,13 @@ function LeadProfile({ lead }: { lead: SectionLead }) {
       <Image
         alt={lead.name}
         className="aspect-square w-32 rounded-full object-cover shadow-[0_18px_42px_rgba(0,0,0,0.34)] sm:w-44 lg:w-52"
+        decoding="async"
         height={208}
-        src={lead.image}
+        sizes="(min-width: 1024px) 13rem, (min-width: 640px) 11rem, 8rem"
+        src={lead.image.src}
+        style={{
+          objectPosition: lead.image.position ?? defaultPortraitPosition,
+        }}
         width={208}
       />
 
