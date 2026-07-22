@@ -18,6 +18,8 @@ const metricGradientClass =
 const sectionHeadingClass =
   "text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white";
 
+const metricSlotCount = 5;
+
 // Renders the selectable Redback technical specification panels with
 // fade/dissolve transitions.
 export function TechSpecs() {
@@ -35,6 +37,10 @@ export function TechSpecs() {
   const transitionTimer = useRef<number | null>(null);
 
   const activePanel = techSpecPanels[displayedIndex];
+  const emptyMetricSlotCount = Math.max(
+    0,
+    metricSlotCount - activePanel.metrics.length,
+  );
 
   const imageSrc = failedImageSources.includes(activePanel.image.src)
     ? fallbackTechSpecImage
@@ -81,16 +87,16 @@ export function TechSpecs() {
   return (
     <section
       id="technical-specifications"
-      className="scroll-mt-10 bg-black-500 px-6 pb-8 pt-12 text-white sm:pb-10 sm:pt-14 lg:px-14 lg:pb-10 lg:pt-16"
+      className="scroll-mt-10 bg-black-500 px-6 pb-4 pt-10 text-white sm:pb-8 sm:pt-12 lg:px-14 lg:pb-10 lg:pt-16"
     >
       <div className="mx-auto w-full max-w-7xl">
-        <h2 className={`mb-8 text-center ${sectionHeadingClass}`}>
+        <h2 className={`mb-5 text-center sm:mb-6 lg:mb-8 ${sectionHeadingClass}`}>
           Technical Specifications
         </h2>
 
         <nav
           aria-label="Explore technical specifications"
-          className="mx-auto flex w-full max-w-max gap-2 overflow-x-auto px-1 py-1 sm:gap-3"
+          className="mx-auto flex w-full max-w-5xl flex-wrap justify-center gap-2 px-1 py-1 sm:gap-3 lg:max-w-max lg:flex-nowrap lg:overflow-x-auto"
         >
           {techSpecPanels.map((panel, index) => {
             const isActive = activeIndex === index;
@@ -114,13 +120,13 @@ export function TechSpecs() {
         </nav>
 
         <div
-          className={`mt-8 grid h-[760px] grid-cols-1 items-stretch overflow-hidden bg-black-500 transition-all duration-200 ease-out motion-reduce:transition-none sm:h-[640px] lg:h-[34rem] lg:grid-cols-[minmax(22rem,0.86fr)_minmax(0,1fr)] ${
+          className={`mt-5 grid grid-cols-1 items-stretch bg-black-500 transition-all duration-200 ease-out motion-reduce:transition-none sm:mt-6 lg:mt-8 lg:h-[34rem] lg:grid-cols-[minmax(22rem,0.86fr)_minmax(0,1fr)] lg:overflow-hidden ${
             isDissolving
               ? "translate-y-1 opacity-0 blur-[3px]"
               : "translate-y-0 opacity-100 blur-0"
           }`}
         >
-          <div className="relative z-10 order-2 flex h-full min-h-0 flex-col py-2 lg:order-1 lg:py-6 lg:pr-10">
+          <div className="relative z-10 order-2 flex min-h-0 flex-col py-2 lg:order-1 lg:h-full lg:py-6 lg:pr-10">
             <h3 className="text-[clamp(1.65rem,5vw,2.4rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white lg:text-[clamp(2rem,3vw,3rem)]">
               {activePanel.title}
             </h3>
@@ -134,11 +140,11 @@ export function TechSpecs() {
             </div>
 
             {/*
-              Every panel always reserves the same five metric positions.
+              Tablet and desktop reserve the same metric positions.
 
               Mobile:
               - One column
-              - Five equal rows
+              - Natural height after the visible metric cards
 
               Tablet and desktop:
               - Two columns
@@ -147,17 +153,24 @@ export function TechSpecs() {
               Panels with fewer metrics leave unused grid positions empty rather
               than stretching their cards to fill the remaining space.
             */}
-            <div className="mt-4 grid min-h-0 flex-1 grid-cols-1 grid-rows-5 items-stretch gap-2 overflow-hidden sm:grid-cols-2 sm:grid-rows-3 sm:gap-3 lg:mt-6 lg:gap-3">
+            <div className="mt-4 grid min-h-0 grid-cols-1 auto-rows-[6rem] items-stretch gap-2 sm:grid-cols-2 sm:grid-rows-[repeat(3,6.25rem)] sm:gap-3 lg:mt-6 lg:flex-1 lg:grid-rows-3 lg:gap-3 lg:overflow-hidden">
               {activePanel.metrics.map((metric) => (
                 <SpecPanelMetric
                   key={metric.label}
                   metric={metric}
                 />
               ))}
+              {Array.from({ length: emptyMetricSlotCount }).map((_, index) => (
+                <div
+                  key={`empty-metric-${index}`}
+                  aria-hidden="true"
+                  className="hidden h-full border border-transparent sm:block"
+                />
+              ))}
             </div>
           </div>
 
-          <div className="relative order-1 mb-5 h-[180px] shrink-0 overflow-hidden bg-black-500 sm:h-[220px] lg:order-2 lg:mb-0 lg:h-full">
+          <div className="relative order-1 mb-4 h-[160px] shrink-0 overflow-hidden bg-black-500 sm:h-[210px] lg:order-2 lg:mb-0 lg:h-full">
             <Image
               key={activePanel.image.src}
               src={imageSrc}
@@ -180,14 +193,14 @@ function SpecPanelMetric({
   metric: TechSpecPanelMetric;
 }) {
   return (
-    <div className="flex h-full min-h-0 flex-col justify-between overflow-hidden border border-white/10 bg-white/[0.04] p-3 shadow-[0_18px_55px_rgba(0,0,0,0.18)] sm:p-3.5 lg:p-4">
+    <div className="flex h-full min-h-0 flex-col justify-between border border-white/10 bg-white/[0.04] p-2.5 shadow-[0_18px_55px_rgba(0,0,0,0.18)] sm:p-3.5 lg:p-4">
       <p
-        className={`inline-block max-w-full break-words pb-[0.06em] pr-[0.08em] text-[clamp(0.98rem,4vw,1.28rem)] font-black leading-[1.02] tracking-tight sm:text-[clamp(1rem,2.25vw,1.36rem)] lg:text-[clamp(0.98rem,1.18vw,1.42rem)] ${metricGradientClass}`}
+        className={`inline-block max-w-full break-words pb-[0.06em] pr-[0.08em] text-[clamp(0.88rem,3.5vw,1.12rem)] font-black leading-[1.02] tracking-tight sm:text-[clamp(0.95rem,2.15vw,1.28rem)] lg:text-[clamp(0.98rem,1.18vw,1.42rem)] ${metricGradientClass}`}
       >
         {metric.value}
       </p>
 
-      <p className="mt-2 text-[0.72rem] leading-[1.12] text-white/68 sm:text-xs lg:text-sm">
+      <p className="mt-1.5 text-[0.68rem] leading-[1.08] text-white/68 sm:mt-2 sm:text-xs lg:text-sm">
         {metric.label}
       </p>
     </div>

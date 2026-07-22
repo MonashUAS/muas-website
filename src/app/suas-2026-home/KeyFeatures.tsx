@@ -25,6 +25,7 @@ const defaultMedia: KeyFeature["media"] = {
   src: "/models/redback.glb",
   type: "model",
 };
+const defaultMobileFeatureTitle = keyFeatures[0]?.title ?? null;
 
 // Tune MODEL_FRAME_MARGIN down to zoom in on initial load; tune it up to show more space around the model.
 const MODEL_FRAME_MARGIN = 0.8;
@@ -280,12 +281,16 @@ export function KeyFeatures() {
   const [displayedFeature, setDisplayedFeature] = useState<string | null>(null);
   const [isDissolving, setIsDissolving] = useState(false);
   const transitionTimer = useRef<number | null>(null);
+  const mobileSwipeStartRef = useRef<{ x: number; y: number } | null>(null);
+  const lastMobileSwipeAtRef = useRef(0);
 
   const displayedActiveFeature = useMemo(
     () => keyFeatures.find((feature) => feature.title === displayedFeature),
     [displayedFeature],
   );
+  const mobileActiveFeature = displayedActiveFeature ?? keyFeatures[0] ?? null;
   const displayedMedia = displayedActiveFeature?.media ?? defaultMedia;
+  const mobileMedia = mobileActiveFeature?.media ?? defaultMedia;
 
   const canUseWebGL = useWebGLSupport();
   const mounted = useIsMounted();
@@ -315,20 +320,74 @@ export function KeyFeatures() {
     }, 400);
   };
 
+  const moveFeature = (direction: -1 | 1) => {
+    const currentTitle =
+      expandedFeature ?? displayedFeature ?? defaultMobileFeatureTitle;
+    const currentIndex = keyFeatures.findIndex((feature) => feature.title === currentTitle);
+    const safeIndex = currentIndex >= 0 ? currentIndex : 0;
+    const nextIndex =
+      (safeIndex + direction + keyFeatures.length) % keyFeatures.length;
+
+    toggleFeature(keyFeatures[nextIndex].title);
+  };
+
   const handlePrevFeature = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!expandedFeature) return;
-    const idx = keyFeatures.findIndex((f) => f.title === expandedFeature);
-    const prevIdx = idx <= 0 ? keyFeatures.length - 1 : idx - 1;
-    toggleFeature(keyFeatures[prevIdx].title);
+    moveFeature(-1);
   };
 
   const handleNextFeature = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!expandedFeature) return;
-    const idx = keyFeatures.findIndex((f) => f.title === expandedFeature);
-    const nextIdx = idx >= keyFeatures.length - 1 ? 0 : idx + 1;
-    toggleFeature(keyFeatures[nextIdx].title);
+    moveFeature(1);
+  };
+
+  const startMobileSwipe = (x: number, y: number) => {
+    mobileSwipeStartRef.current = {
+      x,
+      y,
+    };
+  };
+
+  const finishMobileSwipe = (x: number, y: number) => {
+    const start = mobileSwipeStartRef.current;
+    mobileSwipeStartRef.current = null;
+
+    if (!start) return;
+    if (Date.now() - lastMobileSwipeAtRef.current < 350) return;
+
+    const deltaX = x - start.x;
+    const deltaY = y - start.y;
+    const isHorizontalSwipe =
+      Math.abs(deltaX) > 56 && Math.abs(deltaX) > Math.abs(deltaY) * 1.35;
+
+    if (!isHorizontalSwipe) return;
+
+    lastMobileSwipeAtRef.current = Date.now();
+    moveFeature(deltaX < 0 ? 1 : -1);
+  };
+
+  const handleMobilePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse") return;
+
+    startMobileSwipe(event.clientX, event.clientY);
+  };
+
+  const handleMobilePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    finishMobileSwipe(event.clientX, event.clientY);
+  };
+
+  const handleMobileTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+
+    startMobileSwipe(touch.clientX, touch.clientY);
+  };
+
+  const handleMobileTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+
+    finishMobileSwipe(touch.clientX, touch.clientY);
   };
 
   return (
@@ -336,91 +395,160 @@ export function KeyFeatures() {
       id="key-features"
       className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-8 pt-12 text-white md:pb-10 lg:pb-8 lg:pt-14"
     >
-      {/* MOBILE / VERTICAL TABLET VIEW (Hidden on Desktop) */}
-      <div className="flex w-full flex-col lg:hidden">
-        <h2 className={`mb-5 px-5 text-center sm:px-12 md:mb-8 ${sectionHeadingClass}`}>
+      {/* MOBILE CAROUSEL VIEW (Hidden on Tablet/Desktop) */}
+      <div
+        className="flex w-full touch-pan-y flex-col px-4 sm:px-8 md:hidden"
+        onPointerDown={handleMobilePointerDown}
+        onPointerUp={handleMobilePointerUp}
+        onTouchStart={handleMobileTouchStart}
+        onTouchEnd={handleMobileTouchEnd}
+      >
+        <h2 className={`mb-4 text-center ${sectionHeadingClass}`}>
           Key Features
         </h2>
 
-        <div className="relative w-full overflow-hidden h-[calc(100svh-12rem)] min-h-[550px] max-h-[850px] md:min-h-[700px] md:max-h-[1100px]">
+        <div className="mx-auto w-full max-w-3xl">
+          {mounted && (
+            <ModelViewer
+              isDesktop={false}
+              canUseWebGL={canUseWebGL}
+              media={mobileMedia}
+              isDissolving={isDissolving}
+              className="relative h-[260px] w-full sm:h-[340px]"
+            />
+          )}
+        </div>
+
+        {mobileActiveFeature ? (
+          <div
+            id={`${getFeaturePanelId(mobileActiveFeature.title)}-mobile`}
+            className={`mx-auto mt-4 w-full max-w-2xl transition-all duration-400 ease-out ${
+              isDissolving ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"
+            }`}
+          >
+            <div className="flex items-stretch justify-center gap-2">
+              <button
+                onClick={handlePrevFeature}
+                className="flex min-h-12 flex-none items-center justify-center px-1.5 transition-colors hover:text-white/70"
+                aria-label="Previous Feature"
+              >
+                <ChevronLeft className="size-7 text-white" />
+              </button>
+
+              <div className="flex min-h-[9.5rem] flex-1 flex-col justify-center rounded-[1.25rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-4 py-4 shadow-2xl backdrop-blur-md">
+                <h3 className="mb-1.5 text-sm font-bold text-white sm:text-base">
+                  {mobileActiveFeature.title}
+                </h3>
+                <p className="text-xs leading-relaxed text-white/90 sm:text-sm">
+                  {mobileActiveFeature.body}
+                </p>
+              </div>
+
+              <button
+                onClick={handleNextFeature}
+                className="flex min-h-12 flex-none items-center justify-center px-1.5 transition-colors hover:text-white/70"
+                aria-label="Next Feature"
+              >
+                <ChevronRight className="size-7 text-white" />
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      {/* TABLET VIEW (Hidden on Mobile/Desktop) */}
+      <div className="hidden w-full flex-col px-4 sm:px-8 md:flex md:px-12 lg:hidden">
+        <h2 className={`mb-6 text-center ${sectionHeadingClass}`}>
+          Key Features
+        </h2>
+
+        <div className="mx-auto w-full max-w-3xl">
           {mounted && (
             <ModelViewer
               isDesktop={false}
               canUseWebGL={canUseWebGL}
               media={displayedMedia}
               isDissolving={isDissolving}
-              className="absolute inset-0 h-full w-full"
+              className="relative h-[430px] w-full"
             />
           )}
+        </div>
 
+        <nav
+          aria-label="Explore key features"
+          className="mx-auto mt-6 flex w-full max-w-3xl flex-wrap justify-center gap-3"
+        >
+          {keyFeatures.map((feature) => {
+            const isExpanded = expandedFeature === feature.title;
+
+            return (
+              <button
+                key={feature.title}
+                type="button"
+                onClick={() => toggleFeature(isExpanded ? null : feature.title)}
+                className={`flex min-h-12 shrink-0 items-center gap-1.5 rounded-full border px-6 py-3 text-base font-medium backdrop-blur-md transition-colors duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 ${
+                  isExpanded
+                    ? "border-red-300 bg-red-900/55 text-white"
+                    : "border-red-700 bg-black/60 text-white/80 hover:bg-red-900/60"
+                }`}
+                aria-expanded={isExpanded}
+                aria-controls={`${getFeaturePanelId(feature.title)}-mobile`}
+              >
+                {feature.title}
+                {isExpanded ? (
+                  <Minus className="size-5" aria-hidden />
+                ) : (
+                  <Plus className="size-5" aria-hidden />
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        {displayedFeature && displayedActiveFeature ? (
           <div
-            className={`absolute right-4 top-4 z-40 transition-all duration-400 ease-out md:right-8 md:top-8 ${
-              displayedFeature && !isDissolving
-                ? "translate-y-0 opacity-100"
-                : "pointer-events-none -translate-y-4 opacity-0"
+            id={`${getFeaturePanelId(displayedActiveFeature.title)}-mobile`}
+            className={`mx-auto mt-4 w-full max-w-2xl transition-all duration-400 ease-out md:mt-5 ${
+              isDissolving ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"
             }`}
           >
-            <button
-              onClick={() => toggleFeature(null)}
-              className="grid size-10 place-items-center rounded-full border border-red-300 bg-red-900/55 text-white backdrop-blur-md transition-colors hover:bg-red-800 md:size-12"
-              aria-label="Close feature details"
-            >
-              <Minus className="size-5 md:size-6" />
-            </button>
-          </div>
+            <div className="flex items-stretch justify-center gap-2 sm:gap-4">
+              <button
+                onClick={handlePrevFeature}
+                className="flex flex-none items-center justify-center px-4 transition-colors hover:text-white/70"
+                aria-label="Previous Feature"
+              >
+                <ChevronLeft className="size-8 text-white" />
+              </button>
 
-          <div
-            className={`absolute inset-x-0 bottom-6 z-30 px-4 transition-all duration-400 ease-out sm:px-8 md:bottom-10 md:px-16 ${
-              isDissolving ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"
-            }`}
-          >
-            {displayedFeature && displayedActiveFeature ? (
-              <div className="mx-auto flex w-full max-w-2xl items-center justify-between">
-                <button
-                  onClick={handlePrevFeature}
-                  className="flex flex-none items-center justify-center px-3 transition-colors hover:text-white/70 sm:px-5 md:px-6"
-                  aria-label="Previous Feature"
-                >
-                  <ChevronLeft className="size-6 text-white md:size-8" />
-                </button>
-
-                <div className="flex-1 rounded-[2rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-4 py-4 shadow-2xl backdrop-blur-md sm:px-6 md:py-6">
-                  <h3 className="mb-1.5 text-sm font-bold text-white sm:text-base md:mb-2 md:text-lg">
+              <div className="flex-1 rounded-[1.25rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-6 py-5 shadow-2xl backdrop-blur-md">
+                <div className="mb-2 flex items-start justify-between gap-3">
+                  <h3 className="text-lg font-bold text-white">
                     {displayedActiveFeature.title}
                   </h3>
-                  <p className="text-xs leading-relaxed text-white/90 sm:text-sm md:text-base">
-                    {displayedActiveFeature.body}
-                  </p>
-                </div>
-
-                <button
-                  onClick={handleNextFeature}
-                  className="flex flex-none items-center justify-center px-3 transition-colors hover:text-white/70 sm:px-5 md:px-6"
-                  aria-label="Next Feature"
-                >
-                  <ChevronRight className="size-6 text-white md:size-8" />
-                </button>
-              </div>
-            ) : (
-              <nav
-                aria-label="Explore key features"
-                className="mx-auto flex w-full max-w-3xl flex-wrap justify-center gap-2 sm:gap-3"
-              >
-                {keyFeatures.map((feature) => (
                   <button
-                    key={feature.title}
-                    type="button"
-                    onClick={() => toggleFeature(feature.title)}
-                    className="flex min-h-10 shrink-0 items-center gap-1.5 rounded-full border border-red-700 bg-black/60 px-3.5 py-2 text-xs font-medium text-white/80 backdrop-blur-md transition-colors duration-300 hover:bg-red-900/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 sm:px-4 sm:py-2.5 sm:text-sm md:min-h-12 md:px-6 md:py-3 md:text-base"
+                    onClick={() => toggleFeature(null)}
+                    className="grid size-9 shrink-0 place-items-center rounded-full border border-red-300/50 bg-red-900/35 text-white transition-colors hover:bg-red-800"
+                    aria-label="Close feature details"
                   >
-                    {feature.title}
-                    <Plus className="size-4 md:size-5" aria-hidden />
+                    <Minus className="size-5" />
                   </button>
-                ))}
-              </nav>
-            )}
+                </div>
+                <p className="text-base leading-relaxed text-white/90">
+                  {displayedActiveFeature.body}
+                </p>
+              </div>
+
+              <button
+                onClick={handleNextFeature}
+                className="flex flex-none items-center justify-center px-4 transition-colors hover:text-white/70"
+                aria-label="Next Feature"
+              >
+                <ChevronRight className="size-8 text-white" />
+              </button>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
 
       {/* DESKTOP VIEW (Side-by-side, Hidden on Mobile) */}
