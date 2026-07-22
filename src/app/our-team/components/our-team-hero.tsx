@@ -6,7 +6,7 @@ export function OurTeamHero() {
   return (
     <section
       id="our-team-page"
-      className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-black px-6 pt-[var(--header-height)] text-white sm:px-10"
+      className="relative isolate flex min-h-[100svh] scroll-mt-20 items-center justify-center overflow-hidden bg-black px-6 pt-[var(--header-height)] text-white sm:px-10"
     >
       <Image
         src="/images/homepage/full-team-photo.jpg"
@@ -21,7 +21,7 @@ export function OurTeamHero() {
 
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,7,20,0.3)_0%,rgba(0,7,20,0.18)_42%,rgba(0,7,20,0.68)_100%)]" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-2 flex-col items-center text-center sm:-translate-y-4">
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-12 flex-col items-center text-center">
         <h1 className="text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] text-white">
           Meet the{" "}
           <span className="relative inline-block px-[0.2em]">

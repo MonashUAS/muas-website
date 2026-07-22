@@ -1,63 +1,9 @@
-"use client";
+import { NextDestinationLink } from "@/global-components/next-destination-link";
 
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { type CSSProperties, type MouseEvent, useRef, useState } from "react";
-
-type TransitionRect = {
-  height: number;
-  left: number;
-  top: number;
-  width: number;
-};
-
-const teamHref = "/suas-2026-team";
-const teamImage = "/images/homepage/full-team-photo.jpg";
-const navbarHeight = "5rem";
-
-// TeamLink previews the Redback team page with a zoom-through click transition.
+// TeamLink previews the Redback team page using the shared next-destination panel.
 export function TeamLink() {
-  const router = useRouter();
-  const previewRef = useRef<HTMLDivElement | null>(null);
-  
-  // State for routing transition
-  const [transitionRect, setTransitionRect] = useState<TransitionRect | null>(null);
-  const [isTransitionFullScreen, setIsTransitionFullScreen] = useState(false);
-  
-  // State to track if the Explore button is currently hovered
-  const [isButtonHovered, setIsButtonHovered] = useState(false);
-
-  const handleTeamClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-
-    const preview = previewRef.current;
-
-    if (!preview) {
-      router.push(teamHref);
-      return;
-    }
-
-    const rect = preview.getBoundingClientRect();
-
-    setTransitionRect({
-      height: rect.height,
-      left: rect.left,
-      top: rect.top,
-      width: rect.width,
-    });
-    
-    window.requestAnimationFrame(() => {
-      setIsTransitionFullScreen(true);
-    });
-    
-    window.setTimeout(() => {
-      router.push(teamHref);
-    }, 760);
-  };
-
   return (
-    <section
+    <NextDestinationLink
       id="redback-team-link"
       className="relative flex scroll-mt-20 items-start justify-center bg-black-500 pb-10 pt-4 sm:min-h-[76svh] sm:items-center sm:pb-16 sm:pt-10 lg:min-h-[82svh] lg:pb-20 lg:pt-12"
     >

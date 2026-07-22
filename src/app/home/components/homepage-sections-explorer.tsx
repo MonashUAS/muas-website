@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
+import { headerContentContainerClass } from "@/global-components/layout/sidebar/navbar-classes";
 import { SingleWindowCarousel } from "@/global-components/modules/single-window-carousel";
 import { homepageSections } from "../data/sections";
 
@@ -20,10 +21,10 @@ export function HomepageSectionsExplorer() {
 
   return (
     <section
-      className="bg-[linear-gradient(180deg,#02040a_0%,#001f49_46%,#02040a_100%)] px-5 py-20 text-white sm:px-8 sm:py-24 lg:px-12 lg:py-28"
+      className="bg-[linear-gradient(180deg,#02040a_0%,#001f49_46%,#02040a_100%)] py-20 text-white sm:py-24 lg:py-28"
       aria-labelledby="homepage-sections-heading"
     >
-      <div className="mx-auto max-w-[1720px]">
+      <div className={headerContentContainerClass}>
         <div className="grid gap-12 lg:grid-cols-[minmax(280px,0.82fr)_minmax(0,1.18fr)] lg:items-center lg:gap-16">
           <div className="max-w-2xl">
             <h2

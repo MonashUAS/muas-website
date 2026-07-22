@@ -1,6 +1,9 @@
 // Shared layout classes keep the closed navbar and overlay header aligned.
+export const headerContentContainerClass =
+  "mx-auto w-full max-w-[1720px] px-5 sm:px-8 lg:px-12";
+
 export const topRowClass =
-  "mx-auto grid h-20 w-full max-w-[1720px] grid-cols-[84px_minmax(0,1fr)_84px] items-center px-5 sm:grid-cols-[132px_minmax(0,1fr)_132px] sm:px-8 lg:px-12";
+  `${headerContentContainerClass} grid h-20 grid-cols-[84px_minmax(0,1fr)_84px] items-center sm:grid-cols-[132px_minmax(0,1fr)_132px]`;
 
 export const navButtonClass =
   "flex h-10 w-[84px] items-center justify-center rounded-full bg-white/[0.055] text-[0.65rem] uppercase tracking-[0.14em] text-white/88 backdrop-blur-md transition-colors duration-300 hover:bg-white/[0.09] hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40 sm:h-11 sm:w-[132px] sm:text-b2 sm:tracking-[0.18em] motion-reduce:transition-none cursor-pointer";

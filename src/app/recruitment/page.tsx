@@ -75,7 +75,7 @@ export default function RecruitmentPage() {
                     href={recruitmentConfig.recruitmentFormUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-6 inline-flex min-h-11 items-center justify-center rounded bg-white px-6 py-3 text-b1 font-bold text-blue-900 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:min-h-12"
+                    className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 py-3 text-b1 font-bold text-blue-900 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:min-h-12"
                   >
                     Apply Now
                   </Link>

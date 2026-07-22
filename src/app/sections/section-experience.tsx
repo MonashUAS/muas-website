@@ -1,15 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import {
-  type CSSProperties,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
 import { ProjectCarousel } from "@/app/sections/project-carousel";
+import { AnimatedTextHighlight } from "@/global-components/animated-text-highlight";
+import { headerContentContainerClass } from "@/global-components/layout/sidebar/navbar-classes";
+import { NextDestinationLink } from "@/global-components/next-destination-link";
 import type { SectionLead, TeamSection } from "./section-data";
 
 type SectionExperienceProps = {
@@ -17,279 +12,114 @@ type SectionExperienceProps = {
   section: TeamSection;
 };
 
-type InteractiveBackgroundProps = {
-  children: React.ReactNode;
-  className: string;
-};
-
-// SectionExperience renders the animated client-side section page experience.
+// SectionExperience renders the complete shared page layout for each MUAS team section.
 export function SectionExperience({ nextSection, section }: SectionExperienceProps) {
-  const [videoShade, setVideoShade] = useState(0.45);
-
-  // Updates the fixed hero shade as content scrolls over the video.
-  useEffect(() => {
-    const handleScroll = () => {
-      const foldProgress = clamp(window.scrollY / (window.innerHeight * 0.75), 0, 1);
-
-      setVideoShade(0.45 + foldProgress * 0.4);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   return (
-    <div className="relative bg-blue-900 text-white">
-      <HeroVideo section={section} shade={videoShade} />
-      <section className="viewport-fold" />
+    <div className="min-h-full bg-background text-white">
+      <SectionHero section={section} />
       <main className="relative z-10">
-        <ContentSections section={section} />
-        <NextSection section={nextSection} />
+        <Projects section={section} />
+        <NextDestinationLink
+          id={`next-${nextSection.slug}`}
+          href={`/sections/${nextSection.slug}`}
+          title={`Next: ${nextSection.name}`}
+          description={nextSection.shortDescription}
+          imageSrc={
+            nextSection.projects[0]?.image ?? "/images/homepage/flight-day.jpg"
+          }
+          imageAlt={`${nextSection.name} preview`}
+        />
       </main>
     </div>
   );
 }
 
-// HeroVideo renders the fixed autoplaying section video behind the folding content.
-function HeroVideo({ section, shade }: { section: TeamSection; shade: number }) {
+// SectionHero introduces each team section with full-bleed media and lead profiles.
+function SectionHero({ section }: { section: TeamSection }) {
   return (
-    <section className="fixed inset-x-0 top-20 z-0 flex h-[calc(100svh-var(--header-height))] items-center justify-center overflow-hidden ">
+    <section className="relative isolate flex min-h-[100svh] scroll-mt-20 items-center justify-center overflow-hidden bg-black-500 px-6 pt-[var(--header-height)] text-white sm:px-10">
       <video
         aria-label={`${section.name} hero video`}
         autoPlay
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 -z-30 h-full w-full object-cover"
         loop
         muted
         playsInline
+        preload="auto"
         src={section.heroVideo}
       />
-      <div className="absolute inset-0 bg-black transition-colors duration-200" style={{ opacity: shade }} />
-      <div className="relative z-10 mx-auto max-w-5xl px-6 text-center uppercase">
-        <h1 className="text-h4 font-black leading-none sm:text-h2 tracking-[-0.05em]">{section.name}</h1>
-        <p className="mx-auto mt-5 max-w-3xl text-b2 font-black leading-relaxed sm:text-b1">
-          {section.shortDescription}
-        </p>
+      <div className="absolute inset-0 -z-20 bg-black/45" />
+      <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(0,7,20,0.3)_0%,rgba(0,7,20,0.18)_42%,rgba(0,7,20,0.68)_100%)]" />
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_50%_40%,rgba(84,134,200,0.18),transparent_34%)]" />
+
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-2 flex-col items-center py-12 text-center sm:-translate-y-4 sm:py-16">
+        <div className="flex w-full min-w-0 max-w-full flex-col items-center">
+          <h1 className="w-full min-w-0 max-w-[12ch] text-balance text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] text-white">
+            <AnimatedTextHighlight
+              className="inline max-w-full"
+              variant="goldSingleUnderline"
+            >
+              {section.name}
+            </AnimatedTextHighlight>
+          </h1>
+
+          <p className="mt-10 w-full max-w-[16rem] text-[clamp(1.15rem,1.55vw,1.6rem)] font-medium leading-[1.55] tracking-[-0.015em] text-blue-50 sm:max-w-[52rem]">
+            {section.description}
+          </p>
+        </div>
+
+        <div className="mt-8 flex min-h-[10.5rem] w-full max-w-2xl flex-col items-center justify-start sm:mt-10 sm:min-h-[12.75rem]">
+          <h2 className="text-b1 font-medium uppercase leading-none tracking-[0.2em] text-blue-50/74">
+            Led by
+          </h2>
+
+          <div className="mt-5 flex w-full flex-wrap justify-center gap-6 sm:mt-7 sm:gap-8">
+            {section.leads.map((lead) => (
+              <LeadProfile key={lead.name} lead={lead} />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-// ContentSections groups description, leads, and projects into one shared interactive surface.
-function ContentSections({ section }: { section: TeamSection }) {
-  return (
-    <StaticSectionBackground className="px-6">
-      <Description section={section} />
-      <Projects section={section} />
-    </StaticSectionBackground>
-  );
-}
-
-// Description renders the section overview and lead portraits over an interactive blue field.
-function Description({ section }: { section: TeamSection }) {
-  return (
-    <section
-      id="team-overview"
-      className="mx-auto flex h-[calc(100svh-(var(--header-height)*2))] w-full max-w-5xl scroll-mt-20 flex-col items-center justify-center py-20 text-center"
-    >
-      <ParticleText text={section.description} />
-      <h2 className="mt-14 text-subtitle font-black">
-        {section.leads.length === 1 ? "Section Lead" : "Section Leads"}
-      </h2>
-      <div className="mt-8 flex flex-wrap justify-center gap-10">
-        {section.leads.map((lead) => (
-          <LeadProfile key={lead.name} lead={lead} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-// LeadProfile renders a single section lead headshot and name on a transparent card.
+// LeadProfile renders a single section lead headshot and name.
 function LeadProfile({ lead }: { lead: SectionLead }) {
   return (
-    <figure className="flex w-40 flex-col items-center bg-transparent px-4 py-5 text-center">
+    <figure className="flex min-w-0 max-w-52 flex-col items-center text-center sm:max-w-60">
       <Image
         alt={lead.name}
-        className="h-24 w-24 rounded-full object-cover"
-        height={96}
+        className="aspect-square w-32 rounded-full object-cover shadow-[0_18px_42px_rgba(0,0,0,0.34)] sm:w-44 lg:w-52"
+        height={208}
         src={lead.image}
-        width={96}
+        width={208}
       />
-      <figcaption className="mt-5 text-b1 font-black">{lead.name}</figcaption>
+
+      <figcaption className="mt-4 break-words text-b2 font-medium leading-tight tracking-[-0.03em] text-white sm:text-b1 lg:text-subtitle">
+        {lead.name}
+      </figcaption>
     </figure>
   );
 }
 
-// Projects renders the project carousel after slowly fading into view.
+// Projects renders the section project carousel on the shared MUAS page background.
 function Projects({ section }: { section: TeamSection }) {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  // Watches the projects band and starts its entry fade when it reaches the viewport.
-  useEffect(() => {
-    const element = sectionRef.current;
-
-    if (!element) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.18 },
-    );
-
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
   return (
     <section
       id="team-projects"
-      ref={sectionRef}
-      className={`flex h-svh scroll-mt-20 flex-col items-center justify-center overflow-hidden py-20 transition duration-[1600ms] ease-out ${
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-      }`}
+      className="relative isolate scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,#02040a_0%,#001126_46%,#001f49_100%)] py-16 text-white sm:py-20 lg:py-24"
     >
-      <h2 className="text-center text-h6 font-black sm:text-h5 tracking-[-0.05em]">Projects</h2>
-      <ProjectCarousel projects={section.projects} />
-    </section>
-  );
-}
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_18%,rgba(84,134,200,0.18),transparent_30%),radial-gradient(circle_at_84%_68%,rgba(0,74,173,0.2),transparent_34%)]" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:86px_86px] opacity-24" />
 
-// NextSection renders the linked preview card; shared dissolve handles the route swap.
-function NextSection({ section }: { section: TeamSection }) {
-  return (
-    <section className="relative z-10 flex h-[calc(100svh-(var(--header-height)*1.6))] items-center justify-center bg-white px-6 py-20 text-blue-900">
-      <Link
-        aria-label={`Learn about ${section.name}`}
-        className="group flex max-w-4xl flex-col items-center text-center"
-        href={`/sections/${section.slug}`}
-      >
-        <h2 className="text-h6 font-black leading-tight sm:text-h5 tracking-[-0.05em]">
-          Next Section: <span className="underline underline-offset-8">{section.name}</span>
+      <div className={headerContentContainerClass}>
+        <h2 className="text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
+          Projects
         </h2>
-        <div className="mt-10 aspect-[16/9] w-full max-w-3xl overflow-hidden bg-blue-900">
-          <video
-            aria-label={`${section.name} preview video`}
-            className="h-full w-full object-cover brightness-75 transition duration-700 ease-out group-hover:scale-110 group-hover:brightness-100"
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            src={section.heroVideo}
-          />
-        </div>
-      </Link>
+
+        <ProjectCarousel projects={section.projects} />
+      </div>
     </section>
   );
-}
-
-// StaticSectionBackground groups the section content on a navbar-inspired vertical gradient.
-function StaticSectionBackground({ children, className }: InteractiveBackgroundProps) {
-  return (
-    <div
-      className={`relative overflow-hidden bg-[linear-gradient(180deg,#000000_0%,#001f49_100%)] ${className}`}
-    >
-      <div className="relative z-10">{children}</div>
-    </div>
-  );
-}
-
-// ParticleText animates description words from subtle particles into readable text.
-function ParticleText({ text }: { text: string }) {
-  const particles = useMemo(() => splitTextIntoWordParticles(text), [text]);
-  const textRef = useRef<HTMLParagraphElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  // Watches the description paragraph and starts the particle animation only once it scrolls into view.
-  useEffect(() => {
-    const element = textRef.current;
-
-    if (!element) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.45 },
-    );
-
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  return (
-    <p
-      ref={textRef}
-      className="max-w-3xl text-b2 leading-relaxed text-blue-50 sm:text-b1"
-      aria-label={text}
-    >
-      {particles.map((particle, index) => (
-        <span
-          aria-hidden="true"
-          className={`section-description-particle inline-block whitespace-nowrap ${
-            isVisible ? "section-description-particle-visible" : ""
-          }`}
-          key={`${particle.word}-${index}`}
-          style={getParticleStyle(index, particle.seed)}
-        >
-          {particle.word}
-          {index < particles.length - 1 ? "\u00a0" : ""}
-        </span>
-      ))}
-    </p>
-  );
-}
-
-// splitTextIntoWordParticles prepares deterministic particle seeds for each word.
-function splitTextIntoWordParticles(text: string) {
-  return text.trim().split(/\s+/).map((word, index) => ({
-    word,
-    seed: pseudoRandom(index + word.charCodeAt(0)),
-  }));
-}
-
-// getParticleStyle maps a particle seed into CSS variables for its entry animation.
-function getParticleStyle(index: number, seed: number) {
-  const x = Math.round((seed - 0.5) * 22);
-  const y = Math.round((pseudoRandom(index + 17) - 0.5) * 18);
-  const delay = Math.min(index * 5, 420);
-
-  return {
-    "--particle-delay": `${delay}ms`,
-    "--particle-x": `${x}px`,
-    "--particle-y": `${y}px`,
-  } as CSSProperties;
-}
-
-// pseudoRandom creates stable animation scatter values without storing them in data.
-function pseudoRandom(input: number) {
-  const value = Math.sin(input * 12.9898) * 43758.5453;
-
-  return value - Math.floor(value);
-}
-
-// clamp keeps scroll-derived values inside the expected animation range.
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
 }

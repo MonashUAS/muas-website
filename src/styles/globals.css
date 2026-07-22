@@ -224,3 +224,14 @@
   background-color: rgb(228 197 106 / 0.42);
   box-shadow: none;
 }
+
+/* Route shell opacity is driven by PageDissolveTransition (exit → navigate → enter). */
+.page-dissolve-shell {
+  will-change: opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-dissolve-shell {
+    transition: none !important;
+  }
+}

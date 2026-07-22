@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -9,12 +9,9 @@ import {
   type ReactNode,
 } from "react";
 
-type DissolvePhase = "idle" | "covering" | "revealing";
+type DissolvePhase = "idle" | "pendingEnter" | "entering";
 
-const REVEAL_FADE_MS = 260;
-const REDUCED_REVEAL_MS = 40;
-const QUERY_NAVIGATION_REVEAL_MS = 140;
-const STUCK_OVERLAY_TIMEOUT_MS = 2000;
+const ENTER_MS = 280;
 
 type PageDissolveTransitionProps = {
   children: ReactNode;
@@ -24,158 +21,104 @@ function getLocationKey(url: URL) {
   return `${url.pathname}${url.search}`;
 }
 
-// Shared App Router dissolve: navigation starts immediately while a dark
-// overlay covers the route swap, then dissolves once the new route commits.
+function resetScrollToTop() {
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+}
+
+// Shared App Router dissolve: hide instantly, navigate now, scroll to top, then fade in.
 export function PageDissolveTransition({
   children,
 }: PageDissolveTransitionProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
   const [phase, setPhase] = useState<DissolvePhase>("idle");
-  const [overlayVisible, setOverlayVisible] = useState(false);
+  const [opacity, setOpacity] = useState(1);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   const pathnameRef = useRef(pathname);
-  const phaseRef = useRef<DissolvePhase>("idle");
   const transitionIdRef = useRef(0);
-  const lastLocationKeyRef = useRef("");
-  const revealTimerRef = useRef<number | null>(null);
-  const stuckTimerRef = useRef<number | null>(null);
-  const queryNavigationTimerRef = useRef<number | null>(null);
-  const popstateTimerRef = useRef<number | null>(null);
-  const revealFrameRef = useRef<[number | null, number | null]>([null, null]);
-  const startNavigationTransitionRef = useRef<
-    (expectsPathnameChange: boolean) => void
-  >(() => {});
+  const enterTimerRef = useRef<number | null>(null);
+  const enterFrameRef = useRef<[number | null, number | null]>([null, null]);
+  const hasMountedRef = useRef(false);
 
   const clearAsyncWork = useCallback(() => {
-    if (revealTimerRef.current !== null) {
-      window.clearTimeout(revealTimerRef.current);
-      revealTimerRef.current = null;
+    if (enterTimerRef.current !== null) {
+      window.clearTimeout(enterTimerRef.current);
+      enterTimerRef.current = null;
     }
 
-    if (stuckTimerRef.current !== null) {
-      window.clearTimeout(stuckTimerRef.current);
-      stuckTimerRef.current = null;
-    }
-
-    if (queryNavigationTimerRef.current !== null) {
-      window.clearTimeout(queryNavigationTimerRef.current);
-      queryNavigationTimerRef.current = null;
-    }
-
-    if (popstateTimerRef.current !== null) {
-      window.clearTimeout(popstateTimerRef.current);
-      popstateTimerRef.current = null;
-    }
-
-    for (const frame of revealFrameRef.current) {
+    for (const frame of enterFrameRef.current) {
       if (frame !== null) {
         window.cancelAnimationFrame(frame);
       }
     }
 
-    revealFrameRef.current = [null, null];
+    enterFrameRef.current = [null, null];
   }, []);
 
-  const setPhaseSafe = useCallback((next: DissolvePhase) => {
-    phaseRef.current = next;
-    setPhase(next);
-  }, []);
-
-  const completeTransition = useCallback(
+  const beginEnter = useCallback(
     (transitionId: number) => {
       if (transitionIdRef.current !== transitionId) {
         return;
       }
 
-      clearAsyncWork();
-      setOverlayVisible(false);
-      setPhaseSafe("idle");
-    },
-    [clearAsyncWork, setPhaseSafe],
-  );
+      resetScrollToTop();
+      setOpacity(0);
+      setPhase("pendingEnter");
 
-  const beginReveal = useCallback(
-    (transitionId: number) => {
-      if (
-        transitionIdRef.current !== transitionId ||
-        phaseRef.current === "idle"
-      ) {
+      if (prefersReducedMotion) {
+        setOpacity(1);
+        setPhase("idle");
         return;
       }
 
-      if (revealFrameRef.current[0] !== null) {
-        return;
-      }
+      enterFrameRef.current[0] = window.requestAnimationFrame(() => {
+        enterFrameRef.current[0] = null;
 
-      if (stuckTimerRef.current !== null) {
-        window.clearTimeout(stuckTimerRef.current);
-        stuckTimerRef.current = null;
-      }
-
-      if (queryNavigationTimerRef.current !== null) {
-        window.clearTimeout(queryNavigationTimerRef.current);
-        queryNavigationTimerRef.current = null;
-      }
-
-      if (popstateTimerRef.current !== null) {
-        window.clearTimeout(popstateTimerRef.current);
-        popstateTimerRef.current = null;
-      }
-
-      const revealMs = prefersReducedMotion ? REDUCED_REVEAL_MS : REVEAL_FADE_MS;
-
-      revealFrameRef.current[0] = window.requestAnimationFrame(() => {
-        revealFrameRef.current[0] = null;
-
-        revealFrameRef.current[1] = window.requestAnimationFrame(() => {
-          revealFrameRef.current[1] = null;
+        enterFrameRef.current[1] = window.requestAnimationFrame(() => {
+          enterFrameRef.current[1] = null;
 
           if (transitionIdRef.current !== transitionId) {
             return;
           }
 
-          setPhaseSafe("revealing");
-          setOverlayVisible(false);
+          resetScrollToTop();
+          setPhase("entering");
+          setOpacity(1);
 
-          revealTimerRef.current = window.setTimeout(() => {
-            completeTransition(transitionId);
-          }, revealMs);
+          enterTimerRef.current = window.setTimeout(() => {
+            if (transitionIdRef.current !== transitionId) {
+              return;
+            }
+
+            setPhase("idle");
+            enterTimerRef.current = null;
+          }, ENTER_MS);
         });
       });
     },
-    [completeTransition, prefersReducedMotion, setPhaseSafe],
+    [prefersReducedMotion],
   );
 
-  const startNavigationTransition = useCallback(
-    (expectsPathnameChange: boolean) => {
+  const startNavigation = useCallback(
+    (href: string) => {
       clearAsyncWork();
       transitionIdRef.current += 1;
-      const transitionId = transitionIdRef.current;
 
-      setPhaseSafe("covering");
-      setOverlayVisible(true);
-
-      if (expectsPathnameChange) {
-        stuckTimerRef.current = window.setTimeout(() => {
-          beginReveal(transitionId);
-        }, STUCK_OVERLAY_TIMEOUT_MS);
-        return;
-      }
-
-      queryNavigationTimerRef.current = window.setTimeout(() => {
-        beginReveal(transitionId);
-      }, QUERY_NAVIGATION_REVEAL_MS);
+      // Instant hide — no dissolve-out of the current page.
+      setPhase("pendingEnter");
+      setOpacity(0);
+      resetScrollToTop();
+      router.push(href);
     },
-    [beginReveal, clearAsyncWork, setPhaseSafe],
+    [clearAsyncWork, router],
   );
 
   useEffect(() => {
-    startNavigationTransitionRef.current = startNavigationTransition;
-  }, [startNavigationTransition]);
-
-  useEffect(() => {
-    lastLocationKeyRef.current = `${window.location.pathname}${window.location.search}`;
+    history.scrollRestoration = "manual";
   }, []);
 
   useEffect(() => {
@@ -188,9 +131,6 @@ export function PageDissolveTransition({
     return () => mediaQuery.removeEventListener("change", updatePreference);
   }, []);
 
-  // Cover on user navigation intent. Never preventDefault: routing starts immediately.
-  // Do not patch history.pushState/replaceState: Next may call those inside
-  // useInsertionEffect, where React forbids scheduling state updates.
   useEffect(() => {
     const getInternalNavigationTarget = (href: string) => {
       if (
@@ -216,15 +156,11 @@ export function PageDissolveTransition({
 
       const currentUrl = new URL(window.location.href);
 
-      // Hash-only jumps and identical path/search locations are not route changes.
       if (getLocationKey(url) === getLocationKey(currentUrl)) {
         return null;
       }
 
-      return {
-        expectsPathnameChange: url.pathname !== currentUrl.pathname,
-        key: getLocationKey(url),
-      };
+      return `${url.pathname}${url.search}${url.hash}`;
     };
 
     const handleClick = (event: MouseEvent) => {
@@ -263,34 +199,16 @@ export function PageDissolveTransition({
         return;
       }
 
-      lastLocationKeyRef.current = navigationTarget.key;
-      startNavigationTransitionRef.current(
-        navigationTarget.expectsPathnameChange,
-      );
+      event.preventDefault();
+      startNavigation(navigationTarget);
     };
 
     const handlePopState = () => {
-      if (popstateTimerRef.current !== null) {
-        window.clearTimeout(popstateTimerRef.current);
-      }
-
-      // Defer so we never setState during a browser/React commit turn.
-      popstateTimerRef.current = window.setTimeout(() => {
-        popstateTimerRef.current = null;
-
-        const currentUrl = new URL(window.location.href);
-        const nextKey = getLocationKey(currentUrl);
-
-        if (lastLocationKeyRef.current === nextKey) {
-          return;
-        }
-
-        const previousPathname = pathnameRef.current;
-        lastLocationKeyRef.current = nextKey;
-        startNavigationTransitionRef.current(
-          currentUrl.pathname !== previousPathname,
-        );
-      }, 0);
+      clearAsyncWork();
+      transitionIdRef.current += 1;
+      setPhase("pendingEnter");
+      setOpacity(0);
+      resetScrollToTop();
     };
 
     document.addEventListener("click", handleClick, true);
@@ -301,57 +219,39 @@ export function PageDissolveTransition({
       window.removeEventListener("popstate", handlePopState);
       clearAsyncWork();
     };
-  }, [clearAsyncWork]);
+  }, [clearAsyncWork, startNavigation]);
 
-  // Once the App Router commits a new pathname, dissolve the cover away.
-  // If navigation was programmatic (no prior click cover), flash a cover first.
-  // Defer state updates so they never run in the same turn as the router commit
-  // (avoids "state update on a component that hasn't mounted yet" during transitions).
   useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      pathnameRef.current = pathname;
+      return;
+    }
+
     if (pathnameRef.current === pathname) {
       return;
     }
 
     pathnameRef.current = pathname;
+    const transitionId = transitionIdRef.current;
 
-    if (typeof window !== "undefined") {
-      lastLocationKeyRef.current = `${window.location.pathname}${window.location.search}`;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      if (phaseRef.current === "idle") {
-        startNavigationTransition(true);
-      }
-
-      beginReveal(transitionIdRef.current);
-    }, 0);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [beginReveal, pathname, startNavigationTransition]);
-
-  const revealMs = prefersReducedMotion ? REDUCED_REVEAL_MS : REVEAL_FADE_MS;
-  const showOverlay = phase !== "idle";
+    clearAsyncWork();
+    beginEnter(transitionId);
+  }, [beginEnter, clearAsyncWork, pathname]);
 
   return (
-    <>
+    <div
+      className="page-dissolve-shell flex min-h-0 w-full flex-1 flex-col"
+      style={{
+        opacity,
+        transition:
+          phase === "entering" && !prefersReducedMotion
+            ? `opacity ${ENTER_MS}ms ease-out`
+            : "none",
+        pointerEvents: phase === "pendingEnter" ? "none" : undefined,
+      }}
+    >
       {children}
-      {showOverlay ? (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-0 z-[70] bg-background"
-          style={{
-            opacity: overlayVisible ? 1 : 0,
-            // Cover appears instantly so the previous page never lingers;
-            // only the reveal dissolves once the new route is ready.
-            transition:
-              phase === "revealing"
-                ? `opacity ${revealMs}ms ease-out`
-                : "none",
-          }}
-        />
-      ) : null}
-    </>
+    </div>
   );
 }
