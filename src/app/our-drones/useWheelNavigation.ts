@@ -6,13 +6,14 @@ type WheelNavigationOptions = {
   cooldownMs: number;
   enabled?: boolean;
   onStep: (direction: number) => void;
+  shouldHandleEvent?: (event: WheelEvent, element: HTMLElement) => boolean;
   threshold: number;
 };
 
 // useWheelNavigation captures wheel input with a non-passive listener so page scroll stays locked.
 export function useWheelNavigation(
   ref: RefObject<HTMLElement | null>,
-  { cooldownMs, enabled = true, onStep, threshold }: WheelNavigationOptions,
+  { cooldownMs, enabled = true, onStep, shouldHandleEvent, threshold }: WheelNavigationOptions,
 ) {
   const lastWheelAt = useRef(0);
   const onStepRef = useRef(onStep);
@@ -34,6 +35,10 @@ export function useWheelNavigation(
     const handleWheel = (event: WheelEvent) => {
       const now = Date.now();
 
+      if (shouldHandleEvent && !shouldHandleEvent(event, element)) {
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -50,5 +55,5 @@ export function useWheelNavigation(
     return () => {
       element.removeEventListener("wheel", handleWheel);
     };
-  }, [cooldownMs, enabled, ref, threshold]);
+  }, [cooldownMs, enabled, ref, shouldHandleEvent, threshold]);
 }

@@ -30,6 +30,7 @@ type SingleWindowCarouselProps = {
   autoplay?: boolean;
   initialIndex?: number;
   onActiveIndexChange?: (index: number) => void;
+  dotTone?: "light" | "blue";
 };
 
 // Dependency-free single-window carousel shared by homepage and Redback projects.
@@ -42,6 +43,7 @@ export function SingleWindowCarousel({
   autoplay = true,
   initialIndex = 0,
   onActiveIndexChange,
+  dotTone = "light",
 }: SingleWindowCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(() =>
     clampIndex(initialIndex, slides.length),
@@ -61,6 +63,9 @@ export function SingleWindowCarousel({
     () => Array.from({ length: maxIndex + 1 }, (_, index) => index),
     [maxIndex],
   );
+  const activeDotClass = dotTone === "blue" ? "w-9 bg-blue-900" : "w-9 bg-blue-50";
+  const inactiveDotClass =
+    dotTone === "blue" ? "w-2.5 bg-blue-900/25" : "w-2.5 bg-white/25";
 
   useEffect(() => {
     // Skip the mount notification — the parent already owns the initial index.
@@ -243,7 +248,7 @@ export function SingleWindowCarousel({
               type="button"
               onClick={() => navigateToSlide(pageIndex)}
               className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
-                isActive ? "w-9 bg-blue-50" : "w-2.5 bg-white/25"
+                isActive ? activeDotClass : inactiveDotClass
               }`}
               aria-label={getDotLabel(pageIndex)}
               aria-current={isActive ? "true" : undefined}

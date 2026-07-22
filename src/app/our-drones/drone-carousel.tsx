@@ -39,6 +39,13 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
     cooldownMs: 520,
     enabled: selectedDrone === null,
     onStep: stepCarousel,
+    shouldHandleEvent: (event, element) => {
+      const bounds = element.getBoundingClientRect();
+      const activeLeft = bounds.left + bounds.width * 0.25;
+      const activeRight = bounds.left + bounds.width * 0.75;
+
+      return event.clientX >= activeLeft && event.clientX <= activeRight;
+    },
     threshold: 10,
   });
 
@@ -105,7 +112,7 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
         onClick={() => setSelectedDrone(drones[activeIndex])}
         type="button"
       >
-        {drones[activeIndex].name}.
+        {drones[activeIndex].name}
       </button>
       
       {/* if a drone is selected, show the details modal */}
