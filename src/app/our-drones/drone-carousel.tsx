@@ -69,8 +69,8 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
 
       {/* header */}
       <div className="absolute top-8 text-center uppercase text-blue-900">
-        <p className="text-subtitle font-black leading-none">Explore</p>
-        <h1 className="mt-1 text-h6 font-black leading-none sm:text-h5 tracking-[-0.05em]">Our Drones</h1>
+        <p className="text-b1 font-black leading-none">Explore</p>
+        <h1 className="mt-1 text-h7 font-black leading-none sm:text-h6 tracking-[-0.05em]">Our Drones</h1>
       </div>
 
     {/* carousel */}
@@ -106,7 +106,7 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
 
       {/* active drone name - button */}
       <button
-        className={`absolute bottom-14 max-w-[92vw] cursor-pointer text-h3 font-black uppercase leading-none transition sm:text-h1 tracking-[-0.05em] ${
+        className={`absolute bottom-14 max-w-[92vw] cursor-pointer text-h3 font-black leading-none transition sm:text-h1 tracking-[-0.05em] ${
           isActiveHovered ? "text-blue-500" : "text-blue-900 hover:text-blue-500"
         }`}
         onClick={() => setSelectedDrone(drones[activeIndex])}

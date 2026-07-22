@@ -17,6 +17,8 @@ type DroneDetailsModalProps = {
 export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  
+  const hasGallery = (drone.gallery?.length ?? 0) > 0;
   const slides = useMemo(() => getDroneSlides(drone), [drone]);
   const isVisible = isOpen && !isClosing;
 
@@ -36,13 +38,13 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
   // requestClose plays the exit animation before removing the modal.
   const requestClose = () => {
     setIsClosing(true);
-    window.setTimeout(onClose, 460);
+    window.setTimeout(onClose, 540);
   };
 
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 top-[var(--header-height)] z-40 overflow-hidden bg-blue-50 p-3 text-blue-950 transition-opacity duration-800 sm:p-5 ${
-        isClosing ? "opacity-0" : "opacity-100"
+      className={`fixed inset-x-0 bottom-0 top-[var(--header-height)] z-40 overflow-hidden bg-blue-50 p-3 text-blue-950 transition-opacity duration-[520ms] ease-out sm:p-5 ${
+        isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
       <div className="absolute inset-0 z-0 overflow-hidden">
@@ -58,7 +60,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
       </div>
 
       <article
-        className="relative z-10 mx-auto flex h-full w-full max-w-[1720px] flex-col px-1 [--drone-modal-frame-height:min(26svh,calc((100svh-var(--header-height)-12rem)/2))] sm:px-4 lg:px-6 lg:[--drone-modal-frame-height:min(52svh,calc(100svh-var(--header-height)-12rem))]"
+        className="relative z-10 mx-auto flex h-full w-full max-w-[1720px] flex-col px-1 [--drone-modal-frame-height:min(32svh,calc((100svh-var(--header-height)-11rem)/2))] sm:px-4 sm:[--drone-modal-frame-height:min(34svh,calc((100svh-var(--header-height)-12rem)/2))] lg:px-6 lg:[--drone-modal-frame-height:min(66svh,calc(100svh-var(--header-height)-11rem))]"
       >
         <button
           aria-label="Close drone details"
@@ -70,33 +72,37 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
         </button>
 
         <div
-          className={`absolute left-1/2 top-5 z-10 w-[calc(100%-6rem)] max-w-[92vw] -translate-x-1/2 text-center text-blue-900 transition-[opacity,transform] duration-700 ease-out sm:top-5 ${
-            isVisible ? "translate-y-0 opacity-100" : "-translate-y-5 opacity-0"
+          className={`absolute left-1/2 top-5 z-10 w-[calc(100%-6rem)] max-w-[92vw] -translate-x-1/2 text-center text-blue-900 transition-opacity duration-[520ms] ease-out sm:top-5 ${
+            isVisible ? "opacity-100" : "opacity-0"
           }`}
         >
           <h2
             id="drone-details-heading"
-            className="text-h5 font-black leading-none tracking-[-0.05em] text-blue-900 sm:text-h4"
+            className="text-h3 font-black leading-none tracking-[-0.05em] text-blue-900 sm:text-h1"
           >
             {drone.name}
           </h2>
         </div>
 
-        <div className="grid min-h-0 flex-1 content-center items-center gap-3 pt-16 sm:gap-4 sm:pt-20 lg:grid-cols-[minmax(0,1.12fr)_minmax(26rem,0.88fr)] lg:gap-5 xl:gap-6">
+        <div className="grid min-h-0 flex-1 content-center items-center justify-center gap-3 pt-20 sm:gap-4 sm:pt-24 lg:grid-cols-[1fr_auto] lg:gap-6 xl:gap-8">
           <div
-            className={`mx-auto min-w-0 w-full max-w-[min(100%,calc(var(--drone-modal-frame-height)*1.5+6rem))] transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:transition-none sm:max-w-[min(100%,calc(var(--drone-modal-frame-height)*1.5+8rem))] lg:mx-0 lg:max-w-[min(100%,calc(var(--drone-modal-frame-height)*1.5+10rem))] ${
-              isVisible ? "opacity-100 lg:translate-x-0" : "opacity-100 lg:translate-x-[10vw]"
+            className={`mx-auto min-w-0 w-full max-w-[min(100%,calc(var(--drone-modal-frame-height)*1.5+6rem))] transition-opacity duration-[520ms] ease-out motion-reduce:transition-none sm:max-w-[min(100%,calc(var(--drone-modal-frame-height)*1.5+8rem))] lg:max-w-[min(100%,calc(var(--drone-modal-frame-height)*1.5+10rem))] ${
+              isVisible ? "opacity-100" : "opacity-0"
             }`}
           >
-            <SingleWindowCarousel
-              slides={slides}
-              labelledBy="drone-details-heading"
-              previousLabel={`Show previous ${drone.name} image`}
-              nextLabel={`Show next ${drone.name} image`}
-              getDotLabel={(pageIndex) => `Show ${drone.name} image ${pageIndex + 1}`}
-              autoplay={false}
-              dotTone="blue"
-            />
+            {hasGallery ? (
+              <SingleWindowCarousel
+                slides={slides}
+                labelledBy="drone-details-heading"
+                previousLabel={`Show previous ${drone.name} image`}
+                nextLabel={`Show next ${drone.name} image`}
+                getDotLabel={(pageIndex) => `Show ${drone.name} image ${pageIndex + 1}`}
+                autoplay={false}
+                dotTone="blue"
+              />
+            ) : (
+              <DroneSlide drone={drone} image={drone.heroImage} index={0} />
+            )}
           </div>
 
           <DroneInfoPanel drone={drone} isVisible={isVisible} />
@@ -115,19 +121,17 @@ function DroneInfoPanel({
 }) {
   return (
     <aside
-      className={`mx-auto flex aspect-[3/2] h-auto w-full max-w-[min(100%,calc(var(--drone-modal-frame-height)*1.5))] flex-col overflow-hidden rounded-[1.5rem] border border-white/35 bg-blue-950/90 px-4 py-4 text-white shadow-[0_28px_96px_rgba(0,0,0,0.28)] backdrop-blur-md transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform sm:px-5 sm:py-5 lg:mx-0 lg:aspect-auto lg:h-[var(--drone-modal-frame-height)] lg:max-w-none lg:px-6 lg:py-6 ${
-        isVisible
-          ? "translate-y-0 opacity-100 lg:translate-x-0"
-          : "translate-y-6 opacity-0 lg:translate-x-[10vw] lg:translate-y-0 lg:opacity-100"
+      className={`mx-auto flex h-auto max-h-[var(--drone-modal-frame-height)] w-full max-w-[min(100%,calc(var(--drone-modal-frame-height)*1.5+6rem))] flex-col overflow-hidden rounded-[1.5rem] border border-white/35 bg-blue-950/90 px-4 py-4 text-white shadow-[0_28px_96px_rgba(0,0,0,0.28)] backdrop-blur-md transition-opacity duration-[520ms] ease-out sm:max-w-[min(100%,calc(var(--drone-modal-frame-height)*1.5+8rem))] sm:px-5 sm:py-5 lg:h-[var(--drone-modal-frame-height)] lg:w-[20vw] lg:max-w-[20vw] lg:px-6 lg:py-6 ${
+        isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1 sm:gap-5 lg:overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1 sm:gap-8 lg:overflow-y-auto">
         <div>
           <p className="text-b2 leading-relaxed text-blue-50/80 sm:text-b1">
             {drone.description.join(" ")}
           </p>
         </div>
-        <div className="grid min-h-0 flex-1 grid-cols-2 gap-4 border-t border-white/10 pt-4 sm:gap-5">
+        <div className="grid shrink-0 grid-cols-2 gap-4 border-t border-white/10 pt-8 sm:gap-8 lg:grid-cols-1">
           <SpecList specs={drone.dimensions} title="Dimensions" tone="dark" compact />
           <SpecList specs={drone.features} title="Key Features" tone="dark" compact />
         </div>
@@ -140,7 +144,7 @@ function DroneSlide({ drone, image, index }: { drone: Drone; image?: string; ind
   return (
     <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[1.5rem]">
       {index === 0 ? (
-        <div className="absolute left-1/2 top-1/2 h-full w-[min(64vw,100%)] max-w-[720px] -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute inset-0">
           <DroneVisual drone={drone} />
         </div>
       ) : image ? (
