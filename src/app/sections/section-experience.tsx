@@ -109,7 +109,7 @@ function LeadProfile({ lead }: { lead: SectionLead }) {
   );
 }
 
-// Projects renders the section project carousel on the shared MUAS page background.
+// Projects renders the section responsibilities carousel on the shared MUAS page background.
 function Projects({ section }: { section: TeamSection }) {
   return (
     <section
@@ -121,7 +121,7 @@ function Projects({ section }: { section: TeamSection }) {
 
       <div className={headerContentContainerClass}>
         <h2 className="text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
-          Projects
+          Responsibilities
         </h2>
 
         <ProjectCarousel projects={section.projects} />

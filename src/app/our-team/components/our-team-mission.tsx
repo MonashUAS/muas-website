@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { AnimatedTextHighlight } from "@/global-components/animated-text-highlight";
-import { temporaryImage } from "../data/team-data";
 
 export function OurTeamMission() {
   return (
@@ -51,11 +50,12 @@ export function OurTeamMission() {
               <div className="absolute -inset-8 bg-blue-500/15 blur-3xl" />
 
               <Image
-                src={temporaryImage.src}
-                alt={temporaryImage.missionAlt}
+                src="/images/our team page/our mission/our mission.JPG"
+                alt="Monash UAS members gathered around an aircraft display"
                 fill
                 sizes="(min-width:1024px) 62vw, 100vw"
-                className="object-cover object-center"
+                className="object-cover"
+                style={{ objectPosition: "50% 47%" }}
               />
 
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.28)_0%,rgba(0,31,73,0.05)_48%,rgba(0,0,0,0.18)_100%),linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,31,73,0.3)_100%)]" />

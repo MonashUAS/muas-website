@@ -41,7 +41,7 @@ export const explorePanels: ExplorePanel[] = [
     href: "/contact-us",
     preview:
       "Start a conversation with MUAS about partnerships, recruitment, or enquiries.",
-    image: "/images/homepage/quick-nav/contact-us_updated.jpg",
+    image: "/images/homepage/quick-nav/contact-us.jpg",
     alt: "MUAS members discussing aircraft systems",
   },
 ];

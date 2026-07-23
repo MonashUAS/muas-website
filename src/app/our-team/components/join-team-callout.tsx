@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { temporaryImage } from "../data/team-data";
 
 export function JoinTeamCallout() {
   return (
@@ -10,11 +9,12 @@ export function JoinTeamCallout() {
       <div className="mx-auto w-full max-w-[1720px] px-5 sm:px-8 lg:px-12">
         <div className="relative min-h-[30rem] overflow-hidden border border-white/10 bg-blue-950 shadow-[0_36px_120px_rgba(0,0,0,0.45)] sm:min-h-[34rem] lg:min-h-[38rem]">
           <Image
-            src={temporaryImage.src}
-            alt="Temporary placeholder for Monash UAS recruitment"
+            src="/images/our team page/want to become part of the team card/want-to-join-the-team_updated.jpg"
+            alt="Monash UAS members speaking with prospective recruits"
             fill
             sizes="100vw"
-            className="object-cover object-center"
+            className="object-cover"
+            style={{ objectPosition: "48% 50%" }}
           />
 
           <div className="absolute inset-0 bg-black/30" />
@@ -26,14 +26,14 @@ export function JoinTeamCallout() {
           <div className="relative z-10 flex min-h-[30rem] items-center px-6 py-14 sm:min-h-[34rem] sm:px-10 lg:min-h-[38rem] lg:px-16">
             <div className="max-w-3xl">
               <h2 className="text-h6 font-black leading-[0.96] tracking-[-0.05em] text-white sm:text-h4">
-                Want to become part of the team?
+                Want To Become Part of The Team?
               </h2>
 
               <p className="mt-6 max-w-2xl text-b1 leading-relaxed text-blue-50 sm:text-subtitle sm:leading-relaxed">
                 Build real autonomous aircraft alongside students from
-                engineering, software, manufacturing, operations and flight
-                testing. Gain practical experience, contribute to meaningful
-                projects and help shape what Monash UAS builds next.
+                engineering, software, manufacturing, operations and aerospace
+                backgrounds. Gain practical experience, and contribute to meaningful
+                projects which help shape the future of Monash UAS.
               </p>
 
               <Link
