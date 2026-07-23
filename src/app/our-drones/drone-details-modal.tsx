@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { X } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { SingleWindowCarousel } from "@/global-components/modules/single-window-carousel";
 import type { Drone } from "./drone-data";
@@ -39,9 +40,8 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
 
   return (
     <div
-      className={`absolute inset-0 z-40 h-full w-full overflow-hidden bg-blue-950/40 backdrop-blur-sm p-3 sm:p-6 lg:p-8 flex items-center justify-center transition-opacity duration-[520ms] ease-out ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      className={`absolute inset-0 z-40 h-full w-full overflow-hidden bg-blue-950/40 backdrop-blur-sm p-3 sm:p-6 lg:p-8 flex items-center justify-center transition-opacity duration-[520ms] ease-out ${isVisible ? "opacity-100" : "opacity-0"
+        }`}
       onClick={(e) => {
         if (e.target === e.currentTarget) requestClose();
       }}
@@ -71,10 +71,10 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
 
         <div className="relative z-10 grid min-h-0 flex-1 content-center items-center justify-center gap-4 pt-12 sm:pt-14 lg:pt-14 lg:grid-cols-[1fr_auto] lg:gap-8 overflow-hidden">
           <div
-            className={`mx-auto min-w-0 w-full max-w-[min(100%,720px)] transition-opacity duration-[520ms] ease-out motion-reduce:transition-none ${
-              isVisible ? "opacity-100" : "opacity-0"
-            }`}
+            className={`mx-auto min-w-0 w-full max-w-[min(100%,720px)] transition-opacity duration-[520ms] ease-out motion-reduce:transition-none ${isVisible ? "opacity-100" : "opacity-0"
+              }`}
           >
+            {drone.banner ? <DroneBannerHeader banner={drone.banner} /> : null}
             {hasGallery ? (
               <SingleWindowCarousel
                 slides={slides}
@@ -97,6 +97,24 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
   );
 }
 
+// DroneBannerHeader renders a feature banner notification header with a link button above the drone gallery.
+function DroneBannerHeader({ banner }: { banner: NonNullable<Drone["banner"]> }) {
+  return (
+    <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-blue-200/80 bg-white/80 px-4 py-2.5 shadow-sm backdrop-blur-md sm:px-5 sm:py-3">
+      <span className="text-b2 sm:text-b1 font-bold text-blue-950">
+        {banner.text}
+      </span>
+      <Link
+        href={banner.href}
+        className="group inline-flex items-center gap-1.5 rounded-full bg-blue-900 px-4 py-1.5 text-b2 sm:text-b1 font-bold text-white shadow-sm transition-all duration-300 hover:bg-blue-800 hover:shadow-md hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-900/40"
+      >
+        <span>{banner.buttonText}</span>
+        <ArrowRight size={16} strokeWidth={2.5} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+      </Link>
+    </div>
+  );
+}
+
 // DroneInfoPanel renders the drone details, specifications, and title in a scrollable side panel.
 function DroneInfoPanel({
   drone,
@@ -107,9 +125,8 @@ function DroneInfoPanel({
 }) {
   return (
     <aside
-      className={`mx-auto flex h-full max-h-[68vh] w-full max-w-[min(100%,600px)] flex-col min-h-0 overflow-hidden rounded-[1.5rem] bg-blue-950/90 px-4 py-5 text-white backdrop-blur-md transition-opacity duration-[520ms] ease-out sm:px-6 sm:py-6 lg:h-[65vh] lg:max-h-[600px] lg:w-[24vw] lg:min-w-[300px] lg:max-w-[380px] lg:mr-10 xl:mr-14 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      className={`mx-auto flex h-full max-h-[68vh] w-full max-w-[min(100%,600px)] flex-col min-h-0 overflow-hidden rounded-[1.5rem] bg-blue-950/90 px-4 py-5 text-white backdrop-blur-md transition-opacity duration-[520ms] ease-out sm:px-6 sm:py-6 lg:h-[65vh] lg:max-h-[600px] lg:w-[24vw] lg:min-w-[300px] lg:max-w-[380px] lg:mr-10 xl:mr-14 ${isVisible ? "opacity-100" : "opacity-0"
+        }`}
     >
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-2 text-white scrollbar-thin">
         {/* Drone Name heading */}

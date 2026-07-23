@@ -3,6 +3,12 @@ export type DroneSpec = {
   value: string;
 };
 
+export type DroneBanner = {
+  text: string;
+  buttonText: string;
+  href: string;
+};
+
 export type Drone = {
   slug: string;
   name: string;
@@ -11,6 +17,7 @@ export type Drone = {
   features: DroneSpec[];
   dimensions: DroneSpec[];
   gallery?: Array<string | undefined>;
+  banner?: DroneBanner;
 };
 
 const placeholderGallery = [undefined, undefined, undefined];
@@ -23,6 +30,11 @@ export const drones: Drone[] = [
       "Redback is our latest competition aircraft (SUAS 2026), designed around rapid deployment and search-and-rescue mission capability.",
     ],
     heroImage: "/images/drones/redback.png",
+    banner: {
+      text: "SUAS 2026 Submission:",
+      buttonText: "Learn More",
+      href: "/suas-2026-home",
+    },
     features: [
       { label: "Payload Capacity", value: "0.5 kg" },
       { label: "Range", value: "15 km" },
@@ -67,7 +79,6 @@ export const drones: Drone[] = [
     gallery: [
       "/images/drones/peregrine/peregrine-1.jpg",
       "/images/drones/peregrine/peregrine-2.JPG",
-      "/images/drones/peregrine/peregrine-3.JPG",
       "/images/drones/peregrine/peregrine-4.JPG",
       "/images/drones/peregrine/peregrine-5.JPG",
       "/images/drones/peregrine/peregrine-6.JPG",
@@ -146,6 +157,7 @@ export const drones: Drone[] = [
     description: [
       "Mosquito is a lightweight MUAS platform used for agile testing, prototyping, and quick iteration across the team's systems.",
     ],
+    heroImage: "/images/drones/mosquito.png",
     features: [
       { label: "Payload Capacity", value: "0.7 kg" },
       { label: "Range", value: "2 km" },
