@@ -53,7 +53,7 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
     <section
       id="our-drones-page"
       ref={carouselRef}
-      className="relative flex viewport-fold scroll-mt-20 items-center justify-center overflow-hidden bg-blue-100 px-4 py-12"
+      className="relative flex viewport-fold scroll-mt-20 flex-col items-center justify-between overflow-hidden bg-blue-100 px-4 py-6 sm:py-8"
     >
       {/* Background Cloud Image */}
       <div className="absolute inset-0 z-0 opacity-40 select-none">
@@ -68,13 +68,26 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
       </div>
 
       {/* header */}
-      <div className="absolute top-8 text-center uppercase text-blue-900">
+      <div className="z-10 flex flex-col items-center text-center text-blue-900 pt-2 sm:pt-4">
         <p className="text-b1 font-black leading-none">Explore</p>
         <h1 className="mt-1 text-h7 font-black leading-none sm:text-h6 tracking-[-0.05em]">Our Drones</h1>
       </div>
 
-    {/* carousel */}
-      <div className="relative flex h-[68vh] min-h-[430px] w-full max-w-6xl items-center justify-center">
+      {/* active drone name button & carousel container */}
+      <div className="z-10 flex flex-1 flex-col items-center justify-center w-full max-w-6xl my-auto">
+        {/* active drone name - button */}
+        <button
+          className={`mb-1 sm:mb-2 max-w-[92vw] cursor-pointer text-h4 sm:text-h2 font-black leading-none transition tracking-[-0.05em] ${
+            isActiveHovered ? "text-blue-500" : "text-blue-900 hover:text-blue-500"
+          }`}
+          onClick={() => setSelectedDrone(drones[activeIndex])}
+          type="button"
+        >
+          {drones[activeIndex].name}
+        </button>
+
+        {/* carousel */}
+        <div className="relative flex min-h-[380px] w-full items-center justify-center">
         {visibleDrones.map(({ drone, index, offset }) => {
           const isActive = offset === 0;
 
@@ -102,18 +115,8 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
             </button>
           );
         })}
+        </div>
       </div>
-
-      {/* active drone name - button */}
-      <button
-        className={`absolute bottom-14 max-w-[92vw] cursor-pointer text-h3 font-black leading-none transition sm:text-h1 tracking-[-0.05em] ${
-          isActiveHovered ? "text-blue-500" : "text-blue-900 hover:text-blue-500"
-        }`}
-        onClick={() => setSelectedDrone(drones[activeIndex])}
-        type="button"
-      >
-        {drones[activeIndex].name}
-      </button>
       
       {/* if a drone is selected, show the details modal */}
       {selectedDrone ? (

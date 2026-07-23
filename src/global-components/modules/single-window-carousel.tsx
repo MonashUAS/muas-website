@@ -56,9 +56,8 @@ export function SingleWindowCarousel({
   const prefersReducedMotion = usePrefersReducedMotion();
 
   const maxIndex = Math.max(slides.length - 1, 0);
-  const slideOffset = `calc(-${activeIndex * 100}% - ${
-    activeIndex * SLIDE_GAP_PX
-  }px)`;
+  const slideOffset = `calc(-${activeIndex * 100}% - ${activeIndex * SLIDE_GAP_PX
+    }px)`;
   const pageIndexes = useMemo(
     () => Array.from({ length: maxIndex + 1 }, (_, index) => index),
     [maxIndex],
@@ -247,9 +246,8 @@ export function SingleWindowCarousel({
               key={pageIndex}
               type="button"
               onClick={() => navigateToSlide(pageIndex)}
-              className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
-                isActive ? activeDotClass : inactiveDotClass
-              }`}
+              className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${isActive ? activeDotClass : inactiveDotClass
+                }`}
               aria-label={getDotLabel(pageIndex)}
               aria-current={isActive ? "true" : undefined}
             />
