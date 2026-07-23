@@ -35,7 +35,7 @@ type SingleWindowCarouselProps = {
   autoplay?: boolean;
   initialIndex?: number;
   onActiveIndexChange?: (index: number) => void;
-  searchControllerId?: string;
+  dotTone?: "light" | "blue";
 };
 
 // Dependency-free single-window carousel shared by homepage and Redback projects.
@@ -48,7 +48,7 @@ export function SingleWindowCarousel({
   autoplay = true,
   initialIndex = 0,
   onActiveIndexChange,
-  searchControllerId,
+  dotTone = "light",
 }: SingleWindowCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(() =>
     clampIndex(initialIndex, slides.length),
@@ -63,13 +63,15 @@ export function SingleWindowCarousel({
   const { registerSearchTarget } = useSearchNavigation();
 
   const maxIndex = Math.max(slides.length - 1, 0);
-  const slideOffset = `calc(-${activeIndex * 100}% - ${
-    activeIndex * SLIDE_GAP_PX
-  }px)`;
+  const slideOffset = `calc(-${activeIndex * 100}% - ${activeIndex * SLIDE_GAP_PX
+    }px)`;
   const pageIndexes = useMemo(
     () => Array.from({ length: maxIndex + 1 }, (_, index) => index),
     [maxIndex],
   );
+  const activeDotClass = dotTone === "blue" ? "w-9 bg-blue-900" : "w-9 bg-blue-50";
+  const inactiveDotClass =
+    dotTone === "blue" ? "w-2.5 bg-blue-900/25" : "w-2.5 bg-white/25";
 
   useSearchRevealController(
     searchControllerId ?? "__single-window-carousel-unregistered",
@@ -347,9 +349,8 @@ export function SingleWindowCarousel({
               key={pageIndex}
               type="button"
               onClick={() => navigateToSlide(pageIndex)}
-              className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
-                isActive ? "w-9 bg-blue-50" : "w-2.5 bg-white/25"
-              }`}
+              className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${isActive ? activeDotClass : inactiveDotClass
+                }`}
               aria-label={getDotLabel(pageIndex)}
               aria-current={isActive ? "true" : undefined}
             />

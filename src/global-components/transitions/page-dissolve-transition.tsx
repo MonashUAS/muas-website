@@ -32,6 +32,10 @@ function resetScrollToTop() {
   document.body.scrollTop = 0;
 }
 
+function userPrefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 // Shared App Router dissolve: hide instantly, navigate now, scroll to top, then fade in.
 export function PageDissolveTransition({
   children,
@@ -39,8 +43,8 @@ export function PageDissolveTransition({
   const pathname = usePathname();
   const router = useRouter();
 
-  const [phase, setPhase] = useState<DissolvePhase>("idle");
-  const [opacity, setOpacity] = useState(1);
+  const [phase, setPhase] = useState<DissolvePhase>("pendingEnter");
+  const [opacity, setOpacity] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   const pathnameRef = useRef(pathname);
@@ -74,7 +78,7 @@ export function PageDissolveTransition({
       setOpacity(0);
       setPhase("pendingEnter");
 
-      if (prefersReducedMotion) {
+      if (prefersReducedMotion || userPrefersReducedMotion()) {
         setOpacity(1);
         setPhase("idle");
         return;
@@ -250,7 +254,12 @@ export function PageDissolveTransition({
     if (!hasMountedRef.current) {
       hasMountedRef.current = true;
       pathnameRef.current = pathname;
-      return;
+      const transitionId = transitionIdRef.current;
+      const frame = window.requestAnimationFrame(() => {
+        beginEnter(transitionId);
+      });
+
+      return () => window.cancelAnimationFrame(frame);
     }
 
     if (pathnameRef.current === pathname) {

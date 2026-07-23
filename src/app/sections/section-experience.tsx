@@ -26,7 +26,7 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
           title={`Next: ${nextSection.name}`}
           description={nextSection.shortDescription}
           imageSrc={
-            nextSection.projects[0]?.image ?? "/images/homepage/flight-day.jpg"
+            nextSection.projects[0]?.image ?? "/images/homepage/quick-nav/our-drones.jpg"
           }
           imageAlt={`${nextSection.name} preview`}
         />
@@ -123,11 +123,7 @@ function Projects({ section }: { section: TeamSection }) {
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:86px_86px] opacity-24" />
 
       <div className={headerContentContainerClass}>
-        <h2
-          data-search-target-id={`${section.slug}-responsibilities-heading`}
-          data-search-highlight-mode="text"
-          className="text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white"
-        >
+        <h2 className="text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
           Responsibilities
         </h2>
 

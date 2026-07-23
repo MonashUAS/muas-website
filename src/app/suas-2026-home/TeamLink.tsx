@@ -1,7 +1,7 @@
 import { NextDestinationLink } from "@/global-components/next-destination-link";
 
 const teamHref = "/suas-2026-team";
-const teamImage = "/images/homepage/full-team-photo.jpg";
+const teamImage = "/images/homepage/quick-nav/our-team.jpg";
 
 // TeamLink previews the Redback team page using the shared next-destination panel.
 export function TeamLink() {

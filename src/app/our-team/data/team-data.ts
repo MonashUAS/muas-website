@@ -145,7 +145,7 @@ const propulsionMembers: TeamMember[] = [
 
 const flightOperationsMembers: TeamMember[] = [
   {
-    name: "Alexi Rampono",
+    name: "Alexi Rampono Kelly",
     role: "Flight Operations",
     section: "Flight Operations",
     image: portraits.alexiRampono,

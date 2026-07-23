@@ -8,49 +8,272 @@ import { heroSlides } from "../data/hero-slides";
 import { usePrefersReducedMotion } from "../utils/use-prefers-reduced-motion";
 
 const IMAGE_DURATION_MS = 5000;
-const VIDEO_MAX_DURATION_MS = 12000;
+const MEDIA_TRANSITION_MS = 1000;
+const HAVE_METADATA = 1;
+const HAVE_FUTURE_DATA = 3;
+const VIDEO_READY_TIMEOUT_MS = 8000;
+const VIDEO_FRAME_TIMEOUT_MS = 1200;
+
+type VideoWithFrameCallback = HTMLVideoElement & {
+  requestVideoFrameCallback?: (
+    callback: (now: DOMHighResTimeStamp, metadata: unknown) => void,
+  ) => number;
+  cancelVideoFrameCallback?: (handle: number) => void;
+};
+
+function waitForVideoEvent(
+  video: HTMLVideoElement,
+  eventName: string,
+  timeoutMs = VIDEO_READY_TIMEOUT_MS,
+) {
+  return new Promise<void>((resolve, reject) => {
+    const timeout = window.setTimeout(() => {
+      cleanup();
+      reject(new Error(`Timed out waiting for hero video ${eventName}.`));
+    }, timeoutMs);
+    const cleanup = () => {
+      window.clearTimeout(timeout);
+      video.removeEventListener(eventName, handleEvent);
+      video.removeEventListener("error", handleError);
+    };
+    const handleEvent = () => {
+      cleanup();
+      resolve();
+    };
+    const handleError = () => {
+      cleanup();
+      reject(new Error(`Hero video failed before ${eventName}.`));
+    };
+
+    video.addEventListener(eventName, handleEvent, { once: true });
+    video.addEventListener("error", handleError, { once: true });
+  });
+}
+
+function waitForDecodedFrame(video: HTMLVideoElement) {
+  const videoWithFrameCallback = video as VideoWithFrameCallback;
+
+  return new Promise<void>((resolve) => {
+    if (videoWithFrameCallback.requestVideoFrameCallback) {
+      const timeout = window.setTimeout(() => {
+        if (videoWithFrameCallback.cancelVideoFrameCallback) {
+          videoWithFrameCallback.cancelVideoFrameCallback(callbackHandle);
+        }
+
+        resolve();
+      }, VIDEO_FRAME_TIMEOUT_MS);
+      const callbackHandle = videoWithFrameCallback.requestVideoFrameCallback(
+        () => {
+          window.clearTimeout(timeout);
+          resolve();
+        },
+      );
+
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => resolve());
+    });
+  });
+}
+
+async function resetVideoToStart(video: HTMLVideoElement) {
+  if (video.readyState < HAVE_METADATA) {
+    video.load();
+    await waitForVideoEvent(video, "loadedmetadata");
+  }
+
+  if (Math.abs(video.currentTime) > 0.05) {
+    video.currentTime = 0;
+    await waitForVideoEvent(video, "seeked");
+  } else {
+    video.currentTime = 0;
+  }
+
+  if (video.readyState < HAVE_FUTURE_DATA) {
+    await waitForVideoEvent(video, "canplay");
+  }
+}
+
+async function startHiddenPlayback(video: HTMLVideoElement) {
+  const playPromise = video.play();
+
+  if (playPromise !== undefined) {
+    await playPromise;
+  }
+
+  if (video.paused) {
+    await waitForVideoEvent(video, "playing");
+  }
+
+  await waitForDecodedFrame(video);
+}
+
+async function warmVideo(video: HTMLVideoElement) {
+  await resetVideoToStart(video);
+  await startHiddenPlayback(video);
+  video.pause();
+  await resetVideoToStart(video);
+}
+
+async function prepareVideoForReveal(video: HTMLVideoElement) {
+  await resetVideoToStart(video);
+  await startHiddenPlayback(video);
+}
 
 // The homepage hero owns only slideshow behavior; slide content lives in data
 // so the media sequence can be updated without touching interaction code.
 export function HomepageHero() {
-  const [activeSlide, setActiveSlide] = useState(0);
+  const [requestedSlide, setRequestedSlide] = useState(0);
+  const [visibleSlide, setVisibleSlide] = useState(0);
   const prefersReducedMotion = usePrefersReducedMotion();
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
+  const hasPreloadedVideosRef = useRef(false);
+  const warmedVideoIndexesRef = useRef(new Set<number>());
   const goToNextSlide = useCallback(() => {
-    setActiveSlide((currentIndex) => (currentIndex + 1) % heroSlides.length);
+    setRequestedSlide((currentIndex) => (currentIndex + 1) % heroSlides.length);
   }, []);
 
-  // Image slides advance by fixed timer; video slides advance onEnded, with
-  // a max-duration fallback so a missing video event cannot freeze the hero.
   useEffect(() => {
-    if (prefersReducedMotion) {
+    if (hasPreloadedVideosRef.current) {
       return;
     }
 
-    const activeSlideData = heroSlides[activeSlide];
-    const duration =
-      activeSlideData.type === "image" ? IMAGE_DURATION_MS : VIDEO_MAX_DURATION_MS;
-    const timeout = window.setTimeout(goToNextSlide, duration);
+    hasPreloadedVideosRef.current = true;
+    videoRefs.current.forEach((video) => {
+      video?.load();
+    });
+  }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion || requestedSlide !== visibleSlide) {
+      return;
+    }
+
+    const visibleSlideData = heroSlides[visibleSlide];
+
+    if (!visibleSlideData || visibleSlideData.type !== "image") {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const warmUpcomingVideos = async () => {
+      for (const [index, slide] of heroSlides.entries()) {
+        if (
+          isCancelled ||
+          slide.type !== "video" ||
+          warmedVideoIndexesRef.current.has(index)
+        ) {
+          continue;
+        }
+
+        const video = videoRefs.current[index];
+
+        if (!video) {
+          continue;
+        }
+
+        try {
+          await warmVideo(video);
+
+          if (!isCancelled) {
+            warmedVideoIndexesRef.current.add(index);
+          }
+        } catch {
+          warmedVideoIndexesRef.current.delete(index);
+        }
+      }
+    };
+
+    void warmUpcomingVideos();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [prefersReducedMotion, requestedSlide, visibleSlide]);
+
+  useEffect(() => {
+    if (prefersReducedMotion || requestedSlide === visibleSlide) {
+      return;
+    }
+
+    const incomingSlide = heroSlides[requestedSlide];
+
+    if (!incomingSlide || incomingSlide.type === "image") {
+      const animationFrame = window.requestAnimationFrame(() => {
+        setVisibleSlide(requestedSlide);
+      });
+
+      return () => window.cancelAnimationFrame(animationFrame);
+    }
+
+    const video = videoRefs.current[requestedSlide];
+
+    if (!video) {
+      goToNextSlide();
+      return;
+    }
+
+    let isCancelled = false;
+
+    const prepareIncomingVideo = async () => {
+      try {
+        await prepareVideoForReveal(video);
+
+        if (!isCancelled) {
+          setVisibleSlide(requestedSlide);
+        }
+      } catch {
+        if (!isCancelled) {
+          goToNextSlide();
+        }
+      }
+    };
+
+    void prepareIncomingVideo();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide]);
+
+  // Image slides advance by fixed timer; video slides advance onEnded.
+  useEffect(() => {
+    if (prefersReducedMotion || requestedSlide !== visibleSlide) {
+      return;
+    }
+
+    const visibleSlideData = heroSlides[visibleSlide];
+
+    if (!visibleSlideData || visibleSlideData.type !== "image") {
+      return;
+    }
+
+    const timeout = window.setTimeout(goToNextSlide, IMAGE_DURATION_MS);
 
     return () => window.clearTimeout(timeout);
-  }, [activeSlide, goToNextSlide, prefersReducedMotion]);
+  }, [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide]);
 
-  // Background videos are mounted before they become visible, so the active
-  // video is reset and played explicitly when its slide crossfades in.
   useEffect(() => {
-    const activeSlideData = heroSlides[activeSlide];
+    const visibleSlideData = heroSlides[visibleSlide];
 
-    if (prefersReducedMotion || activeSlideData.type !== "video") {
+    if (
+      prefersReducedMotion ||
+      requestedSlide !== visibleSlide ||
+      !visibleSlideData ||
+      visibleSlideData.type !== "video"
+    ) {
       return;
     }
 
-    const video = videoRefs.current[activeSlide];
+    const video = videoRefs.current[visibleSlide];
 
     if (!video) {
       return;
     }
 
-    video.currentTime = 0;
     const playPromise = video.play();
 
     if (playPromise !== undefined) {
@@ -58,26 +281,50 @@ export function HomepageHero() {
         goToNextSlide();
       });
     }
-  }, [activeSlide, goToNextSlide, prefersReducedMotion]);
+  }, [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide]);
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      videoRefs.current.forEach((video) => video?.pause());
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      videoRefs.current.forEach((video, index) => {
+        if (index !== visibleSlide) {
+          video?.pause();
+        }
+      });
+    }, MEDIA_TRANSITION_MS);
+
+    return () => window.clearTimeout(timeout);
+  }, [prefersReducedMotion, visibleSlide]);
 
   const handleMediaError = useCallback(
     (index: number) => {
       // If the active asset fails to load, skip forward so one file cannot freeze the hero.
-      if (!prefersReducedMotion && index === activeSlide) {
+      if (
+        !prefersReducedMotion &&
+        (index === requestedSlide || index === visibleSlide)
+      ) {
         goToNextSlide();
       }
     },
-    [activeSlide, goToNextSlide, prefersReducedMotion],
+    [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide],
   );
 
   const handleVideoEnded = useCallback(
     (index: number) => {
       // Videos advance from their natural ended event instead of replaying indefinitely.
-      if (!prefersReducedMotion && index === activeSlide) {
+      if (
+        !prefersReducedMotion &&
+        index === visibleSlide &&
+        requestedSlide === visibleSlide
+      ) {
         goToNextSlide();
       }
     },
-    [activeSlide, goToNextSlide, prefersReducedMotion],
+    [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide],
   );
 
   return (
@@ -87,11 +334,11 @@ export function HomepageHero() {
     >
       <div className="absolute inset-0">
         {heroSlides.map((slide, index) => {
-          const isActive = index === activeSlide;
+          const isActive = index === visibleSlide;
 
           return (
             <div
-              key={slide.src}
+              key={slide.id}
               aria-hidden={!isActive}
               className={`absolute inset-0 transition-opacity duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                 isActive ? "opacity-100" : "opacity-0"
@@ -114,10 +361,9 @@ export function HomepageHero() {
                     videoRefs.current[index] = element;
                   }}
                   src={slide.src}
-                  autoPlay={isActive && !prefersReducedMotion}
                   muted
                   playsInline
-                  preload={isActive ? "auto" : "metadata"}
+                  preload="auto"
                   className="h-full w-full object-cover"
                   onEnded={() => handleVideoEnded(index)}
                   onError={() => handleMediaError(index)}
@@ -142,11 +388,7 @@ export function HomepageHero() {
           className="h-auto w-[190px] sm:w-[240px] lg:w-[280px]"
         />
 
-        <SearchableText
-          as="p"
-          searchId="home-hero-heading"
-          className="mt-8 text-[clamp(2.4rem,7vw,5.6rem)] font-black leading-[0.95] tracking-[-0.05em] text-white"
-        >
+        <p className="mt-8 text-[clamp(2.4rem,7vw,5.6rem)] font-black leading-[0.95] tracking-[-0.05em] text-white">
           Redefining Drone Technology
         </SearchableText>
 
