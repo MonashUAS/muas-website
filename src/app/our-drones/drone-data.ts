@@ -44,9 +44,9 @@ export const drones: Drone[] = [
   },
   {
     slug: "peregrine",
-    name: "Peregrine",
+    name: "Peregrine Mk II",
     description: [
-      "Featuring a 3.4 metre wingspan and a cruise-capable multirotor design, Peregrine is engineered for maximum endurance and range. The Peregrine Mk II had also recently debuted in the New Flying Competition 2025.",
+      "Featuring a 3.4 metre wingspan and a cruise-capable multirotor design, Peregrine Mk II is engineered for maximum endurance and range. The Peregrine Mk II had also recently debuted in the New Flying Competition 2025.",
     ],
     heroImage: "/images/drones/peregrine.png",
     features: [
@@ -100,46 +100,46 @@ export const drones: Drone[] = [
       "/images/drones/ibis/ibis-4.jpg",
     ],
   },
-  {
-    slug: "currawong",
-    name: "Currawong",
-    description: [
-      "Currawong is a team aircraft focused on practical testing, flight validation, and refining MUAS' autonomous systems in the field.",
-    ],
-    features: [
-      { label: "Range", value: "15 km" },
-      { label: "Max Flight Speed", value: "22 m/s" },
-      { label: "Min Flight Speed", value: "0 m/s" },
-      { label: "Design Max Speed", value: "22 m/s" },
-    ],
-    dimensions: [
-      { label: "Length", value: "908 mm" },
-      { label: "Width", value: "908 mm" },
-      { label: "Height", value: "358 mm" },
-      { label: "Mass", value: "9.1 kg" },
-      { label: "Maximum Take-Off Weight", value: "12.5 kg" },
-    ],
-    gallery: placeholderGallery,
-  },
-  {
-    slug: "fyrefly",
-    name: "Fyrefly",
-    description: [
-      "Fyrefly is part of the MUAS fleet, representing the team's continued experimentation with compact aircraft and autonomous flight capability.",
-    ],
-    features: [
-      { label: "Range", value: "2 km" },
-      { label: "Max Flight Speed", value: "18 m/s" },
-      { label: "Min Flight Speed", value: "0 m/s" },
-      { label: "Design Max Speed", value: "18 m/s" },
-    ],
-    dimensions: [
-      { label: "Length", value: "340 mm" },
-      { label: "Width", value: "355 mm" },
-      { label: "Height", value: "100 mm" },
-      { label: "Mass", value: "1 kg" },
-    ],
-  },
+  // {
+  //   slug: "currawong",
+  //   name: "Currawong",
+  //   description: [
+  //     "Currawong is a team aircraft focused on practical testing, flight validation, and refining MUAS' autonomous systems in the field.",
+  //   ],
+  //   features: [
+  //     { label: "Range", value: "15 km" },
+  //     { label: "Max Flight Speed", value: "22 m/s" },
+  //     { label: "Min Flight Speed", value: "0 m/s" },
+  //     { label: "Design Max Speed", value: "22 m/s" },
+  //   ],
+  //   dimensions: [
+  //     { label: "Length", value: "908 mm" },
+  //     { label: "Width", value: "908 mm" },
+  //     { label: "Height", value: "358 mm" },
+  //     { label: "Mass", value: "9.1 kg" },
+  //     { label: "Maximum Take-Off Weight", value: "12.5 kg" },
+  //   ],
+  //   gallery: placeholderGallery,
+  // },
+  // {
+  //   slug: "fyrefly",
+  //   name: "Fyrefly",
+  //   description: [
+  //     "Fyrefly is part of the MUAS fleet, representing the team's continued experimentation with compact aircraft and autonomous flight capability.",
+  //   ],
+  //   features: [
+  //     { label: "Range", value: "2 km" },
+  //     { label: "Max Flight Speed", value: "18 m/s" },
+  //     { label: "Min Flight Speed", value: "0 m/s" },
+  //     { label: "Design Max Speed", value: "18 m/s" },
+  //   ],
+  //   dimensions: [
+  //     { label: "Length", value: "340 mm" },
+  //     { label: "Width", value: "355 mm" },
+  //     { label: "Height", value: "100 mm" },
+  //     { label: "Mass", value: "1 kg" },
+  //   ],
+  // },
   {
     slug: "mosquito",
     name: "Mosquito",
