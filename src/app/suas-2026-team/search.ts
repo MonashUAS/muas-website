@@ -1,6 +1,87 @@
 import type { SearchDocument, SearchTarget } from "@/lib/search/types";
 import { textSearchContent } from "@/lib/search/content";
-import { projects } from "./projects/project-data";
+import { projects, type Project } from "./projects/project-data";
+
+function decisionSearchId(title: string) {
+  return title.replaceAll(" ", "-").toLowerCase();
+}
+
+function getProjectSearchText(project: Project): SearchTarget["text"] {
+  const text: SearchTarget["text"] = [
+    {
+      id: "heading",
+      text: project.name,
+      componentTargetId: `redback-project-${project.slug}`,
+      highlightTargetId: `redback-project-${project.slug}-heading`,
+      highlightMode: "text",
+      targetType: "text",
+    },
+    {
+      id: "summary",
+      text: project.summary,
+      componentTargetId: `redback-project-${project.slug}`,
+      highlightTargetId: `redback-project-${project.slug}-summary`,
+      highlightMode: "text",
+      targetType: "text",
+    },
+  ];
+
+  if (project.leads?.length) {
+    text.push({
+      id: "lead",
+      text: project.leads.join(", "),
+      componentTargetId: `redback-project-${project.slug}`,
+      highlightTargetId: `redback-project-${project.slug}-lead`,
+      highlightMode: "text",
+      targetType: "text",
+    });
+  }
+
+  if (project.members?.length) {
+    text.push({
+      id: "team",
+      text: project.members.join(", "),
+      componentTargetId: `redback-project-${project.slug}`,
+      highlightTargetId: `redback-project-${project.slug}-team`,
+      highlightMode: "text",
+      targetType: "text",
+    });
+  }
+
+  text.push(
+    ...project.keyDecisions.flatMap((decision) => [
+      {
+        id: `decision-${decision.title}-title`,
+        text: decision.title,
+        componentTargetId: `redback-project-${project.slug}`,
+        highlightTargetId: `redback-project-${project.slug}-decision-${decisionSearchId(decision.title)}-title`,
+        highlightMode: "text" as const,
+        targetType: "text" as const,
+      },
+      {
+        id: `decision-${decision.title}-body`,
+        text: decision.body,
+        componentTargetId: `redback-project-${project.slug}`,
+        highlightTargetId: `redback-project-${project.slug}-decision-${decisionSearchId(decision.title)}-body`,
+        highlightMode: "text" as const,
+        targetType: "text" as const,
+      },
+    ]),
+  );
+
+  if (project.testingProcess) {
+    text.push({
+      id: "testing-process",
+      text: project.testingProcess,
+      componentTargetId: `redback-project-${project.slug}`,
+      highlightTargetId: `redback-project-${project.slug}-testing-process`,
+      highlightMode: "text",
+      targetType: "text",
+    });
+  }
+
+  return text;
+}
 
 export const suasTeamSearchDocument: SearchDocument = {
   route: "/suas-2026-team",
@@ -81,58 +162,7 @@ export const suasTeamSearchDocument: SearchDocument = {
         id: `redback-project-${project.slug}`,
         label: project.name,
         hash: "our-redback-projects",
-        text: [
-          {
-            id: "heading",
-            text: project.name,
-            componentTargetId: `redback-project-${project.slug}`,
-            highlightTargetId: `redback-project-${project.slug}-heading`,
-            highlightMode: "text",
-            targetType: "text",
-          },
-          {
-            id: "description",
-            text: project.description,
-            componentTargetId: `redback-project-${project.slug}`,
-            highlightTargetId: `redback-project-${project.slug}-description`,
-            highlightMode: "text",
-            targetType: "text",
-          },
-          {
-            id: "lead",
-            text: project.lead,
-            componentTargetId: `redback-project-${project.slug}`,
-            highlightTargetId: `redback-project-${project.slug}-lead`,
-            highlightMode: "text",
-            targetType: "text",
-          },
-          {
-            id: "team",
-            text: project.members.join(", "),
-            componentTargetId: `redback-project-${project.slug}`,
-            highlightTargetId: `redback-project-${project.slug}-team`,
-            highlightMode: "text",
-            targetType: "text",
-          },
-          ...project.decisions.flatMap((decision) => [
-            {
-              id: `decision-${decision.title}-title`,
-              text: decision.title,
-              componentTargetId: `redback-project-${project.slug}`,
-              highlightTargetId: `redback-project-${project.slug}-decision-${decision.title.replaceAll(" ", "-").toLowerCase()}-title`,
-              highlightMode: "text" as const,
-              targetType: "text" as const,
-            },
-            {
-              id: `decision-${decision.title}-body`,
-              text: decision.body,
-              componentTargetId: `redback-project-${project.slug}`,
-              highlightTargetId: `redback-project-${project.slug}-decision-${decision.title.replaceAll(" ", "-").toLowerCase()}-body`,
-              highlightMode: "text" as const,
-              targetType: "text" as const,
-            },
-          ]),
-        ],
+        text: getProjectSearchText(project),
         reveal: {
           carousel: {
             id: "redback-projects-carousel",
