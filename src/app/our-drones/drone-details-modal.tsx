@@ -130,14 +130,18 @@ function DroneInfoPanel({
         </div>
 
         {/* Specs: Dimensions */}
-        <div className="border-t border-white/15 pt-3">
-          <SpecList specs={drone.dimensions} title="Dimensions" tone="dark" compact />
-        </div>
+        {drone.dimensions.length > 0 ? (
+          <div className="border-t border-white/15 pt-3">
+            <SpecList specs={drone.dimensions} title="Dimensions" tone="dark" compact />
+          </div>
+        ) : null}
 
         {/* Specs: Key Features */}
-        <div className="border-t border-white/15 pt-3">
-          <SpecList specs={drone.features} title="Key Features" tone="dark" compact />
-        </div>
+        {drone.features.length > 0 ? (
+          <div className="border-t border-white/15 pt-3">
+            <SpecList specs={drone.features} title="Key Features" tone="dark" compact />
+          </div>
+        ) : null}
       </div>
     </aside>
   );
