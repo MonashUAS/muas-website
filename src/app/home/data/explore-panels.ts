@@ -2,45 +2,46 @@ export type ExplorePanel = {
   title: string;
   href: string;
   preview: string;
+  image: string;
   alt: string;
 };
 
-export const temporaryPanelImage =
-  "/images/placeholder (to be replaced)/placeholder image.jpg";
-
-// Temporary placeholder image. Replace each panel image before final production.
-// Panel labels/routes/copy live here; all panels intentionally share the same
-// image while final section photography is still being selected.
+// Panel labels/routes/copy live here so the homepage navigation has one edit point.
 export const explorePanels: ExplorePanel[] = [
   {
     title: "Our Team",
     href: "/our-team",
     preview: "Meet the students behind MUAS and the teams building our aircraft.",
-    alt: "Temporary Our Team panel placeholder",
+    image: "/images/homepage/quick-nav/our-team.jpg",
+    alt: "MUAS team members gathered for a group photo",
   },
   {
     title: "Our Drones",
     href: "/our-drones",
     preview: "See the aircraft, systems, and technology behind our builds.",
-    alt: "Temporary Our Drones panel placeholder",
+    image: "/images/homepage/quick-nav/our-drones.jpg",
+    alt: "MUAS aircraft on a flight field",
   },
   {
     title: "Recruitment",
     href: "/recruitment",
     preview: "Help shape the next generation of drone technology with MUAS.",
-    alt: "Temporary Recruitment panel placeholder",
+    image: "/images/homepage/quick-nav/recruitment.png",
+    alt: "MUAS recruitment and outreach activity",
   },
   {
     title: "Sponsor Us",
     href: "/our-sponsors",
     preview: "See the partners supporting student-led aerospace innovation.",
-    alt: "Temporary Sponsor Us panel placeholder",
+    image: "/images/homepage/quick-nav/sponsor-us.jpg",
+    alt: "MUAS aircraft and team activity supported by sponsors",
   },
   {
     title: "Contact Us",
     href: "/contact-us",
     preview:
       "Start a conversation with MUAS about partnerships, recruitment, or enquiries.",
-    alt: "Temporary Contact panel placeholder",
+    image: "/images/homepage/quick-nav/contact-us_updated.jpg",
+    alt: "MUAS members discussing aircraft systems",
   },
 ];

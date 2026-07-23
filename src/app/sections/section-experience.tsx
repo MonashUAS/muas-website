@@ -26,7 +26,7 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
           title={`Next: ${nextSection.name}`}
           description={nextSection.shortDescription}
           imageSrc={
-            nextSection.projects[0]?.image ?? "/images/homepage/flight-day.jpg"
+            nextSection.projects[0]?.image ?? "/images/homepage/quick-nav/our-drones.jpg"
           }
           imageAlt={`${nextSection.name} preview`}
         />

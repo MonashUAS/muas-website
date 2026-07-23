@@ -69,6 +69,7 @@ function SectionTile({ section }: SectionTileProps) {
         fill
         sizes="(min-width: 1024px) 54vw, 100vw"
         className="rounded-[inherit] object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.045] group-focus-visible:scale-[1.045] motion-reduce:transition-none"
+        style={{ objectPosition: section.objectPosition ?? "50% 50%" }}
       />
 
       <div className="absolute inset-0 rounded-[inherit] bg-[linear-gradient(180deg,rgba(0,0,0,0.08),rgba(0,31,73,0.4)_44%,rgba(0,0,0,0.88))]" />

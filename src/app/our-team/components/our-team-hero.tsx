@@ -9,7 +9,7 @@ export function OurTeamHero() {
       className="relative isolate flex min-h-[100svh] scroll-mt-20 items-center justify-center overflow-hidden bg-black px-6 pt-[var(--header-height)] text-white sm:px-10"
     >
       <Image
-        src="/images/homepage/full-team-photo.jpg"
+        src="/images/homepage/quick-nav/our-team.jpg"
         alt="Monash UAS members standing together"
         fill
         priority

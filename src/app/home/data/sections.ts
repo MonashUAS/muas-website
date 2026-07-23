@@ -4,47 +4,46 @@ export type HomepageSection = {
   description: string;
   image: string;
   alt: string;
+  objectPosition?: string;
 };
 
-const temporarySectionImage =
-  "/images/placeholder (to be replaced)/placeholder image.jpg";
-
-// Homepage-only team section data. Placeholder images are temporary; swap
-// image/alt values here when final team photography is available.
+// Homepage-only team section data.
 export const homepageSections: HomepageSection[] = [
   {
     title: "Aerostructures",
-    href: "/aerostructures",
+    href: "/sections/aerostructures",
     description: "Designing, building, and refining the aircraft frame.",
-    image: temporarySectionImage,
-    alt: "Temporary Aerostructures section placeholder",
+    image: "/images/homepage/sections/aerostructures_updated.jpg",
+    alt: "Aerostructures team work on aircraft hardware",
+    objectPosition: "50% 42%",
   },
   {
     title: "Avionics",
-    href: "/avionics",
+    href: "/sections/avionics",
     description: "Developing the electronics, software, and onboard systems.",
-    image: temporarySectionImage,
-    alt: "Temporary Avionics section placeholder",
+    image: "/images/homepage/sections/avionics.jpg",
+    alt: "Avionics electronics and flight systems workbench",
   },
   {
     title: "Flight Operations",
-    href: "/flight-ops",
+    href: "/sections/flight-ops",
     description: "Planning, testing, and supporting safe aircraft flights.",
-    image: temporarySectionImage,
-    alt: "Temporary Flight Operations section placeholder",
+    image: "/images/homepage/sections/flight-operations_updated.jpg",
+    alt: "Flight Operations team preparing for testing",
+    objectPosition: "50% 60%",
   },
   {
     title: "Propulsion",
-    href: "/propulsion",
+    href: "/sections/propulsion",
     description: "Building and validating the systems that keep our aircraft moving.",
-    image: temporarySectionImage,
-    alt: "Temporary Propulsion section placeholder",
+    image: "/images/homepage/sections/propulsion.jpg",
+    alt: "Propulsion testing and aircraft components",
   },
   {
     title: "Operations",
-    href: "/operations",
+    href: "/sections/operations",
     description: "Coordinating the people, logistics, and planning behind the team.",
-    image: temporarySectionImage,
-    alt: "Temporary Operations section placeholder",
+    image: "/images/homepage/sections/operations.jpg",
+    alt: "Operations team coordinating MUAS activities",
   },
 ];

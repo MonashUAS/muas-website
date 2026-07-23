@@ -1,53 +1,57 @@
 export type HeroSlide =
   | {
+      id: string;
       type: "image";
       src: string;
       alt: string;
     }
   | {
+      id: string;
       type: "video";
       src: string;
     };
 
-// Homepage hero media is maintained here. Keep filenames URL-safe and order
-// images/videos intentionally so the slideshow does not feel predictable.
+// Homepage hero media is maintained here. Keep the sequence as:
+// 2 photos -> video -> 1 photo -> video -> 2 photos.
 export const heroSlides: HeroSlide[] = [
   {
+    id: "composites",
     type: "image",
-    src: "/images/homepage/composites.jpg",
+    src: "/images/homepage/hero/composites.jpg",
     alt: "MUAS composites work in progress",
   },
   {
-    type: "video",
-    src: "/images/homepage/redback-flight.mov",
-  },
-  {
+    id: "flight-monitor",
     type: "image",
-    src: "/images/homepage/full-team-photo.jpg",
-    alt: "MUAS team group portrait",
-  },
-  {
-    type: "image",
-    src: "/images/homepage/flight-day.jpg",
-    alt: "MUAS team preparing aircraft before launch",
-  },
-  {
-    type: "video",
-    src: "/images/homepage/outreach-2.mov",
-  },
-  {
-    type: "image",
-    src: "/images/homepage/nfc-team.jpg",
-    alt: "MUAS NFC team",
-  },
-  {
-    type: "image",
-    src: "/images/homepage/flight-monitor.jpg",
+    src: "/images/homepage/hero/flight-monitor.jpg",
     alt: "MUAS members monitoring flight data",
   },
   {
+    id: "explaining",
+    type: "video",
+    src: "/images/homepage/hero/explaining.mov",
+  },
+  {
+    id: "o-week",
     type: "image",
-    src: "/images/homepage/outreach-1.jpg",
-    alt: "MUAS outreach event",
+    src: "/images/homepage/hero/o-week_updated.jpg",
+    alt: "MUAS members speaking with students at O-Week",
+  },
+  {
+    id: "drone-footage",
+    type: "video",
+    src: "/images/homepage/hero/drone-footage.mov",
+  },
+  {
+    id: "sunset-redback",
+    type: "image",
+    src: "/images/homepage/hero/sunset-redback.png",
+    alt: "Redback quadcopter at sunset",
+  },
+  {
+    id: "tinkering",
+    type: "image",
+    src: "/images/homepage/hero/tinkering.jpg",
+    alt: "MUAS members working on aircraft hardware",
   },
 ];

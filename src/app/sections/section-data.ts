@@ -26,9 +26,9 @@ export type TeamSection = {
 
 const placeholderVideo = "/videos/placeholder-vid.mov";
 const placeholderProjectImages = [
-  "/images/homepage/composites.jpg",
-  "/images/homepage/flight-monitor.jpg",
-  "/images/homepage/flight-day.jpg",
+  "/images/homepage/hero/composites.jpg",
+  "/images/homepage/hero/flight-monitor.jpg",
+  "/images/homepage/quick-nav/our-drones.jpg",
 ];
 
 export const sectionOrder = [
@@ -184,7 +184,7 @@ export const sections: TeamSection[] = [
       {
         name: "Marketing",
         description: "Managing social media, team storytelling, and public-facing updates across the season.",
-        image: "/images/homepage/full-team-photo.jpg",
+        image: "/images/homepage/quick-nav/our-team.jpg",
       },
       {
         name: "Sponsorship",

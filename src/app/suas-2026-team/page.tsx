@@ -8,9 +8,9 @@ import { RedbackWebHighlight } from "./redback-web-highlight";
 import { TimelineRevealItem } from "./timeline-reveal";
 import { TimelineWebField } from "./timeline-web-field";
 
-const teamHeroImage = "/images/homepage/full-team-photo.jpg";
+const teamHeroImage = "/images/homepage/quick-nav/our-team.jpg";
 
-const storyImage = "/images/homepage/full-team-photo.jpg";
+const storyImage = "/images/homepage/quick-nav/our-team.jpg";
 
 const timelineWebImages = {
   spire: "/images/suas-2026-team/timeline-web-spire.png",
@@ -32,7 +32,7 @@ const timelineItems: TimelineItemContent[] = [
     date: "04/07/2025",
     title: "First Design Meeting",
     body: "The SUAS Committee was inaugurated and began shaping the team's goals and approach for Redback against the 2025 ruleset.",
-    image: "/images/homepage/flight-day.jpg",
+    image: "/images/homepage/quick-nav/our-drones.jpg",
     alt: "Redback aircraft on a field during flight testing",
   },
   {
@@ -60,28 +60,28 @@ const timelineItems: TimelineItemContent[] = [
     date: "09/02/2026",
     title: "CAD V2 Design Finished",
     body: "The airframe design was completed and released for manufacturing, giving the team a ready-to-build Redback V2 structure.",
-    image: "/images/homepage/flight-monitor.jpg",
+    image: "/images/homepage/hero/flight-monitor.jpg",
     alt: "MUAS team member monitoring Redback systems during testing",
   },
   {
     date: "16/02/2026",
     title: "Redback V2 Frame Manufactured",
     body: "The Redback V2 airframe was manufactured and assembled in three days, turning the completed design into flight-ready structure.",
-    image: "/images/homepage/composites.jpg",
+    image: "/images/homepage/hero/composites.jpg",
     alt: "Composite aircraft manufacturing work for Redback",
   },
   {
     date: "06/03/2026",
     title: "Redback V2 Maiden Flight",
     body: "Redback V2 completed its maiden flight with all competition avionics on board, a major VTOL integration milestone for the team.",
-    image: "/images/homepage/flight-day.jpg",
+    image: "/images/homepage/quick-nav/our-drones.jpg",
     alt: "Redback aircraft during a flight testing day",
   },
   {
     date: "27/04/2026",
     title: "First Mission Management Mock Run",
     body: "The team completed beta testing of the full mission management system for a real-life flight, bringing the operational workflow into one coordinated run.",
-    image: "/images/homepage/flight-monitor.jpg",
+    image: "/images/homepage/hero/flight-monitor.jpg",
     alt: "Team member monitoring Redback systems during flight operations",
   },
   {
@@ -109,7 +109,7 @@ const timelineItems: TimelineItemContent[] = [
     date: "In Progress",
     title: "Physical Avoidance and Diversion Test",
     body: "The avoidance and diversion functions will be physically tested at flight days, moving the autonomy stack from simulation into real aircraft behavior.",
-    image: "/images/homepage/flight-day.jpg",
+    image: "/images/homepage/quick-nav/our-drones.jpg",
     alt: "Redback flight testing on an airfield",
   },
   {
@@ -130,14 +130,14 @@ const timelineItems: TimelineItemContent[] = [
     date: "Future",
     title: "Vision Detection and Payload Deployment",
     body: "A future integrated milestone will combine vision detection and payload deployment in one flight, bringing perception and mission execution together.",
-    image: "/images/homepage/flight-monitor.jpg",
+    image: "/images/homepage/hero/flight-monitor.jpg",
     alt: "Team member monitoring Redback systems",
   },
   {
     date: "Future",
     title: "First Full Mock Competition Run",
     body: "A future full mock run will rehearse the competition mission end to end, giving every subteam a shared test of readiness under realistic operating conditions.",
-    image: "/images/homepage/flight-day.jpg",
+    image: "/images/homepage/quick-nav/our-drones.jpg",
     alt: "Redback aircraft during flight testing",
   },
 ];
