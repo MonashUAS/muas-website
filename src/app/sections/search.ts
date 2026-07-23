@@ -34,6 +34,19 @@ export const sectionSearchDocuments: SearchDocument[] = sections.map(
           ),
         ],
       },
+      {
+        id: `${section.slug}-responsibilities`,
+        label: "Responsibilities",
+        hash: "team-projects",
+        text: [
+          textSearchContent({
+            id: "heading",
+            text: "Responsibilities",
+            componentTargetId: "team-projects",
+            highlightTargetId: `${section.slug}-responsibilities-heading`,
+          }),
+        ],
+      },
       ...section.projects.map(
         (project): SearchTarget => ({
           id: `${section.slug}-project-${project.slug}`,

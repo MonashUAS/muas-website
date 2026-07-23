@@ -25,7 +25,7 @@ const carouselTransitionMs = 700;
 const slideGapPx = 24;
 const swipeThresholdPx = 48;
 
-// ProjectCarousel follows the homepage carousel pattern for section project slides.
+// ProjectCarousel follows the homepage carousel pattern for section responsibility slides.
 export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const dragStartXRef = useRef<number | null>(null);
@@ -158,7 +158,7 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
 
   return (
     <div
-      aria-label="Section projects"
+      aria-label="Section responsibilities"
       className="mt-8 w-full sm:mt-10 lg:mt-12"
       role="region"
     >
@@ -198,7 +198,7 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
         </div>
 
         <button
-          aria-label="Previous project"
+          aria-label="Previous responsibility"
           className="absolute left-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
           onClick={goToPreviousSlide}
           type="button"
@@ -207,7 +207,7 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
         </button>
 
         <button
-          aria-label="Next project"
+          aria-label="Next responsibility"
           className="absolute right-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
           onClick={goToNextSlide}
           type="button"
@@ -223,7 +223,7 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
           return (
             <button
               aria-current={isActive ? "true" : undefined}
-              aria-label={`Show project slide ${slideIndex + 1}`}
+              aria-label={`Show responsibility slide ${slideIndex + 1}`}
               className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
                 isActive ? "w-9 bg-blue-50" : "w-2.5 bg-white/25 hover:bg-white/45"
               }`}
@@ -244,13 +244,13 @@ type ProjectSlideProps = {
   sectionSlug: string;
 };
 
-// ProjectSlide keeps every project inside one fixed-size card layout.
+// ProjectSlide keeps every responsibility inside one fixed-size card layout.
 function ProjectSlide({ index, project, sectionSlug }: ProjectSlideProps) {
   return (
     <article className="grid h-full grid-rows-[minmax(0,1.15fr)_minmax(0,0.85fr)] bg-[linear-gradient(155deg,rgba(255,255,255,0.08)_0%,rgba(84,134,200,0.09)_44%,rgba(0,31,73,0.38)_100%)] text-white lg:grid-cols-[minmax(0,0.58fr)_minmax(320px,0.42fr)] lg:grid-rows-none">
       <div className="relative min-h-0 overflow-hidden bg-blue-900">
         <Image
-          alt={`${project.name} project`}
+          alt={`${project.name} responsibility`}
           className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
           decoding="async"
           draggable={false}
