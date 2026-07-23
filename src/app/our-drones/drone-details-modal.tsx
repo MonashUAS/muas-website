@@ -107,7 +107,7 @@ function DroneInfoPanel({
 }) {
   return (
     <aside
-      className={`mx-auto flex h-full max-h-[68vh] w-full max-w-[min(100%,600px)] flex-col min-h-0 overflow-hidden rounded-[1.5rem] bg-blue-950/90 px-4 py-5 text-white shadow-[0_28px_96px_rgba(0,0,0,0.28)] backdrop-blur-md transition-opacity duration-[520ms] ease-out sm:px-6 sm:py-6 lg:h-[65vh] lg:max-h-[600px] lg:w-[24vw] lg:min-w-[300px] lg:max-w-[380px] ${
+      className={`mx-auto flex h-full max-h-[68vh] w-full max-w-[min(100%,600px)] flex-col min-h-0 overflow-hidden rounded-[1.5rem] bg-blue-950/90 px-4 py-5 text-white backdrop-blur-md transition-opacity duration-[520ms] ease-out sm:px-6 sm:py-6 lg:h-[65vh] lg:max-h-[600px] lg:w-[24vw] lg:min-w-[300px] lg:max-w-[380px] lg:mr-10 xl:mr-14 ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
