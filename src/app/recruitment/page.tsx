@@ -1,24 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SearchableText } from "@/global-components/search/searchable-text";
+import { recruitmentConfig } from "./recruitment-data";
 
 // Set isRecruitmentOpen to true when applications are open, or false when
 // recruitment is closed. Update recruitmentFormUrl when the application form
 // changes. The open and closed images are configured separately because they
 // intentionally use different render styles.
-const recruitmentConfig = {
-  isRecruitmentOpen: false,
-  recruitmentFormUrl:
-    "https://docs.google.com/forms/d/e/1FAIpQLSfwcHf9qlp82zL6ozTGCwcedqiVyZPMbfV5QdVsvk-8K2bcWA/viewform?usp=dialog",
-  openImage: {
-    src: "/images/recruitment/true.JPG",
-    alt: "MUAS members carrying an aircraft during a flight day",
-  },
-  closedImage: {
-    src: "/images/recruitment/false.png",
-    alt: "MUAS team members wearing team polos",
-  },
-};
-
 export default function RecruitmentPage() {
   const isRecruitmentOpen = recruitmentConfig.isRecruitmentOpen;
 
@@ -51,30 +39,46 @@ export default function RecruitmentPage() {
           <div className="grid w-full min-w-0 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,0.68fr)_minmax(680px,1.32fr)] lg:items-center lg:gap-16">
             {/* Recruitment text */}
             <div className="min-w-0 max-w-4xl">
-              <h1 className="max-w-full text-[clamp(3rem,8vw,7rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
+              <SearchableText
+                as="h1"
+                searchId="recruitment-heading"
+                className="max-w-full text-[clamp(3rem,8vw,7rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white"
+              >
                 Recruitment
-              </h1>
+              </SearchableText>
 
-              <p className="mt-5 max-w-[21rem] break-words text-b1 leading-relaxed text-blue-50 sm:max-w-3xl sm:text-subtitle lg:mt-6">
-                MUAS welcomes students from all backgrounds, technical and
-                non-technical, to contribute to a team designing, building,
-                testing, and flying uncrewed aerial systems.
-              </p>
+              <SearchableText
+                as="p"
+                searchId="recruitment-intro"
+                className="mt-5 max-w-[21rem] break-words text-b1 leading-relaxed text-blue-50 sm:max-w-3xl sm:text-subtitle lg:mt-6"
+              >
+                MUAS welcomes students from all backgrounds, technical and non-technical, to contribute to a team designing, building, testing, and flying uncrewed aerial systems.
+              </SearchableText>
 
               <div className="mt-7 max-w-[21rem] border-l-2 border-blue-300/70 pl-4 sm:mt-9 sm:max-w-2xl sm:pl-5 lg:mt-12">
-                <h2 className="text-h7 font-bold leading-tight tracking-[-0.03em] text-white sm:text-h5">
+                <SearchableText
+                  as="h2"
+                  searchId="recruitment-status-heading"
+                  className="text-h7 font-bold leading-tight tracking-[-0.03em] text-white sm:text-h5"
+                >
                   {statusContent.heading}
-                </h2>
+                </SearchableText>
 
-                <p className="mt-3 break-words text-b1 leading-relaxed text-blue-50 sm:text-subtitle">
+                <SearchableText
+                  as="p"
+                  searchId="recruitment-status-copy"
+                  className="mt-3 break-words text-b1 leading-relaxed text-blue-50 sm:text-subtitle"
+                >
                   {statusContent.copy}
-                </p>
+                </SearchableText>
 
                 {isRecruitmentOpen ? (
                   <Link
                     href={recruitmentConfig.recruitmentFormUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-search-target-id="recruitment-apply"
+                    data-search-highlight-mode="text"
                     className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 py-3 text-b1 font-bold text-blue-900 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:min-h-12"
                   >
                     Apply Now

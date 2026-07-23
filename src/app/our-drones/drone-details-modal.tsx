@@ -18,6 +18,36 @@ type DroneDetailsModalProps = {
 export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const modalRef = useRef<HTMLElement | null>(null);
+  const { registerSearchTarget } = useSearchNavigation();
+
+  useSearchTarget(`drone-${drone.slug}`, modalRef);
+
+  useEffect(() => {
+    if (!modalRef.current) {
+      return;
+    }
+
+    const cleanups = Array.from(
+      modalRef.current.querySelectorAll<HTMLElement>("[data-search-target-id]"),
+    ).flatMap((element) => {
+      const targetId = element.dataset.searchTargetId;
+
+      return targetId && targetId !== `drone-${drone.slug}`
+        ? [
+            registerSearchTarget(targetId, {
+              element,
+              highlightMode:
+                element.dataset.searchHighlightMode === "text"
+                  ? "text"
+                  : "component",
+            }),
+          ]
+        : [];
+    });
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }, [drone.slug, registerSearchTarget]);
 
   const hasGallery = (drone.gallery?.length ?? 0) > 0;
   const slides = useMemo(() => getDroneSlides(drone), [drone]);

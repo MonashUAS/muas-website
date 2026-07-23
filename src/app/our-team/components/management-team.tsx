@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
+import {
+  useSearchNavigation,
+  useSearchRevealController,
+} from "@/global-components/search/search-navigation-provider";
+import { SearchableText } from "@/global-components/search/searchable-text";
 import type { TeamMember, TeamSection } from "../data/team-data";
 import { teamSections } from "../data/team-data";
 import { MemberCard } from "./member-card";
@@ -32,6 +37,8 @@ export function ManagementTeam() {
   const [isDissolving, setIsDissolving] = useState(false);
   const transitionTimer = useRef<number | null>(null);
   const preloadGeneration = useRef(0);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const { registerSearchTarget } = useSearchNavigation();
 
   const displayedSection =
     teamSections.find((section) => section.id === displayedSectionId) ??
@@ -46,6 +53,79 @@ export function ManagementTeam() {
       preloadGeneration.current += 1;
     };
   }, []);
+
+  useSearchRevealController(
+    "management-team",
+    {
+      reveal: (state) => {
+        const pillInteraction = state.interactions?.find(
+          (interaction) =>
+            interaction.type === "pill" &&
+            interaction.groupId === "management-team",
+        );
+
+        if (!pillInteraction && state.expand?.id !== "management-team") {
+          return;
+        }
+
+        const nextSection =
+          teamSections.find(
+            (section) =>
+              section.id === (pillInteraction?.value ?? state.expand?.itemId),
+          ) ??
+          teamSections[0];
+
+        if (transitionTimer.current !== null) {
+          window.clearTimeout(transitionTimer.current);
+          transitionTimer.current = null;
+        }
+
+        preloadGeneration.current += 1;
+        setActiveSectionId(nextSection.id);
+        setDisplayedSectionId(nextSection.id);
+        setIsDissolving(false);
+      },
+    },
+  );
+
+  useEffect(() => {
+    if (!panelRef.current) {
+      return;
+    }
+
+    const cleanups = [
+      registerSearchTarget(`team-section-${displayedSection.id}`, {
+        element: panelRef.current,
+        highlightMode: "component",
+      }),
+    ];
+
+    panelRef.current
+      .querySelectorAll<HTMLElement>("[data-search-target-id]")
+      .forEach((element) => {
+        if (element.dataset.searchManaged === "true") {
+          return;
+        }
+
+        const targetId = element.dataset.searchTargetId;
+
+        if (!targetId) {
+          return;
+        }
+
+        cleanups.push(
+          registerSearchTarget(targetId, {
+            element,
+            highlightMode:
+              element.dataset.searchHighlightMode === "text"
+                ? "text"
+                : "component",
+          }),
+        );
+      });
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }, [displayedSection.id, registerSearchTarget]);
 
   const changeSection = (sectionId: string) => {
     if (sectionId === activeSectionId || isDissolving) {
@@ -132,6 +212,7 @@ export function ManagementTeam() {
 
         <TeamSectionPanel
           isDissolving={isDissolving}
+          panelRef={panelRef}
           section={displayedSection}
         />
       </div>
@@ -141,22 +222,29 @@ export function ManagementTeam() {
 
 function TeamSectionPanel({
   isDissolving,
+  panelRef,
   section,
 }: {
   isDissolving: boolean;
+  panelRef: RefObject<HTMLDivElement | null>;
   section: TeamSection;
 }) {
   return (
     <div
+      ref={panelRef}
       className={`transition-all duration-200 ease-out motion-reduce:transition-none ${
         isDissolving
           ? "translate-y-1 opacity-0 blur-[3px]"
           : "translate-y-0 opacity-100 blur-0"
       }`}
     >
-      <p className="mx-auto mt-8 max-w-5xl text-center text-b2 leading-relaxed text-blue-50 sm:text-b1">
+      <SearchableText
+        as="p"
+        searchId={`team-section-${section.id}-description`}
+        className="mx-auto mt-8 max-w-5xl text-center text-b2 leading-relaxed text-blue-50 sm:text-b1"
+      >
         {section.description}
-      </p>
+      </SearchableText>
 
       <div className="mx-auto mt-10 flex max-w-[1280px] flex-wrap justify-center gap-7">
         {section.members.map((member) => (

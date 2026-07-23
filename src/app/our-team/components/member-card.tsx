@@ -10,6 +10,10 @@ type MemberCardProps = {
   member: TeamMember;
 };
 
+function memberSearchSlug(member: TeamMember) {
+  return member.name.toLowerCase().replaceAll(" ", "-");
+}
+
 export function MemberCard({ member }: MemberCardProps) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
@@ -39,11 +43,21 @@ export function MemberCard({ member }: MemberCardProps) {
       </div>
 
       <div className="flex min-h-[7.5rem] w-full flex-col items-center justify-center px-5 py-5">
-        <h3 className="text-b1 font-black leading-tight text-white">
+        <h3
+          data-search-target-id={`team-member-${memberSearchSlug(member)}-name`}
+          data-search-highlight-mode="text"
+          className="text-b1 font-black leading-tight text-white"
+        >
           {member.name}
         </h3>
 
-        <p className="mt-2 text-b2 font-medium text-blue-100">{member.role}</p>
+        <p
+          data-search-target-id={`team-member-${memberSearchSlug(member)}-role`}
+          data-search-highlight-mode="text"
+          className="mt-2 text-b2 font-medium text-blue-100"
+        >
+          {member.role}
+        </p>
       </div>
     </article>
   );

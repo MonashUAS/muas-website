@@ -38,7 +38,10 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
 // SectionHero introduces each team section with full-bleed media and lead profiles.
 function SectionHero({ section }: { section: TeamSection }) {
   return (
-    <section className="relative isolate flex min-h-[100svh] scroll-mt-20 items-center justify-center overflow-hidden bg-black-500 px-6 pt-[var(--header-height)] text-white sm:px-10">
+    <section
+      id="team-overview"
+      className="relative isolate flex min-h-[100svh] scroll-mt-20 items-center justify-center overflow-hidden bg-black-500 px-6 pt-[var(--header-height)] text-white sm:px-10"
+    >
       <video
         aria-label={`${section.name} hero video`}
         autoPlay
@@ -124,7 +127,7 @@ function Projects({ section }: { section: TeamSection }) {
           Responsibilities
         </h2>
 
-        <ProjectCarousel projects={section.projects} />
+        <ProjectCarousel projects={section.projects} sectionSlug={section.slug} />
       </div>
     </section>
   );
