@@ -388,7 +388,11 @@ export function HomepageHero() {
           className="h-auto w-[190px] sm:w-[240px] lg:w-[280px]"
         />
 
-        <p className="mt-8 text-[clamp(2.4rem,7vw,5.6rem)] font-black leading-[0.95] tracking-[-0.05em] text-white">
+        <SearchableText
+          as="p"
+          searchId="home-hero-heading"
+          className="mt-8 text-[clamp(2.4rem,7vw,5.6rem)] font-black leading-[0.95] tracking-[-0.05em] text-white"
+        >
           Redefining Drone Technology
         </SearchableText>
 

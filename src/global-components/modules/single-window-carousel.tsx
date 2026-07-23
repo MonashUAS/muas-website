@@ -36,6 +36,7 @@ type SingleWindowCarouselProps = {
   initialIndex?: number;
   onActiveIndexChange?: (index: number) => void;
   dotTone?: "light" | "blue";
+  searchControllerId?: string;
 };
 
 // Dependency-free single-window carousel shared by homepage and Redback projects.
@@ -49,6 +50,7 @@ export function SingleWindowCarousel({
   initialIndex = 0,
   onActiveIndexChange,
   dotTone = "light",
+  searchControllerId,
 }: SingleWindowCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(() =>
     clampIndex(initialIndex, slides.length),

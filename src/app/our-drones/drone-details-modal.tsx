@@ -3,8 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SingleWindowCarousel } from "@/global-components/modules/single-window-carousel";
+import {
+  useSearchNavigation,
+  useSearchTarget,
+} from "@/global-components/search/search-navigation-provider";
 import type { Drone } from "./drone-data";
 import { DroneVisual } from "./drone-visual";
 import { SpecList } from "./spec-list";
@@ -77,6 +81,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
       }}
     >
       <article
+        ref={modalRef}
         className="relative z-10 mx-auto flex w-full max-w-[1380px] max-h-[88vh] flex-col overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-blue-50/95 shadow-2xl p-4 sm:p-6 lg:p-8 my-auto"
       >
         <div className="absolute inset-0 z-0 overflow-hidden rounded-[inherit] bg-blue-100">
