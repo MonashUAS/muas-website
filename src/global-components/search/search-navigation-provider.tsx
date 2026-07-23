@@ -27,6 +27,7 @@ import {
 
 const HIGHLIGHT_MS = 2600;
 const TARGET_WAIT_MS = 4500;
+const SCROLL_STABLE_FRAMES = 3;
 const PROVIDER_RANGE_HIGHLIGHT_NAME = "search-active-range-highlight";
 const PROVIDER_RANGE_OVERLAY_ID = "search-active-range-highlight-overlay";
 
@@ -56,6 +57,7 @@ type SearchRevealRequest = SearchRevealState & {
 
 type PendingSearchNavigation = {
   destination: SearchDestination;
+  id: number;
   waitForRouteReady: boolean;
 };
 
@@ -83,14 +85,179 @@ function getHeaderOffset() {
   return headerHeight + 24;
 }
 
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 function scrollToTarget(element: HTMLElement) {
-  const top = element.getBoundingClientRect().top + window.scrollY;
+  const top = Math.max(
+    0,
+    element.getBoundingClientRect().top + window.scrollY - getHeaderOffset(),
+  );
 
   window.scrollTo({
-    top: Math.max(0, top - getHeaderOffset()),
-    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? "auto"
-      : "smooth",
+    top,
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+  });
+
+  return top;
+}
+
+function isNearScrollTarget(targetTop: number) {
+  return Math.abs(window.scrollY - targetTop) <= 1;
+}
+
+function isRectInViewport(rect: DOMRectReadOnly) {
+  return (
+    rect.width > 0 &&
+    rect.height > 0 &&
+    rect.bottom > 0 &&
+    rect.top < window.innerHeight &&
+    rect.right > 0 &&
+    rect.left < window.innerWidth
+  );
+}
+
+function isFixedHighlightInViewport() {
+  const overlay = window.document.getElementById(PROVIDER_RANGE_OVERLAY_ID);
+
+  if (!overlay) {
+    return false;
+  }
+
+  return Array.from(
+    overlay.querySelectorAll<HTMLElement>(".search-range-highlight-overlay"),
+  ).some((segment) => isRectInViewport(segment.getBoundingClientRect()));
+}
+
+function isElementHighlightInViewport(element: HTMLElement) {
+  return isRectInViewport(element.getBoundingClientRect());
+}
+
+function waitForScrollSettled(
+  isActive: () => boolean,
+  targetTop: number,
+) {
+  return new Promise<boolean>((resolve) => {
+    if (!isActive()) {
+      resolve(false);
+      return;
+    }
+
+    const maxScrollTop = Math.max(
+      0,
+      window.document.documentElement.scrollHeight - window.innerHeight,
+    );
+    const effectiveTargetTop = Math.min(targetTop, maxScrollTop);
+
+    if (prefersReducedMotion() || isNearScrollTarget(effectiveTargetTop)) {
+      void waitForPaint().then(() => resolve(isActive()));
+      return;
+    }
+
+    let settled = false;
+    let animationFrame = 0;
+    let lastY = window.scrollY;
+    let stableFrames = 0;
+
+    const finish = (success: boolean) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      window.clearTimeout(timeout);
+      window.removeEventListener("scrollend", onScrollEnd);
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
+      }
+
+      resolve(success);
+    };
+
+    const onScrollEnd = () => {
+      void waitForPaint().then(() => finish(isActive()));
+    };
+
+    window.addEventListener("scrollend", onScrollEnd, { once: true });
+
+    const checkStability = () => {
+      if (settled) {
+        return;
+      }
+
+      if (!isActive()) {
+        finish(false);
+        return;
+      }
+
+      if (window.scrollY === lastY) {
+        stableFrames += 1;
+
+        if (
+          stableFrames >= SCROLL_STABLE_FRAMES &&
+          isNearScrollTarget(effectiveTargetTop)
+        ) {
+          void waitForPaint().then(() => finish(isActive()));
+          return;
+        }
+      } else {
+        stableFrames = 0;
+        lastY = window.scrollY;
+      }
+
+      animationFrame = window.requestAnimationFrame(checkStability);
+    };
+
+    const timeout = window.setTimeout(() => {
+      void waitForPaint().then(() => finish(isActive()));
+    }, TARGET_WAIT_MS);
+
+    animationFrame = window.requestAnimationFrame(checkStability);
+  });
+}
+
+function waitForHighlightRetryOpportunity(
+  isActive: () => boolean,
+  timeoutMs: number,
+) {
+  return new Promise<boolean>((resolve) => {
+    if (!isActive() || timeoutMs <= 0) {
+      resolve(false);
+      return;
+    }
+
+    let settled = false;
+
+    const finish = (success: boolean) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      window.clearTimeout(timeout);
+      window.removeEventListener("scrollend", onOpportunity);
+      mutationObserver.disconnect();
+      resolve(success);
+    };
+
+    const onOpportunity = () => {
+      void waitForPaint().then(() => finish(isActive()));
+    };
+
+    const mutationObserver = new MutationObserver(onOpportunity);
+    mutationObserver.observe(window.document.body, {
+      attributeFilter: ["aria-hidden", "class", "hidden", "inert", "style"],
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
+    window.addEventListener("scrollend", onOpportunity, { once: true });
+
+    const timeout = window.setTimeout(() => {
+      finish(isActive());
+    }, timeoutMs);
   });
 }
 
@@ -410,8 +577,10 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
   const targetsRef = useRef(new Map<string, SearchTargetRegistration>());
   const controllersRef = useRef(new Map<string, SearchController>());
   const activeHighlightCleanupRef = useRef<(() => void) | null>(null);
+  const activeNavigationIdRef = useRef(0);
+  const previousPathnameRef = useRef(pathname);
   const waitersRef = useRef(
-    new Map<string, Array<(target: SearchTargetRegistration) => void>>(),
+    new Map<string, Set<() => void>>(),
   );
 
   const registerSearchTarget = useCallback(
@@ -420,9 +589,8 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
 
       const waiters = waitersRef.current.get(id);
 
-      if (waiters && isSearchTargetReady(registration)) {
-        waiters.forEach((resolve) => resolve(registration));
-        waitersRef.current.delete(id);
+      if (waiters) {
+        waiters.forEach((notify) => notify());
       }
 
       return () => {
@@ -453,30 +621,80 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
     deleteCssHighlight(PROVIDER_RANGE_HIGHLIGHT_NAME);
   }, []);
 
-  const waitForTarget = useCallback((id: string) => {
+  const waitForTarget = useCallback((id: string, navigationId: number) => {
     const currentTarget = targetsRef.current.get(id);
 
-    if (currentTarget && isSearchTargetReady(currentTarget)) {
+    if (
+      activeNavigationIdRef.current === navigationId &&
+      currentTarget &&
+      isSearchTargetReady(currentTarget)
+    ) {
       return Promise.resolve(currentTarget);
     }
 
     return new Promise<SearchTargetRegistration | null>((resolve) => {
-      const timeout = window.setTimeout(() => {
-        const waiters = waitersRef.current.get(id) ?? [];
-        waitersRef.current.set(
-          id,
-          waiters.filter((waiter) => waiter !== wrappedResolve),
-        );
-        resolve(null);
-      }, TARGET_WAIT_MS);
+      let animationFrame = 0;
+      let settled = false;
+      const waiters = waitersRef.current.get(id) ?? new Set<() => void>();
 
-      const wrappedResolve = (target: SearchTargetRegistration) => {
+      const cleanup = () => {
+        if (animationFrame) {
+          window.cancelAnimationFrame(animationFrame);
+        }
+
         window.clearTimeout(timeout);
+        mutationObserver.disconnect();
+        waiters.delete(checkTarget);
+
+        if (waiters.size === 0) {
+          waitersRef.current.delete(id);
+        }
+      };
+
+      const settle = (target: SearchTargetRegistration | null) => {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
+        cleanup();
         resolve(target);
       };
 
-      const waiters = waitersRef.current.get(id) ?? [];
-      waitersRef.current.set(id, [...waiters, wrappedResolve]);
+      const checkTarget = () => {
+        if (settled) {
+          return;
+        }
+
+        if (activeNavigationIdRef.current !== navigationId) {
+          settle(null);
+          return;
+        }
+
+        const target = targetsRef.current.get(id);
+
+        if (target && isSearchTargetReady(target)) {
+          settle(target);
+          return;
+        }
+
+        animationFrame = window.requestAnimationFrame(checkTarget);
+      };
+
+      const timeout = window.setTimeout(() => {
+        settle(null);
+      }, TARGET_WAIT_MS);
+      const mutationObserver = new MutationObserver(checkTarget);
+
+      waiters.add(checkTarget);
+      waitersRef.current.set(id, waiters);
+      mutationObserver.observe(window.document.body, {
+        attributeFilter: ["aria-hidden", "class", "hidden", "inert", "style"],
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
+      animationFrame = window.requestAnimationFrame(checkTarget);
     });
   }, []);
 
@@ -516,7 +734,7 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
       return;
     }
 
-    const { destination, waitForRouteReady } = pendingNavigation;
+    const { destination, id, waitForRouteReady } = pendingNavigation;
 
     if (resolveRoute(pathname) !== resolveRoute(destination.route)) {
       return;
@@ -527,16 +745,35 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
     }
 
     await waitForPaint();
+
+    if (activeNavigationIdRef.current !== id) {
+      return;
+    }
+
     await revealDestination(destination);
     await waitForPaint();
 
+    if (activeNavigationIdRef.current !== id) {
+      return;
+    }
+
     const scrollTargetId = getDestinationScrollTargetId(destination);
     const highlightTargetId = getDestinationTargetId(destination);
-    const scrollRegistration = await waitForTarget(scrollTargetId);
+    const scrollRegistration = await waitForTarget(scrollTargetId, id);
+
+    if (activeNavigationIdRef.current !== id) {
+      return;
+    }
+
     const highlightRegistration =
       highlightTargetId === scrollTargetId
         ? scrollRegistration
-        : await waitForTarget(highlightTargetId);
+        : await waitForTarget(highlightTargetId, id);
+
+    if (activeNavigationIdRef.current !== id) {
+      return;
+    }
+
     const highlightMode = getDestinationHighlightMode(destination);
     const registration =
       highlightMode === "text"
@@ -548,8 +785,21 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
       return;
     }
 
+    const isActiveNavigation = () => activeNavigationIdRef.current === id;
+
     clearActiveHighlight();
-    scrollToTarget((scrollRegistration ?? registration).element);
+    const targetScrollTop = scrollToTarget(
+      (scrollRegistration ?? registration).element,
+    );
+
+    const scrollSettled = await waitForScrollSettled(
+      isActiveNavigation,
+      targetScrollTop,
+    );
+
+    if (!scrollSettled || !isActiveNavigation()) {
+      return;
+    }
 
     const matchQuery = destination.matchQuery ?? "";
     const rangeRequest =
@@ -560,28 +810,41 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
             sourceText: destination.content.text,
           }
         : null;
-    const usedRegistrationRangeHighlight =
-      rangeRequest && registration.applyRangeHighlight?.(rangeRequest);
-    const usedProviderRangeHighlight =
-      rangeRequest &&
-      !usedRegistrationRangeHighlight &&
-      applyElementRangeHighlight(registration.element, rangeRequest);
-    const usedRangeHighlight =
-      usedRegistrationRangeHighlight || usedProviderRangeHighlight;
-    const usedTextRangeHighlight =
-      usedRangeHighlight ||
-      (highlightMode === "text" &&
-        matchQuery &&
-        registration.applyTextHighlight?.(matchQuery));
 
-    if (usedTextRangeHighlight) {
-      registration.element.focus({ preventScroll: true });
+    const tryApplyTextHighlight = (
+      activeRegistration: SearchTargetRegistration,
+    ) => {
+      clearActiveHighlight();
+
+      const usedRegistrationRangeHighlight = Boolean(
+        rangeRequest && activeRegistration.applyRangeHighlight?.(rangeRequest),
+      );
+      const usedProviderRangeHighlight = Boolean(
+        rangeRequest &&
+          !usedRegistrationRangeHighlight &&
+          applyElementRangeHighlight(activeRegistration.element, rangeRequest),
+      );
+      const usedRangeHighlight =
+        usedRegistrationRangeHighlight || usedProviderRangeHighlight;
+      const usedTextRangeHighlight =
+        usedRangeHighlight ||
+        Boolean(
+          highlightMode === "text" &&
+            matchQuery &&
+            activeRegistration.applyTextHighlight?.(matchQuery),
+        );
+
+      if (!usedTextRangeHighlight) {
+        return false;
+      }
+
+      activeRegistration.element.focus({ preventScroll: true });
 
       const fadeTimer = window.setTimeout(() => {
-        registration.fadeTextHighlight?.();
+        activeRegistration.fadeTextHighlight?.();
       }, HIGHLIGHT_MS);
       const clearTimer = window.setTimeout(() => {
-        registration.clearTextHighlight?.();
+        activeRegistration.clearTextHighlight?.();
         deleteCssHighlight(PROVIDER_RANGE_HIGHLIGHT_NAME);
         activeHighlightCleanupRef.current = null;
       }, HIGHLIGHT_MS + 700);
@@ -589,16 +852,66 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
       activeHighlightCleanupRef.current = () => {
         window.clearTimeout(fadeTimer);
         window.clearTimeout(clearTimer);
-        registration.clearTextHighlight?.();
+        activeRegistration.clearTextHighlight?.();
         deleteCssHighlight(PROVIDER_RANGE_HIGHLIGHT_NAME);
       };
-    } else if (highlightMode === "text") {
-      warnTextHighlightFailure(destination);
+
+      const acknowledged =
+        isFixedHighlightInViewport() ||
+        isElementHighlightInViewport(activeRegistration.element);
+
+      if (!acknowledged) {
+        clearActiveHighlight();
+      }
+
+      return acknowledged;
+    };
+
+    let highlightAcknowledged = false;
+
+    if (highlightMode === "text") {
+      highlightAcknowledged = tryApplyTextHighlight(registration);
+
+      const highlightDeadline = Date.now() + TARGET_WAIT_MS;
+
+      while (
+        !highlightAcknowledged &&
+        isActiveNavigation() &&
+        Date.now() < highlightDeadline
+      ) {
+        const canRetry = await waitForHighlightRetryOpportunity(
+          isActiveNavigation,
+          highlightDeadline - Date.now(),
+        );
+
+        if (!canRetry || !isActiveNavigation()) {
+          break;
+        }
+
+        const latestRegistration =
+          targetsRef.current.get(highlightTargetId) ?? registration;
+
+        if (!isSearchTargetReady(latestRegistration)) {
+          continue;
+        }
+
+        highlightAcknowledged = tryApplyTextHighlight(latestRegistration);
+      }
+
+      if (!highlightAcknowledged) {
+        warnTextHighlightFailure(destination);
+      }
     } else {
-      highlightTarget(registration.element, registration.highlightMode ?? "component");
+      highlightTarget(
+        registration.element,
+        registration.highlightMode ?? "component",
+      );
+      highlightAcknowledged = true;
     }
 
-    setPendingNavigation(null);
+    if (isActiveNavigation()) {
+      setPendingNavigation(null);
+    }
   }, [
     clearActiveHighlight,
     pathname,
@@ -632,13 +945,48 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
     };
   }, []);
 
+  useEffect(() => {
+    if (previousPathnameRef.current === pathname) {
+      return;
+    }
+
+    previousPathnameRef.current = pathname;
+
+    if (!pendingNavigation) {
+      activeNavigationIdRef.current += 1;
+      clearActiveHighlight();
+      return;
+    }
+
+    if (
+      !pendingNavigation.waitForRouteReady &&
+      resolveRoute(pathname) !== resolveRoute(pendingNavigation.destination.route)
+    ) {
+      const pendingNavigationId = pendingNavigation.id;
+
+      activeNavigationIdRef.current += 1;
+      clearActiveHighlight();
+      const task = window.setTimeout(() => {
+        setPendingNavigation((current) =>
+          current?.id === pendingNavigationId ? null : current,
+        );
+      }, 0);
+
+      return () => window.clearTimeout(task);
+    }
+  }, [clearActiveHighlight, pathname, pendingNavigation]);
+
   const navigateToSearchDestination = useCallback(
     (destination: SearchDestination) => {
       const isSameRoute =
         resolveRoute(pathname) === resolveRoute(destination.route);
+      const id = activeNavigationIdRef.current + 1;
 
+      activeNavigationIdRef.current = id;
+      clearActiveHighlight();
       setPendingNavigation({
         destination,
+        id,
         waitForRouteReady: !isSameRoute,
       });
 
@@ -646,7 +994,7 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
         dispatchSearchTransitionNavigation(destination.route);
       }
     },
-    [pathname],
+    [clearActiveHighlight, pathname],
   );
 
   const value = useMemo(
