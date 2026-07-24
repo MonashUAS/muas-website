@@ -19,6 +19,7 @@ export function HomepageExplorePanels() {
             <Link
               key={panel.href}
               href={panel.href}
+              data-search-target-id={`home-explore-${panel.href.replaceAll("/", "-").replace(/^-/, "")}`}
               className="group relative min-h-[120px] overflow-hidden rounded-xl border border-white/12 bg-black-500 text-white outline-none focus-visible:ring-1 focus-visible:ring-white/80"
             >
               <Image
@@ -49,6 +50,7 @@ export function HomepageExplorePanels() {
             <Link
               key={panel.href}
               href={panel.href}
+              data-search-target-id={`home-explore-${panel.href.replaceAll("/", "-").replace(/^-/, "")}`}
               className="group relative min-h-[220px] overflow-hidden rounded-none bg-black-500 text-white outline-none transition-[flex] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-1 focus-visible:ring-white/80 motion-reduce:transition-none lg:min-h-[420px] lg:flex-[1] lg:hover:flex-[3] lg:focus-visible:flex-[3]"
             >
               <Image

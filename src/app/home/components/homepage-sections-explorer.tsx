@@ -14,6 +14,7 @@ export function HomepageSectionsExplorer() {
     () =>
       homepageSections.map((section) => ({
         key: section.href,
+        searchTargetId: `home-sections-${section.href.replaceAll("/", "-").replace(/^-/, "")}`,
         content: <SectionTile section={section} />,
       })),
     [],
@@ -21,6 +22,7 @@ export function HomepageSectionsExplorer() {
 
   return (
     <section
+      id="homepage-sections"
       className="bg-[linear-gradient(180deg,#02040a_0%,#001f49_46%,#02040a_100%)] py-20 text-white sm:py-24 lg:py-28"
       aria-labelledby="homepage-sections-heading"
     >
@@ -46,6 +48,7 @@ export function HomepageSectionsExplorer() {
             previousLabel="Show previous section"
             nextLabel="Show next section"
             getDotLabel={(pageIndex) => `Show section slide ${pageIndex + 1}`}
+            searchControllerId="homepage-sections-carousel"
           />
         </div>
       </div>
@@ -78,14 +81,30 @@ function SectionTile({ section }: SectionTileProps) {
       <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 sm:p-8 lg:p-10">
         <div className="max-w-xl">
           <h3 className="text-[clamp(2.3rem,4.4vw,4.8rem)] font-medium leading-[0.92] tracking-[-0.05em]">
-            {section.title}
+            <span
+              data-search-target-id={`home-sections-${section.href.replaceAll("/", "-").replace(/^-/, "")}-heading`}
+              data-search-managed="true"
+              data-search-highlight-mode="text"
+            >
+              {section.title}
+            </span>
           </h3>
 
-          <p className="mt-4 max-w-md text-b1 leading-6 text-blue-50/82 sm:text-subtitle">
+          <p
+            data-search-target-id={`home-sections-${section.href.replaceAll("/", "-").replace(/^-/, "")}-description`}
+            data-search-managed="true"
+            data-search-highlight-mode="text"
+            className="mt-4 max-w-md text-b1 leading-6 text-blue-50/82 sm:text-subtitle"
+          >
             {section.description}
           </p>
 
-          <span className="mt-6 inline-flex items-center gap-3 text-b2 font-medium uppercase tracking-[0.18em] text-blue-50/84 transition-colors duration-300 group-hover:text-white group-focus-visible:text-white motion-reduce:transition-none">
+          <span
+            data-search-target-id={`home-sections-${section.href.replaceAll("/", "-").replace(/^-/, "")}-cta`}
+            data-search-managed="true"
+            data-search-highlight-mode="text"
+            className="mt-6 inline-flex items-center gap-3 text-b2 font-medium uppercase tracking-[0.18em] text-blue-50/84 transition-colors duration-300 group-hover:text-white group-focus-visible:text-white motion-reduce:transition-none"
+          >
             Visit section
             <span
               className="text-lg transition-transform duration-300 group-hover:translate-x-1 group-focus-visible:translate-x-1 motion-reduce:transition-none"

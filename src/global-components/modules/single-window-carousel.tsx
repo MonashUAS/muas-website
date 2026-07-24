@@ -9,6 +9,10 @@ import {
   type PointerEvent,
   type ReactNode,
 } from "react";
+import {
+  useSearchNavigation,
+  useSearchRevealController,
+} from "@/global-components/search/search-navigation-provider";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 const AUTOPLAY_INTERVAL_MS = 4800;
@@ -19,6 +23,7 @@ const SWIPE_THRESHOLD_PX = 48;
 export type SingleWindowCarouselSlide = {
   key: string;
   content: ReactNode;
+  searchTargetId?: string;
 };
 
 type SingleWindowCarouselProps = {
@@ -31,6 +36,7 @@ type SingleWindowCarouselProps = {
   initialIndex?: number;
   onActiveIndexChange?: (index: number) => void;
   dotTone?: "light" | "blue";
+  searchControllerId?: string;
 };
 
 // Dependency-free single-window carousel shared by homepage and Redback projects.
@@ -44,16 +50,19 @@ export function SingleWindowCarousel({
   initialIndex = 0,
   onActiveIndexChange,
   dotTone = "light",
+  searchControllerId,
 }: SingleWindowCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(() =>
     clampIndex(initialIndex, slides.length),
   );
   const [isPaused, setIsPaused] = useState(false);
   const dragStartXRef = useRef<number | null>(null);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
   const isTransitioningRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
   const hasNotifiedParentRef = useRef(false);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const { registerSearchTarget } = useSearchNavigation();
 
   const maxIndex = Math.max(slides.length - 1, 0);
   const slideOffset = `calc(-${activeIndex * 100}% - ${activeIndex * SLIDE_GAP_PX
@@ -65,6 +74,48 @@ export function SingleWindowCarousel({
   const activeDotClass = dotTone === "blue" ? "w-9 bg-blue-900" : "w-9 bg-blue-50";
   const inactiveDotClass =
     dotTone === "blue" ? "w-2.5 bg-blue-900/25" : "w-2.5 bg-white/25";
+
+  useSearchRevealController(
+    searchControllerId ?? "__single-window-carousel-unregistered",
+    useMemo(
+      () => ({
+        reveal: (state) => {
+          const carouselInteraction = state.interactions?.find(
+            (interaction) =>
+              interaction.type === "carousel" &&
+              interaction.groupId === searchControllerId,
+          );
+
+          if (
+            !searchControllerId ||
+            (!carouselInteraction && state.carousel?.id !== searchControllerId)
+          ) {
+            return;
+          }
+
+          const nextIndex = slides.findIndex(
+            (slide) =>
+              slide.key ===
+              (carouselInteraction?.value ?? state.carousel?.slideId),
+          );
+
+          if (nextIndex < 0) {
+            return;
+          }
+
+          if (transitionTimeoutRef.current !== null) {
+            window.clearTimeout(transitionTimeoutRef.current);
+            transitionTimeoutRef.current = null;
+          }
+
+          isTransitioningRef.current = false;
+          setActiveIndex(nextIndex);
+          onActiveIndexChange?.(nextIndex);
+        },
+      }),
+      [onActiveIndexChange, searchControllerId, slides],
+    ),
+  );
 
   useEffect(() => {
     // Skip the mount notification — the parent already owns the initial index.
@@ -80,6 +131,56 @@ export function SingleWindowCarousel({
 
     onActiveIndexChange(activeIndex);
   }, [activeIndex, onActiveIndexChange]);
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    const activeSlide = slides[activeIndex];
+
+    if (!carousel || !activeSlide) {
+      return;
+    }
+
+    const slideElement = carousel.querySelector<HTMLElement>(
+      `[data-search-slide-key="${activeSlide.key}"]`,
+    );
+
+    if (!slideElement) {
+      return;
+    }
+
+    const cleanups: Array<() => void> = [];
+
+    if (activeSlide.searchTargetId) {
+      cleanups.push(
+        registerSearchTarget(activeSlide.searchTargetId, {
+          element: slideElement,
+          highlightMode: "component",
+        }),
+      );
+    }
+
+    slideElement
+      .querySelectorAll<HTMLElement>("[data-search-target-id]")
+      .forEach((element) => {
+        const targetId = element.dataset.searchTargetId;
+
+        if (!targetId) {
+          return;
+        }
+
+        cleanups.push(
+          registerSearchTarget(targetId, {
+            element,
+            highlightMode:
+              element.dataset.searchHighlightMode === "text"
+                ? "text"
+                : "component",
+          }),
+        );
+      });
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }, [activeIndex, registerSearchTarget, slides]);
 
   const navigateToSlide = useCallback(
     (nextIndex: number) => {
@@ -182,6 +283,7 @@ export function SingleWindowCarousel({
 
   return (
     <div
+      ref={carouselRef}
       className="w-full"
       role="region"
       aria-labelledby={labelledBy}
@@ -210,6 +312,9 @@ export function SingleWindowCarousel({
             {slides.map((slide) => (
               <div
                 key={slide.key}
+                data-search-target-id={slide.searchTargetId}
+                data-search-managed="true"
+                data-search-slide-key={slide.key}
                 className="shrink-0 basis-full overflow-hidden rounded-[1.5rem]"
               >
                 {slide.content}

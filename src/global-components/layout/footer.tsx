@@ -7,6 +7,7 @@ import {
   LuMail,
   LuYoutube,
 } from "react-icons/lu";
+import { SearchableText } from "@/global-components/search/searchable-text";
 
 const footerNavigationGroups = [
   {
@@ -86,9 +87,13 @@ export function Footer() {
             height={56}
             className="h-auto w-40"
           />
-          <p className="text-b1 leading-relaxed text-white/64">
+          <SearchableText
+            as="p"
+            searchId="footer-humanitarian-potential"
+            className="text-b1 leading-relaxed text-white/64"
+          >
             Monash Uncrewed Aerial Systems - Demonstrating the humanitarian potential of Drone Technology since 2011.
-          </p>
+          </SearchableText>
         </div>
 
         <nav aria-label="Footer navigation">

@@ -9,6 +9,7 @@ type FilterPillNavProps = {
   activeId: string;
   onSelect: (id: string) => void;
   className?: string;
+  getSearchTargetId?: (item: FilterPillItem) => string | undefined;
 };
 
 const navClassName =
@@ -30,6 +31,7 @@ export function FilterPillNav({
   activeId,
   onSelect,
   className = "",
+  getSearchTargetId,
 }: FilterPillNavProps) {
   return (
     <nav
@@ -45,6 +47,9 @@ export function FilterPillNav({
             type="button"
             aria-pressed={isActive}
             onClick={() => onSelect(item.id)}
+            data-search-target-id={getSearchTargetId?.(item)}
+            data-search-managed={getSearchTargetId?.(item) ? "true" : undefined}
+            data-search-highlight-mode={getSearchTargetId?.(item) ? "text" : undefined}
             className={`${pillClassName} ${
               isActive ? activePillClassName : inactivePillClassName
             }`}

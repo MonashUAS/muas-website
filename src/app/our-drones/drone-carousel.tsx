@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useSearchRevealController } from "@/global-components/search/search-navigation-provider";
 import type { Drone } from "./drone-data";
 import { DroneDetailsModal } from "./drone-details-modal";
 import { DroneVisual } from "./drone-visual";
@@ -48,6 +49,54 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
     },
     threshold: 10,
   });
+
+  const searchController = useMemo(
+    () => ({
+      reveal: (state: {
+        carousel?: { id: string; slideId: string };
+        modal?: { id: string; itemId: string };
+        interactions?: Array<{ type: string; groupId: string; value: string }>;
+      }) => {
+        const carouselInteraction = state.interactions?.find(
+          (interaction) =>
+            interaction.type === "carousel" &&
+            interaction.groupId === "our-drones-carousel",
+        );
+        const modalInteraction = state.interactions?.find(
+          (interaction) =>
+            interaction.type === "modal" && interaction.groupId === "drone-details",
+        );
+        const requestedSlug =
+          carouselInteraction?.value ??
+          modalInteraction?.value ??
+          (state.carousel?.id === "our-drones-carousel"
+            ? state.carousel.slideId
+            : null) ??
+          (state.modal?.id === "drone-details" ? state.modal.itemId : null);
+
+        if (!requestedSlug) {
+          return;
+        }
+
+        const nextIndex = drones.findIndex((drone) => drone.slug === requestedSlug);
+        const nextDrone = drones[nextIndex];
+
+        if (!nextDrone) {
+          return;
+        }
+
+        setActiveIndex(nextIndex);
+
+        if (modalInteraction || state.modal?.id === "drone-details") {
+          setSelectedDrone(nextDrone);
+        }
+      },
+    }),
+    [drones],
+  );
+
+  useSearchRevealController("our-drones-carousel", searchController);
+  useSearchRevealController("drone-details", searchController);
 
   return (
     <section

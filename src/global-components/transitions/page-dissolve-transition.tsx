@@ -8,6 +8,11 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import {
+  dispatchSearchRouteReady,
+  SEARCH_TRANSITION_NAVIGATION_EVENT,
+  type SearchTransitionNavigationDetail,
+} from "@/lib/search/navigation-events";
 
 type DissolvePhase = "idle" | "pendingEnter" | "entering";
 
@@ -215,12 +220,32 @@ export function PageDissolveTransition({
       resetScrollToTop();
     };
 
+    const handleTransitionNavigation = (event: Event) => {
+      const navigationEvent =
+        event as CustomEvent<SearchTransitionNavigationDetail>;
+      const href = navigationEvent.detail?.href;
+
+      if (!href) {
+        return;
+      }
+
+      startNavigation(href);
+    };
+
     document.addEventListener("click", handleClick, true);
     window.addEventListener("popstate", handlePopState);
+    window.addEventListener(
+      SEARCH_TRANSITION_NAVIGATION_EVENT,
+      handleTransitionNavigation,
+    );
 
     return () => {
       document.removeEventListener("click", handleClick, true);
       window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener(
+        SEARCH_TRANSITION_NAVIGATION_EVENT,
+        handleTransitionNavigation,
+      );
       clearAsyncWork();
     };
   }, [clearAsyncWork, startNavigation]);
@@ -247,6 +272,14 @@ export function PageDissolveTransition({
     clearAsyncWork();
     beginEnter(transitionId);
   }, [beginEnter, clearAsyncWork, pathname]);
+
+  useEffect(() => {
+    if (phase !== "idle") {
+      return;
+    }
+
+    dispatchSearchRouteReady(pathname);
+  }, [pathname, phase]);
 
   return (
     <div

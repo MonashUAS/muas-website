@@ -12,6 +12,10 @@ import {
   useProgress,
 } from "@react-three/drei";
 import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
+import {
+  useSearchNavigation,
+  useSearchRevealController,
+} from "@/global-components/search/search-navigation-provider";
 
 import { keyFeatures } from "./key-features-data";
 import type { KeyFeature } from "./key-features-data";
@@ -281,8 +285,10 @@ export function KeyFeatures() {
   const [displayedFeature, setDisplayedFeature] = useState<string | null>(null);
   const [isDissolving, setIsDissolving] = useState(false);
   const transitionTimer = useRef<number | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
   const mobileSwipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastMobileSwipeAtRef = useRef(0);
+  const { registerSearchTarget } = useSearchNavigation();
 
   const displayedActiveFeature = useMemo(
     () => keyFeatures.find((feature) => feature.title === displayedFeature),
@@ -302,6 +308,92 @@ export function KeyFeatures() {
       }
     };
   }, []);
+
+  useSearchRevealController(
+    "key-features",
+    useMemo(
+      () => ({
+        reveal: (state) => {
+          const accordionInteraction = state.interactions?.find(
+            (interaction) =>
+              interaction.type === "accordion" &&
+              interaction.groupId === "key-features",
+          );
+
+          if (!accordionInteraction && state.expand?.id !== "key-features") {
+            return;
+          }
+
+          const feature = keyFeatures.find(
+            (item) =>
+              item.slug ===
+              (accordionInteraction?.value ?? state.expand?.itemId),
+          );
+
+          if (!feature) {
+            return;
+          }
+
+          if (transitionTimer.current !== null) {
+            window.clearTimeout(transitionTimer.current);
+            transitionTimer.current = null;
+          }
+
+          setExpandedFeature(feature.title);
+          setDisplayedFeature(feature.title);
+          setIsDissolving(false);
+        },
+      }),
+      [],
+    ),
+  );
+
+  useEffect(() => {
+    const activeFeature = displayedActiveFeature ?? mobileActiveFeature;
+
+    if (!activeFeature || !sectionRef.current) {
+      return;
+    }
+
+    const activePanel = Array.from(
+      sectionRef.current.querySelectorAll<HTMLElement>(
+        `[data-key-feature-slug="${activeFeature.slug}"]`,
+      ),
+    ).find((element) => element.getClientRects().length > 0);
+
+    if (!activePanel) {
+      return;
+    }
+
+    const cleanups = [
+      registerSearchTarget(`key-feature-${activeFeature.slug}`, {
+        element: activePanel,
+        highlightMode: "component",
+      }),
+    ];
+
+    activePanel
+      .querySelectorAll<HTMLElement>("[data-search-target-id]")
+      .forEach((element) => {
+        const targetId = element.dataset.searchTargetId;
+
+        if (!targetId) {
+          return;
+        }
+
+        cleanups.push(
+          registerSearchTarget(targetId, {
+            element,
+            highlightMode:
+              element.dataset.searchHighlightMode === "text"
+                ? "text"
+                : "component",
+          }),
+        );
+      });
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }, [displayedActiveFeature, mobileActiveFeature, registerSearchTarget]);
 
   const toggleFeature = (title: string | null) => {
     if (title === expandedFeature) return;
@@ -392,6 +484,7 @@ export function KeyFeatures() {
 
   return (
     <section
+      ref={sectionRef}
       id="key-features"
       className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-8 pt-12 text-white md:pb-10 lg:pb-8 lg:pt-14"
     >
@@ -422,6 +515,7 @@ export function KeyFeatures() {
         {mobileActiveFeature ? (
           <div
             id={`${getFeaturePanelId(mobileActiveFeature.title)}-mobile`}
+            data-key-feature-slug={mobileActiveFeature.slug}
             className={`mx-auto mt-4 w-full max-w-2xl transition-all duration-400 ease-out ${
               isDissolving ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"
             }`}
@@ -436,10 +530,18 @@ export function KeyFeatures() {
               </button>
 
               <div className="flex min-h-[9.5rem] flex-1 flex-col justify-center rounded-[1.25rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-4 py-4 shadow-2xl backdrop-blur-md">
-                <h3 className="mb-1.5 text-sm font-bold text-white sm:text-base">
+                <h3
+                  data-search-target-id={`key-feature-${mobileActiveFeature.slug}-heading`}
+                  data-search-highlight-mode="text"
+                  className="mb-1.5 text-sm font-bold text-white sm:text-base"
+                >
                   {mobileActiveFeature.title}
                 </h3>
-                <p className="text-xs leading-relaxed text-white/90 sm:text-sm">
+                <p
+                  data-search-target-id={`key-feature-${mobileActiveFeature.slug}-body`}
+                  data-search-highlight-mode="text"
+                  className="text-xs leading-relaxed text-white/90 sm:text-sm"
+                >
                   {mobileActiveFeature.body}
                 </p>
               </div>
@@ -485,6 +587,8 @@ export function KeyFeatures() {
               <button
                 key={feature.title}
                 type="button"
+                data-search-target-id={`key-feature-${feature.slug}-heading`}
+                data-search-highlight-mode="text"
                 onClick={() => toggleFeature(isExpanded ? null : feature.title)}
                 className={`flex min-h-12 shrink-0 items-center gap-1.5 rounded-full border px-6 py-3 text-base font-medium backdrop-blur-md transition-colors duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 ${
                   isExpanded
@@ -508,6 +612,7 @@ export function KeyFeatures() {
         {displayedFeature && displayedActiveFeature ? (
           <div
             id={`${getFeaturePanelId(displayedActiveFeature.title)}-mobile`}
+            data-key-feature-slug={displayedActiveFeature.slug}
             className={`mx-auto mt-4 w-full max-w-2xl transition-all duration-400 ease-out md:mt-5 ${
               isDissolving ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"
             }`}
@@ -523,7 +628,11 @@ export function KeyFeatures() {
 
               <div className="flex-1 rounded-[1.25rem] border border-red-300/50 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-6 py-5 shadow-2xl backdrop-blur-md">
                 <div className="mb-2 flex items-start justify-between gap-3">
-                  <h3 className="text-lg font-bold text-white">
+                  <h3
+                    data-search-target-id={`key-feature-${displayedActiveFeature.slug}-heading`}
+                    data-search-highlight-mode="text"
+                    className="text-lg font-bold text-white"
+                  >
                     {displayedActiveFeature.title}
                   </h3>
                   <button
@@ -534,7 +643,11 @@ export function KeyFeatures() {
                     <Minus className="size-5" />
                   </button>
                 </div>
-                <p className="text-base leading-relaxed text-white/90">
+                <p
+                  data-search-target-id={`key-feature-${displayedActiveFeature.slug}-body`}
+                  data-search-highlight-mode="text"
+                  className="text-base leading-relaxed text-white/90"
+                >
                   {displayedActiveFeature.body}
                 </p>
               </div>
@@ -578,6 +691,8 @@ export function KeyFeatures() {
                 <div key={feature.title} className="grid grid-cols-[1fr_auto] gap-3">
                   <button
                     type="button"
+                    data-search-target-id={`key-feature-${feature.slug}-heading`}
+                    data-search-highlight-mode="text"
                     className={`h-12 border px-5 text-left text-subtitle backdrop-blur-md transition-colors duration-300 hover:cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-200 motion-reduce:transition-none ${
                       isExpanded
                         ? "border-red-300 bg-red-900/55 text-white"
@@ -609,6 +724,7 @@ export function KeyFeatures() {
 
                   <div
                     id={panelId}
+                    data-key-feature-slug={feature.slug}
                     className={`col-span-2 grid overflow-hidden transition-[grid-template-rows,opacity] duration-500 ease-out ${
                       isExpanded
                         ? "grid-rows-[1fr] opacity-100"
@@ -617,7 +733,12 @@ export function KeyFeatures() {
                   >
                     <div className="min-h-0">
                       <div className=" border border-red-300 bg-[linear-gradient(180deg,rgba(214,28,28,0.22),rgba(0,0,0,0.88)_56%)] px-5 pb-5 pt-4 text-b1 leading-6 text-white backdrop-blur-md">
+                        <span
+                          data-search-target-id={`key-feature-${feature.slug}-body`}
+                          data-search-highlight-mode="text"
+                        >
                         {feature.body}
+                        </span>
                       </div>
                     </div>
                   </div>

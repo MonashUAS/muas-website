@@ -32,10 +32,19 @@ export default function OurSponsorsPage() {
           <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(520px,1fr)] lg:items-center lg:gap-14">
             <div className="max-w-3xl">
               <h1 className="max-w-full break-words text-[clamp(3.75rem,12vw,9rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
-                Sponsor Us
+                <span
+                  data-search-target-id="sponsor-hero-heading"
+                  data-search-highlight-mode="text"
+                >
+                  Sponsor Us
+                </span>
               </h1>
 
-              <p className="mt-6 max-w-3xl text-b1 leading-relaxed text-blue-50 sm:text-subtitle">
+              <p
+                data-search-target-id="sponsor-hero-copy"
+                data-search-highlight-mode="text"
+                className="mt-6 max-w-3xl text-b1 leading-relaxed text-blue-50 sm:text-subtitle"
+              >
                 {sponsorHeroParagraph}
               </p>
 
@@ -46,11 +55,19 @@ export default function OurSponsorsPage() {
                       key={stat.label}
                       className="min-w-0 rounded-xl border border-white/14 bg-white/[0.085] px-4 py-5 shadow-[0_22px_60px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-5 sm:py-6"
                     >
-                      <p className="break-words text-h7 font-bold leading-tight text-white sm:text-h5">
+                      <p
+                        data-search-target-id={`sponsor-stat-${stat.label.toLowerCase().replaceAll(" ", "-")}-value`}
+                        data-search-highlight-mode="text"
+                        className="break-words text-h7 font-bold leading-tight text-white sm:text-h5"
+                      >
                         {stat.value}
                       </p>
 
-                      <p className="mt-2 text-b2 leading-snug text-blue-100 sm:text-b1">
+                      <p
+                        data-search-target-id={`sponsor-stat-${stat.label.toLowerCase().replaceAll(" ", "-")}-label`}
+                        data-search-highlight-mode="text"
+                        className="mt-2 text-b2 leading-snug text-blue-100 sm:text-b1"
+                      >
                         {stat.label}
                       </p>
                     </div>
@@ -95,15 +112,26 @@ export default function OurSponsorsPage() {
         <div className={`${headerContentContainerClass} relative grid gap-8 lg:grid-cols-[minmax(280px,0.7fr)_minmax(0,1fr)] lg:gap-14`}>
           <div id="why-sponsor-muas" className="scroll-mt-20 lg:sticky lg:top-28 lg:self-start">
             <h2 className="text-[clamp(2.8rem,7vw,6.4rem)] font-medium leading-[0.9] tracking-[-0.05em]">
-              {sponsorWhyHeading}
+              <span
+                data-search-target-id="why-sponsor-heading"
+                data-search-highlight-mode="text"
+              >
+                {sponsorWhyHeading}
+              </span>
             </h2>
 
-            <p className="mt-4 max-w-xl text-b1 leading-relaxed text-blue-50 sm:mt-5 sm:text-subtitle">
+            <p
+              data-search-target-id="why-sponsor-copy"
+              data-search-highlight-mode="text"
+              className="mt-4 max-w-xl text-b1 leading-relaxed text-blue-50 sm:mt-5 sm:text-subtitle"
+            >
               {sponsorWhyCopy}
             </p>
 
             <Link
               href="/contact-us"
+              data-search-target-id="why-sponsor-cta"
+              data-search-highlight-mode="text"
               className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 py-2.5 text-b1 font-bold text-blue-900 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:mt-8 sm:min-h-12 sm:px-6 sm:py-3"
             >
               {sponsorCtaLabel}
@@ -130,11 +158,19 @@ export default function OurSponsorsPage() {
                   </div>
 
                   <div className="p-4 sm:p-7 lg:p-8">
-                    <h3 className="text-subtitle font-bold leading-tight tracking-[-0.02em] text-white sm:text-h6">
+                    <h3
+                      data-search-target-id={`sponsor-benefit-${benefit.title.toLowerCase().replaceAll(" ", "-")}-title`}
+                      data-search-highlight-mode="text"
+                      className="text-subtitle font-bold leading-tight tracking-[-0.02em] text-white sm:text-h6"
+                    >
                       {benefit.title}
                     </h3>
 
-                    <p className="mt-2.5 text-b2 leading-relaxed text-blue-50/82 sm:mt-4 sm:text-b1">
+                    <p
+                      data-search-target-id={`sponsor-benefit-${benefit.title.toLowerCase().replaceAll(" ", "-")}-description`}
+                      data-search-highlight-mode="text"
+                      className="mt-2.5 text-b2 leading-relaxed text-blue-50/82 sm:mt-4 sm:text-b1"
+                    >
                       {benefit.description}
                     </p>
                   </div>
