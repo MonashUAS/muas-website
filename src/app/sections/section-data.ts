@@ -122,7 +122,7 @@ export const sections: TeamSection[] = [
         slug: "computational-fluid-dynamics",
         name: "Computational Fluid Dynamics",
         description: "Computational fluid dynamics (CFD) is a crucial step in ensuring the validity of the team's design. CFD also provides quantitative values used to evaluate and compare design choices.",
-        image: "/images/teams/aerostructures/projects/cfd.jpg",
+        image: "/images/teams/aerostructures/projects/cfd_updated.jpg",
         imagePosition: "50% 50%",
       },
       {
