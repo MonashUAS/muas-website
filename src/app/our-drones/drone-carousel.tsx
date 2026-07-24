@@ -5,14 +5,13 @@ import { useSearchRevealController } from "@/global-components/search/search-nav
 import type { Drone } from "./drone-data";
 import { DroneDetailsModal } from "./drone-details-modal";
 import { DroneVisual } from "./drone-visual";
-import { useWheelNavigation } from "./useWheelNavigation";
 import Image from "next/image";
 
 type DroneCarouselProps = {
   drones: Drone[];
 };
 
-// DroneCarousel presents the fleet with wheel and adjacent-image navigation.
+// DroneCarousel presents the fleet with arrow toggle buttons and adjacent-image navigation.
 export function DroneCarousel({ drones }: DroneCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(6);
   const [selectedDrone, setSelectedDrone] = useState<Drone | null>(null);
@@ -27,28 +26,6 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
     },
     [drones.length],
   );
-
-  // stepCarousel moves the carousel in response to captured wheel direction.
-  const stepCarousel = useCallback(
-    (direction: number) => {
-      navigateTo(activeIndex + direction);
-    },
-    [activeIndex, navigateTo],
-  );
-
-  useWheelNavigation(carouselRef, {
-    cooldownMs: 520,
-    enabled: selectedDrone === null,
-    onStep: stepCarousel,
-    shouldHandleEvent: (event, element) => {
-      const bounds = element.getBoundingClientRect();
-      const activeLeft = bounds.left + bounds.width * 0.25;
-      const activeRight = bounds.left + bounds.width * 0.75;
-
-      return event.clientX >= activeLeft && event.clientX <= activeRight;
-    },
-    threshold: 10,
-  });
 
   const searchController = useMemo(
     () => ({
@@ -118,15 +95,36 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
 
       {/* header */}
       <div className="z-10 flex flex-col items-center text-center text-blue-900 pt-2 sm:pt-4">
-        <p className="text-b1 font-black leading-none">Explore</p>
-        <h1 className="mt-1 text-h7 font-black leading-none sm:text-h6 tracking-[-0.05em]">Our Drones</h1>
+        <p className="text-b1 sm:text-h7 font-black uppercase tracking-wider leading-none">Explore</p>
+        <h1 className="mt-1 text-h5 sm:text-h3 font-black leading-none tracking-[-0.05em]">Our Drones</h1>
       </div>
 
       {/* active drone name button & carousel container */}
-      <div className="z-10 flex flex-1 flex-col items-center justify-center w-full max-w-6xl my-auto">
+      <div className="z-10 flex flex-1 flex-col items-center justify-center w-full max-w-6xl my-auto relative">
+        {/* Arrow Navigation Toggle Buttons (bounded at max-w-[960px] to align with start of adjacent drones) */}
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 mx-auto flex w-full max-w-[960px] -translate-y-1/2 items-center justify-between px-2 sm:px-4">
+          <button
+            type="button"
+            onClick={() => navigateTo(activeIndex - 1)}
+            className="pointer-events-auto inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white text-2xl text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-900/30 motion-reduce:transition-none sm:h-12 sm:w-12"
+            aria-label="Show previous drone"
+          >
+            ‹
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigateTo(activeIndex + 1)}
+            className="pointer-events-auto inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white text-2xl text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-900/30 motion-reduce:transition-none sm:h-12 sm:w-12"
+            aria-label="Show next drone"
+          >
+            ›
+          </button>
+        </div>
+
         {/* active drone name - button */}
         <button
-          className={`mb-1 sm:mb-2 max-w-[92vw] cursor-pointer text-h4 sm:text-h2 font-black leading-none transition tracking-[-0.05em] ${
+          className={`mb-1 sm:mb-2 max-w-[92vw] cursor-pointer text-balance text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] transition ${
             isActiveHovered ? "text-blue-500" : "text-blue-900 hover:text-blue-500"
           }`}
           onClick={() => setSelectedDrone(drones[activeIndex])}
