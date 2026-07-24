@@ -258,6 +258,10 @@ function ProjectSlide({ index, project, sectionSlug }: ProjectSlideProps) {
           priority={index === 0}
           sizes="(min-width: 1024px) 46vw, 100vw"
           src={project.image}
+          style={{
+            objectFit: project.imageFit ?? "cover",
+            objectPosition: project.imagePosition ?? "center",
+          }}
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,31,73,0.46)_100%)]" />
         <div className="absolute inset-x-6 top-5 h-px bg-blue-100/35" />

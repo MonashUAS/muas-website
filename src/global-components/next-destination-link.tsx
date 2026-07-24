@@ -9,6 +9,8 @@ export type NextDestinationLinkProps = {
   href: string;
   id?: string;
   imageAlt: string;
+  imageFit?: "cover" | "contain";
+  imagePosition?: string;
   imageSrc: string;
   title: string;
 };
@@ -19,6 +21,8 @@ export function NextDestinationLink({
   href,
   id,
   imageAlt,
+  imageFit,
+  imagePosition,
   imageSrc,
   title,
 }: NextDestinationLinkProps) {
@@ -47,6 +51,10 @@ export function NextDestinationLink({
             className={`object-cover object-center transition-all duration-700 ease-out motion-reduce:transition-none ${
               isHovered ? "scale-110 brightness-100" : "scale-100 brightness-75"
             }`}
+            style={{
+              objectFit: imageFit ?? "cover",
+              objectPosition: imagePosition ?? "center",
+            }}
           />
 
           <div className="pointer-events-none absolute inset-0 bg-black/30" />
