@@ -8,6 +8,7 @@ import { SingleWindowCarousel } from "@/global-components/modules/single-window-
 import type { Drone } from "./drone-data";
 import { DroneVisual } from "./drone-visual";
 import { SpecList } from "./spec-list";
+import { GalleryImage } from "./gallery-image";
 
 type DroneDetailsModalProps = {
   drone: Drone;
@@ -23,31 +24,32 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
   const slides = useMemo(() => getDroneSlides(drone), [drone]);
   const isVisible = isOpen && !isClosing;
 
-  // Starts the reveal animation on mount.
+  // Starts the reveal animation on mount after initial paint.
   useEffect(() => {
-    const animationFrame = window.requestAnimationFrame(() => setIsOpen(true));
+    const timer = window.setTimeout(() => setIsOpen(true), 20);
 
     return () => {
-      window.cancelAnimationFrame(animationFrame);
+      window.clearTimeout(timer);
     };
   }, []);
 
   // requestClose plays the exit animation before removing the modal.
   const requestClose = () => {
     setIsClosing(true);
-    window.setTimeout(onClose, 540);
+    window.setTimeout(onClose, 280);
   };
 
   return (
     <div
-      className={`absolute inset-0 z-40 h-full w-full overflow-hidden bg-blue-950/40 backdrop-blur-sm p-3 sm:p-6 lg:p-8 flex items-center justify-center transition-opacity duration-[520ms] ease-out ${isVisible ? "opacity-100" : "opacity-0"
+      className={`absolute inset-0 z-40 h-full w-full overflow-hidden bg-blue-950/40 backdrop-blur-sm p-3 sm:p-6 lg:p-8 flex items-center justify-center transform-gpu will-change-[opacity] transition-opacity duration-300 ease-out ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       onClick={(e) => {
         if (e.target === e.currentTarget) requestClose();
       }}
     >
       <article
-        className="relative z-10 mx-auto flex w-full max-w-[1380px] max-h-[88vh] flex-col overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-blue-50/95 shadow-2xl p-4 sm:p-6 lg:p-8 my-auto"
+        className={`relative z-10 mx-auto flex w-full max-w-[1380px] max-h-[88vh] flex-col overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-blue-50/95 shadow-2xl p-4 sm:p-6 lg:p-8 my-auto transform-gpu will-change-[transform,opacity] transition-all duration-300 ease-out ${isVisible ? "scale-100 opacity-100" : "scale-95 opacity-0"
+          }`}
       >
         <div className="absolute inset-0 z-0 overflow-hidden rounded-[inherit] bg-blue-100">
           <Image
@@ -70,10 +72,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
         </button>
 
         <div className="relative z-10 grid min-h-0 flex-1 content-center items-center justify-center gap-4 pt-12 sm:pt-14 lg:pt-14 lg:grid-cols-[1fr_auto] lg:gap-8 overflow-hidden">
-          <div
-            className={`mx-auto min-w-0 w-full max-w-[min(100%,720px)] transition-opacity duration-[520ms] ease-out motion-reduce:transition-none ${isVisible ? "opacity-100" : "opacity-0"
-              }`}
-          >
+          <div className="mx-auto min-w-0 w-full max-w-[min(100%,720px)] transform-gpu">
             {drone.banner ? <DroneBannerHeader banner={drone.banner} /> : null}
             {hasGallery ? (
               <SingleWindowCarousel
@@ -90,7 +89,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
             )}
           </div>
 
-          <DroneInfoPanel drone={drone} isVisible={isVisible} />
+          <DroneInfoPanel drone={drone} />
         </div>
       </article>
     </div>
@@ -116,17 +115,10 @@ function DroneBannerHeader({ banner }: { banner: NonNullable<Drone["banner"]> })
 }
 
 // DroneInfoPanel renders the drone details, specifications, and title in a scrollable side panel.
-function DroneInfoPanel({
-  drone,
-  isVisible,
-}: {
-  drone: Drone;
-  isVisible: boolean;
-}) {
+function DroneInfoPanel({ drone }: { drone: Drone }) {
   return (
     <aside
-      className={`mx-auto flex h-full max-h-[68vh] w-full max-w-[min(100%,600px)] flex-col min-h-0 overflow-hidden rounded-[1.5rem] bg-blue-950/90 px-4 py-5 text-white backdrop-blur-md transition-opacity duration-[520ms] ease-out sm:px-6 sm:py-6 lg:h-[65vh] lg:max-h-[600px] lg:w-[24vw] lg:min-w-[300px] lg:max-w-[380px] lg:mr-10 xl:mr-14 ${isVisible ? "opacity-100" : "opacity-0"
-        }`}
+      className="mx-auto flex h-full max-h-[68vh] w-full max-w-[min(100%,600px)] flex-col min-h-0 overflow-hidden rounded-[1.5rem] bg-blue-950/90 px-4 py-5 text-white backdrop-blur-md sm:px-6 sm:py-6 lg:h-[65vh] lg:max-h-[600px] lg:w-[24vw] lg:min-w-[300px] lg:max-w-[380px] lg:mr-10 xl:mr-14 transform-gpu"
     >
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-2 text-white scrollbar-thin">
         {/* Drone Name heading */}
@@ -164,21 +156,19 @@ function DroneInfoPanel({
   );
 }
 
+// DroneSlide renders a single slide within the drone details image gallery.
 function DroneSlide({ drone, image, index }: { drone: Drone; image?: string; index: number }) {
   return (
-    <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[1.5rem]">
+    <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[1.5rem] transform-gpu">
       {index === 0 ? (
         <div className="absolute inset-0">
           <DroneVisual drone={drone} />
         </div>
       ) : image ? (
-        <Image
+        <GalleryImage
           alt={`${drone.name} gallery image ${index}`}
           src={image}
-          fill
           sizes="(min-width: 1024px) 62vw, 100vw"
-          className="rounded-[inherit] object-cover"
-          draggable={false}
         />
       ) : (
         <div className="absolute inset-0 p-8 sm:p-12 lg:p-16">
@@ -186,7 +176,7 @@ function DroneSlide({ drone, image, index }: { drone: Drone; image?: string; ind
         </div>
       )}
 
-      <div className="absolute inset-0 rounded-[inherit]" />
+      <div className="absolute inset-0 rounded-[inherit] pointer-events-none" />
     </div>
   );
 }

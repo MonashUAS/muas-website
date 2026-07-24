@@ -1,5 +1,5 @@
 import type { Drone } from "./drone-data";
-import Image from "next/image";
+import { GalleryImage } from "./gallery-image";
 
 type DroneVisualProps = {
   drone: Pick<Drone, "name" | "heroImage">;
@@ -11,13 +11,12 @@ export function DroneVisual({ drone, className = "" }: DroneVisualProps) {
   if (drone.heroImage) {
     return (
       <div className={`relative h-full w-full ${className}`}>
-        <Image
+        <GalleryImage
           alt={`${drone.name} drone`}
           src={drone.heroImage}
-          fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-contain drop-shadow-2xl"
-          draggable={false}
+          className="drop-shadow-2xl"
+          objectFit="contain"
           priority
         />
       </div>

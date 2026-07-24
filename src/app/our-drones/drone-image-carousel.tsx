@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import type { Drone } from "./drone-data";
 import { DroneVisual } from "./drone-visual";
 import { useWheelNavigation } from "./useWheelNavigation";
-import Image from "next/image";
+import { GalleryImage } from "./gallery-image";
 
 type DroneImageCarouselProps = {
   drone: Drone;
@@ -54,16 +54,11 @@ export function DroneImageCarousel({ drone, images }: DroneImageCarouselProps) {
             type="button"
           >
             {image ? (
-              <div className="relative h-full w-full">
-                <Image
-                  alt={`${drone.name} gallery image ${index + 1}`}
-                  src={image}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover"
-                  draggable={false}
-                />
-              </div>
+              <GalleryImage
+                alt={`${drone.name} gallery image ${index + 1}`}
+                src={image}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
             ) : (
               <DroneVisual drone={{ name: drone.name }} />
             )}
