@@ -45,7 +45,7 @@ export const heroSlides: HeroSlide[] = [
   {
     id: "sunset-redback",
     type: "image",
-    src: "/images/homepage/hero/sunset-redback.png",
+    src: "/images/homepage/hero/redback3.jpg",
     alt: "Redback quadcopter at sunset",
   },
   {
