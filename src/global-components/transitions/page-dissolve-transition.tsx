@@ -215,9 +215,8 @@ export function PageDissolveTransition({
     const handlePopState = () => {
       clearAsyncWork();
       transitionIdRef.current += 1;
-      setPhase("pendingEnter");
-      setOpacity(0);
-      resetScrollToTop();
+      const transitionId = transitionIdRef.current;
+      beginEnter(transitionId);
     };
 
     const handleTransitionNavigation = (event: Event) => {
