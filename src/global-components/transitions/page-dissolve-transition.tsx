@@ -23,13 +23,57 @@ type PageDissolveTransitionProps = {
 };
 
 function getLocationKey(url: URL) {
-  return `${url.pathname}${url.search}`;
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
+function getCurrentLocationKey() {
+  return `${window.location.pathname}${window.location.search}${window.location.hash}`;
+}
+
+function getCurrentPathname() {
+  return window.location.pathname || "/";
+}
+
+function getHeaderOffset() {
+  const header = document.querySelector("header");
+  const headerHeight =
+    header instanceof HTMLElement ? header.getBoundingClientRect().height : 80;
+
+  return headerHeight + 24;
 }
 
 function resetScrollToTop() {
   window.scrollTo(0, 0);
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
+}
+
+function resetScrollForLocation() {
+  if (!window.location.hash) {
+    resetScrollToTop();
+  }
+}
+
+function scrollToHashTarget() {
+  const hash = window.location.hash;
+
+  if (!hash) {
+    return;
+  }
+
+  const targetId = decodeURIComponent(hash.slice(1));
+  const target = document.getElementById(targetId);
+
+  if (!target) {
+    return;
+  }
+
+  const top = Math.max(
+    0,
+    target.getBoundingClientRect().top + window.scrollY - getHeaderOffset(),
+  );
+
+  window.scrollTo({ top, behavior: "auto" });
 }
 
 function userPrefersReducedMotion() {
@@ -47,16 +91,26 @@ export function PageDissolveTransition({
   const [opacity, setOpacity] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-  const pathnameRef = useRef(pathname);
+  const renderedPathnameRef = useRef(pathname);
+  const locationKeyRef = useRef<string | null>(null);
   const transitionIdRef = useRef(0);
   const enterTimerRef = useRef<number | null>(null);
   const enterFrameRef = useRef<[number | null, number | null]>([null, null]);
+  const fallbackEnterTimerRef = useRef<number | null>(null);
   const hasMountedRef = useRef(false);
+  const pendingHistoryNavigationRef = useRef(false);
+
+  renderedPathnameRef.current = pathname;
 
   const clearAsyncWork = useCallback(() => {
     if (enterTimerRef.current !== null) {
       window.clearTimeout(enterTimerRef.current);
       enterTimerRef.current = null;
+    }
+
+    if (fallbackEnterTimerRef.current !== null) {
+      window.clearTimeout(fallbackEnterTimerRef.current);
+      fallbackEnterTimerRef.current = null;
     }
 
     for (const frame of enterFrameRef.current) {
@@ -74,7 +128,8 @@ export function PageDissolveTransition({
         return;
       }
 
-      resetScrollToTop();
+      pendingHistoryNavigationRef.current = false;
+      resetScrollForLocation();
       setOpacity(0);
       setPhase("pendingEnter");
 
@@ -94,7 +149,7 @@ export function PageDissolveTransition({
             return;
           }
 
-          resetScrollToTop();
+          resetScrollForLocation();
           setPhase("entering");
           setOpacity(1);
 
@@ -112,15 +167,42 @@ export function PageDissolveTransition({
     [prefersReducedMotion],
   );
 
+  const scheduleHistoryFallbackEnter = useCallback(
+    (transitionId: number, locationKey: string) => {
+      if (fallbackEnterTimerRef.current !== null) {
+        window.clearTimeout(fallbackEnterTimerRef.current);
+      }
+
+      fallbackEnterTimerRef.current = window.setTimeout(() => {
+        fallbackEnterTimerRef.current = null;
+
+        if (
+          transitionIdRef.current !== transitionId ||
+          !pendingHistoryNavigationRef.current ||
+          getCurrentLocationKey() !== locationKey ||
+          getCurrentPathname() !== renderedPathnameRef.current
+        ) {
+          return;
+        }
+
+        locationKeyRef.current = locationKey;
+        clearAsyncWork();
+        beginEnter(transitionId);
+      }, 80);
+    },
+    [beginEnter, clearAsyncWork],
+  );
+
   const startNavigation = useCallback(
     (href: string) => {
       clearAsyncWork();
       transitionIdRef.current += 1;
+      pendingHistoryNavigationRef.current = false;
 
       // Instant hide — no dissolve-out of the current page.
       setPhase("pendingEnter");
       setOpacity(0);
-      resetScrollToTop();
+      resetScrollForLocation();
       router.push(href);
     },
     [clearAsyncWork, router],
@@ -215,9 +297,15 @@ export function PageDissolveTransition({
     const handlePopState = () => {
       clearAsyncWork();
       transitionIdRef.current += 1;
+      pendingHistoryNavigationRef.current = true;
+
+      const transitionId = transitionIdRef.current;
+      const locationKey = getCurrentLocationKey();
+
       setPhase("pendingEnter");
       setOpacity(0);
-      resetScrollToTop();
+      resetScrollForLocation();
+      scheduleHistoryFallbackEnter(transitionId, locationKey);
     };
 
     const handleTransitionNavigation = (event: Event) => {
@@ -248,12 +336,14 @@ export function PageDissolveTransition({
       );
       clearAsyncWork();
     };
-  }, [clearAsyncWork, startNavigation]);
+  }, [clearAsyncWork, scheduleHistoryFallbackEnter, startNavigation]);
 
   useEffect(() => {
+    const currentLocationKey = getCurrentLocationKey();
+
     if (!hasMountedRef.current) {
       hasMountedRef.current = true;
-      pathnameRef.current = pathname;
+      locationKeyRef.current = currentLocationKey;
       const transitionId = transitionIdRef.current;
       const frame = window.requestAnimationFrame(() => {
         beginEnter(transitionId);
@@ -262,11 +352,14 @@ export function PageDissolveTransition({
       return () => window.cancelAnimationFrame(frame);
     }
 
-    if (pathnameRef.current === pathname) {
+    if (
+      locationKeyRef.current === currentLocationKey &&
+      !pendingHistoryNavigationRef.current
+    ) {
       return;
     }
 
-    pathnameRef.current = pathname;
+    locationKeyRef.current = currentLocationKey;
     const transitionId = transitionIdRef.current;
 
     clearAsyncWork();
@@ -278,6 +371,7 @@ export function PageDissolveTransition({
       return;
     }
 
+    scrollToHashTarget();
     dispatchSearchRouteReady(pathname);
   }, [pathname, phase]);
 
