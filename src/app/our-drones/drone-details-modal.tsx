@@ -82,8 +82,10 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
       }}
     >
       <article
-        className={`relative z-10 mx-auto flex w-full max-w-[1380px] max-h-[88vh] flex-col overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-blue-50/95 shadow-2xl p-4 sm:p-6 lg:p-8 my-auto transform-gpu will-change-[transform,opacity] transition-all duration-300 ease-out ${isVisible ? "scale-100 opacity-100" : "scale-95 opacity-0"
-          }`}
+        ref={modalRef}
+        className={`relative z-10 mx-auto flex w-full max-w-[1380px] max-h-[88vh] flex-col overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-blue-50/95 shadow-2xl p-4 sm:p-6 lg:p-8 my-auto transform-gpu will-change-[transform,opacity] transition-all duration-300 ease-out ${
+          isVisible ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        }`}
       >
         <div className="absolute inset-0 z-0 overflow-hidden rounded-[inherit] bg-blue-100">
           <Image

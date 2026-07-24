@@ -16,7 +16,7 @@ import {
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 const AUTOPLAY_INTERVAL_MS = 4800;
-const CAROUSEL_TRANSITION_MS = 700;
+const CAROUSEL_TRANSITION_MS = 400;
 const SLIDE_GAP_PX = 24;
 const SWIPE_THRESHOLD_PX = 48;
 
@@ -303,10 +303,11 @@ export function SingleWindowCarousel({
           }}
         >
           <div
-            className="flex touch-pan-y rounded-[1.5rem] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+            className="flex touch-pan-y rounded-[1.5rem] transform-gpu will-change-transform transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
             style={{
               gap: `${SLIDE_GAP_PX}px`,
               transform: `translate3d(${slideOffset}, 0, 0)`,
+              backfaceVisibility: "hidden",
             }}
           >
             {slides.map((slide) => (
@@ -315,7 +316,7 @@ export function SingleWindowCarousel({
                 data-search-target-id={slide.searchTargetId}
                 data-search-managed="true"
                 data-search-slide-key={slide.key}
-                className="shrink-0 basis-full overflow-hidden rounded-[1.5rem]"
+                className="shrink-0 basis-full overflow-hidden rounded-[1.5rem] transform-gpu"
               >
                 {slide.content}
               </div>
