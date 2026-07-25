@@ -15,6 +15,9 @@ export type TechSpecPanel = {
   };
 };
 
+const techSpecImageDir =
+  "/images/suas initiative page/technical specifications";
+
 export const techSpecPanels: TechSpecPanel[] = [
   {
     navTitle: "Collapsed",
@@ -22,7 +25,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     kicker: "Collapsed State",
     subtitle: "Dimensions",
     image: {
-      src: "/images/redback-tech-specs/collapsed.png",
+      src: `${techSpecImageDir}/Collapsed.jpg`,
       alt: "Redback aircraft collapsed state detail",
     },
     metrics: [
@@ -37,7 +40,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     kicker: "Deployed State",
     subtitle: "Dimensions",
     image: {
-      src: "/images/redback-tech-specs/deployed.jpg",
+      src: `${techSpecImageDir}/Deployed.jpg`,
       alt: "Redback aircraft deployed state detail",
     },
     metrics: [
@@ -46,13 +49,13 @@ export const techSpecPanels: TechSpecPanel[] = [
       { label: "Height", value: "14' (358mm)" },
     ],
   },
-    {
+  {
     navTitle: "Airframe",
     title: "Aerostructure",
     subtitle: "Materials",
     image: {
-      src: "/images/redback-tech-specs/deployed.jpg",
-      alt: "Redback aircraft deployed state detail",
+      src: `${techSpecImageDir}/Airframe.jpg`,
+      alt: "Redback aircraft airframe materials detail",
     },
     metrics: [
       { label: "Main Frame", value: "Carbon Fibre" },
@@ -65,7 +68,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Aerostructure",
     subtitle: "Weight",
     image: {
-      src: "/images/redback-tech-specs/weight.png",
+      src: `${techSpecImageDir}/Weight.JPG`,
       alt: "Redback aircraft weight specification detail",
     },
     metrics: [
@@ -78,7 +81,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Flight Performance",
     subtitle: "Range and Speed",
     image: {
-      src: "/images/redback-tech-specs/flight.png",
+      src: `${techSpecImageDir}/Performance.jpg`,
       alt: "Redback aircraft flight performance detail",
     },
     metrics: [
@@ -91,7 +94,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Stack and Propulsion",
     subtitle: "Power and Propulsion",
     image: {
-      src: "/images/redback-tech-specs/propulsion.png",
+      src: `${techSpecImageDir}/Power.jpg`,
       alt: "Redback propulsion system detail",
     },
     metrics: [
@@ -107,13 +110,17 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Vision",
     subtitle: "Camera and Detection",
     image: {
-      src: "/images/redback-tech-specs/vision.jpg",
+      src: `${techSpecImageDir}/Vision.jpg`,
       alt: "Redback vision system detail",
     },
     metrics: [
       { label: "Camera", value: "SIYI A8 Mini Gimbal Camera" },
       { label: "Detection Model", value: "YOLOv8" },
-      { label: "Mapping Software", value: "Microsoft Image Composite Editor (MICE) and Open Drone Model (ODM)" },
+      {
+        label: "Mapping Software",
+        value:
+          "Microsoft Image Composite Editor (MICE) and Open Drone Model (ODM)",
+      },
       { label: "Ground Sample Distance", value: "6cm/pixel" },
       { label: "Map Resolution", value: "1920 x 1080p" },
     ],
@@ -123,11 +130,14 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Lifeline",
     subtitle: "Payload Delivery",
     image: {
-      src: "/images/redback-tech-specs/lifeline.png",
+      src: `${techSpecImageDir}/Payload.JPG`,
       alt: "Redback lifeline payload delivery detail",
     },
     metrics: [
-      { label: "Tethered Payload Delivery System", value: "Electromagnetic Braking" },
+      {
+        label: "Tethered Payload Delivery System",
+        value: "Electromagnetic Braking",
+      },
       { label: "Payload Capacity", value: "14.5oz (410g)" },
     ],
   },
@@ -136,7 +146,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Flight Operations",
     subtitle: "Controller",
     image: {
-      src: "/images/redback-tech-specs/controller.png",
+      src: `${techSpecImageDir}/Controller.JPG`,
       alt: "Redback flight controller detail",
     },
     metrics: [

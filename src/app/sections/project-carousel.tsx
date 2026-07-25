@@ -17,6 +17,8 @@ import {
 } from "@/global-components/search/search-navigation-provider";
 import { isCircularNear } from "@/lib/is-circular-near";
 import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
+import { useCarouselAutoplay } from "@/lib/use-carousel-autoplay";
+import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 type ProjectCarouselProps = {
   projects: SectionProject[];
@@ -26,17 +28,21 @@ type ProjectCarouselProps = {
 const carouselTransitionMs = 700;
 const slideGapPx = 24;
 const swipeThresholdPx = 48;
+const autoplayIntervalMs = 4800;
 
 // ProjectCarousel follows the homepage carousel pattern for section responsibility slides.
 export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const dragStartXRef = useRef<number | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const { registerSearchTarget } = useSearchNavigation();
+  const prefersReducedMotion = usePrefersReducedMotion();
   const slideIndexes = useMemo(
     () => Array.from({ length: projects.length }, (_, index) => index),
     [projects.length],
   );
+  const maxIndex = Math.max(projects.length - 1, 0);
   const slideOffset = `calc(-${activeIndex * 100}% - ${
     activeIndex * slideGapPx
   }px)`;
@@ -47,6 +53,21 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
     },
     [projects.length],
   );
+
+  const goToNextSlide = useCallback(() => {
+    navigateToSlide(activeIndex + 1);
+  }, [activeIndex, navigateToSlide]);
+
+  useCarouselAutoplay({
+    enabled: true,
+    intervalMs: autoplayIntervalMs,
+    activeIndex,
+    maxIndex,
+    prefersReducedMotion,
+    isInteractionPaused: isPaused,
+    containerRef: carouselRef,
+    onAdvance: goToNextSlide,
+  });
 
   useSearchRevealController(
     `${sectionSlug}-projects-carousel`,
@@ -125,17 +146,15 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
     navigateToSlide(activeIndex - 1);
   };
 
-  const goToNextSlide = () => {
-    navigateToSlide(activeIndex + 1);
-  };
-
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     dragStartXRef.current = event.clientX;
+    setIsPaused(true);
   };
 
   const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
     const dragStartX = dragStartXRef.current;
     dragStartXRef.current = null;
+    setIsPaused(false);
 
     if (dragStartX === null) {
       return;
@@ -163,6 +182,10 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
       aria-label="Section responsibilities"
       className="mt-8 w-full sm:mt-10 lg:mt-12"
       role="region"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
     >
       <div className="relative px-10 sm:px-12 lg:px-14">
         <div
@@ -170,6 +193,7 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
           className="overflow-hidden rounded-[1.5rem] border border-white/12 bg-white/[0.045]"
           onPointerCancel={() => {
             dragStartXRef.current = null;
+            setIsPaused(false);
           }}
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}

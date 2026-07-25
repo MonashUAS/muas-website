@@ -142,11 +142,46 @@ function getMountedSlideIndexes(
 export function HomepageHero() {
   const [requestedSlide, setRequestedSlide] = useState(0);
   const [visibleSlide, setVisibleSlide] = useState(0);
+  const [isInView, setIsInView] = useState(true);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(true);
   const prefersReducedMotion = usePrefersReducedMotion();
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
   const warmedVideoIndexesRef = useRef(new Set<number>());
+  const sectionRef = useRef<HTMLElement | null>(null);
   const goToNextSlide = useCallback(() => {
     setRequestedSlide((currentIndex) => (currentIndex + 1) % heroSlides.length);
+  }, []);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { rootMargin: "80px 0px" },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const syncVisibility = () => {
+      setIsDocumentVisible(document.visibilityState !== "hidden");
+    };
+
+    syncVisibility();
+    document.addEventListener("visibilitychange", syncVisibility);
+
+    return () => {
+      document.removeEventListener("visibilitychange", syncVisibility);
+    };
   }, []);
 
   // Warm only the upcoming video so large .mov files do not contend with LCP.
@@ -239,7 +274,12 @@ export function HomepageHero() {
 
   // Image slides advance by fixed timer; video slides advance onEnded.
   useEffect(() => {
-    if (prefersReducedMotion || requestedSlide !== visibleSlide) {
+    if (
+      prefersReducedMotion ||
+      requestedSlide !== visibleSlide ||
+      !isInView ||
+      !isDocumentVisible
+    ) {
       return;
     }
 
@@ -252,7 +292,14 @@ export function HomepageHero() {
     const timeout = window.setTimeout(goToNextSlide, IMAGE_DURATION_MS);
 
     return () => window.clearTimeout(timeout);
-  }, [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide]);
+  }, [
+    goToNextSlide,
+    isDocumentVisible,
+    isInView,
+    prefersReducedMotion,
+    requestedSlide,
+    visibleSlide,
+  ]);
 
   useEffect(() => {
     const visibleSlideData = heroSlides[visibleSlide];
@@ -261,8 +308,12 @@ export function HomepageHero() {
       prefersReducedMotion ||
       requestedSlide !== visibleSlide ||
       !visibleSlideData ||
-      visibleSlideData.type !== "video"
+      visibleSlideData.type !== "video" ||
+      !isInView ||
+      !isDocumentVisible
     ) {
+      const video = videoRefs.current[visibleSlide];
+      video?.pause();
       return;
     }
 
@@ -279,7 +330,14 @@ export function HomepageHero() {
         goToNextSlide();
       });
     }
-  }, [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide]);
+  }, [
+    goToNextSlide,
+    isDocumentVisible,
+    isInView,
+    prefersReducedMotion,
+    requestedSlide,
+    visibleSlide,
+  ]);
 
   useEffect(() => {
     if (prefersReducedMotion) {
@@ -334,6 +392,7 @@ export function HomepageHero() {
   return (
     <section
       id="homepage-hero"
+      ref={sectionRef}
       className="relative viewport-fold scroll-mt-20 overflow-hidden bg-black-500 text-white"
     >
       <div className="absolute inset-0">

@@ -1,9 +1,39 @@
 import type { SearchDocument, SearchTarget } from "@/lib/search/types";
 import { textSearchContent } from "@/lib/search/content";
 import { projects, type Project } from "./projects/project-data";
+import { timelineItems } from "./timeline-data";
 
 function decisionSearchId(title: string) {
   return title.replaceAll(" ", "-").toLowerCase();
+}
+
+function getTimelineSearchTargets(): SearchTarget[] {
+  return timelineItems.map((item) => ({
+    id: `timeline-${item.slug}`,
+    label: item.title,
+    hash: "the-production-timeline",
+    text: [
+      textSearchContent({
+        id: "date",
+        text: item.date,
+        componentTargetId: `timeline-${item.slug}`,
+        highlightTargetId: `timeline-${item.slug}-date`,
+      }),
+      textSearchContent({
+        id: "title",
+        text: item.title,
+        componentTargetId: `timeline-${item.slug}`,
+        highlightTargetId: `timeline-${item.slug}-title`,
+      }),
+      textSearchContent({
+        id: "body",
+        text: item.body,
+        componentTargetId: `timeline-${item.slug}`,
+        highlightTargetId: `timeline-${item.slug}-body`,
+      }),
+    ],
+    keywords: ["timeline", "production timeline", "redback"],
+  }));
 }
 
 function getProjectSearchText(project: Project): SearchTarget["text"] {
@@ -157,6 +187,7 @@ export const suasTeamSearchDocument: SearchDocument = {
       ],
       keywords: ["Redback Timeline"],
     },
+    ...getTimelineSearchTargets(),
     ...projects.map(
       (project): SearchTarget => ({
         id: `redback-project-${project.slug}`,

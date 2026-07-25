@@ -13,6 +13,7 @@ import {
   useSearchNavigation,
   useSearchRevealController,
 } from "@/global-components/search/search-navigation-provider";
+import { useCarouselAutoplay } from "@/lib/use-carousel-autoplay";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { ProjectInfoPanel } from "./project-info";
 import { placeholderImage, projects, type Project } from "./project-data";
@@ -296,32 +297,23 @@ function RedbackTeamsCarousel() {
     };
   }, [activeIndex]);
 
-  useEffect(() => {
-    if (prefersReducedMotion || isPaused || maxIndex === 0) {
-      return;
-    }
+  const goToNextSlide = useCallback(() => {
+    navigateToSlide(activeIndex + 1);
+  }, [activeIndex, navigateToSlide]);
 
-    const interval = window.setInterval(() => {
-      navigateToSlide(activeIndex + 1);
-    }, AUTOPLAY_INTERVAL_MS);
-
-    return () => {
-      window.clearInterval(interval);
-    };
-  }, [
+  useCarouselAutoplay({
+    enabled: true,
+    intervalMs: AUTOPLAY_INTERVAL_MS,
     activeIndex,
-    isPaused,
     maxIndex,
-    navigateToSlide,
     prefersReducedMotion,
-  ]);
+    isInteractionPaused: isPaused,
+    containerRef: carouselRef,
+    onAdvance: goToNextSlide,
+  });
 
   const goToPreviousSlide = () => {
     navigateToSlide(activeIndex - 1);
-  };
-
-  const goToNextSlide = () => {
-    navigateToSlide(activeIndex + 1);
   };
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
