@@ -8,15 +8,16 @@ import { RedbackWebHighlight } from "./redback-web-highlight";
 import { TimelineRevealItem } from "./timeline-reveal";
 import { TimelineWebField } from "./timeline-web-field";
 
-const teamHeroImage = "/images/homepage/quick-nav/our-team.jpg";
+const teamHeroImage = "/images/suas-team-page/hero/hero-redback.jpg";
 
-const storyImage = "/images/homepage/quick-nav/our-team.jpg";
+const storyImage =
+  "/images/suas-team-page/why-we-built-redback/why-we-built-redback.png";
 
 const timelineWebImages = {
-  spire: "/images/suas-2026-team/timeline-web-spire.png",
-  bridge: "/images/suas-2026-team/timeline-web-bridge.png",
-  shelf: "/images/suas-2026-team/timeline-web-shelf.png",
-  lattice: "/images/suas-2026-team/timeline-web-lattice.png",
+  spire: "/images/suas-team-page/production-timeline/timeline-web-spire.png",
+  bridge: "/images/suas-team-page/production-timeline/timeline-web-bridge.png",
+  shelf: "/images/suas-team-page/production-timeline/timeline-web-shelf.png",
+  lattice: "/images/suas-team-page/production-timeline/timeline-web-lattice.png",
 };
 
 type TimelineItemContent = {
@@ -53,7 +54,7 @@ const timelineItems: TimelineItemContent[] = [
     date: "25 January 2026",
     title: "Gimbal Camera Hardware Integration",
     body: "The gimbal camera was integrated with a third-party network link and its connection stabilised. Packet loss was diagnosed using networking expertise and guidance from former team members.",
-    image: "/images/homepage/flight-monitor.jpg",
+    image: "/images/homepage/hero/flight-monitor.jpg",
     alt: "Team member monitoring Redback systems",
   },
   {
@@ -95,7 +96,7 @@ const timelineItems: TimelineItemContent[] = [
     date: "12 May 2026",
     title: "Vision Model Accuracy Improved",
     body: "YOLOv8 detection accuracy was initially limited because objects appeared very small at the minimum operating altitude. Performance was improved through image preprocessing and colour-based clustering to distinguish targets from the surrounding grass.",
-    image: "/images/homepage/flight-monitor.jpg",
+    image: "/images/homepage/hero/flight-monitor.jpg",
     alt: "Team member monitoring Redback systems",
   },
   {
@@ -166,7 +167,7 @@ export default function SUAS2026TeamPage() {
         >
           <Image
             src={teamHeroImage}
-            alt="The MUAS Redback team standing with aircraft in a lecture theatre"
+            alt="Redback aircraft flying low over a grass field"
             fill
             preload
             fetchPriority="high"
@@ -241,7 +242,7 @@ export default function SUAS2026TeamPage() {
 
                   <Image
                     src={storyImage}
-                    alt="MUAS Redback team in navy shirts with aircraft"
+                    alt="Studio image of Redback aircraft with cobwebs"
                     fill
                     sizes="(min-width:1024px) 62vw, 100vw"
                     className="object-cover object-center"

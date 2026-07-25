@@ -230,7 +230,7 @@ export const sections: TeamSection[] = [
         slug: "mission-management",
         name: "Mission Management",
         description: "DroneLink is UAS' custom-built, in-house mission management software tailored to UAS' needs. It automates the drone's mission, reducing the risk of human error. It features an intuitive general user interface that displays flight-critical information such as live aircraft speed, location of the drone, on-board camera feeds, battery data and much more, allowing our users to easily monitor and analyse the mission. This UI can be simultaneously run on multiple devices, with the data updating dynamically on all of them.",
-        image: "/images/teams/avionics/projects/mission-management.jpg",
+        image: "/images/teams/avionics/projects/mission-management_updated.JPG",
         imagePosition: "50% 50%",
       },
       {
