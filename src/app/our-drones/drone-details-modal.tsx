@@ -9,7 +9,6 @@ import {
   useSearchNavigation,
   useSearchTarget,
 } from "@/global-components/search/search-navigation-provider";
-import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 import type { Drone } from "./drone-data";
 import { DroneVisual } from "./drone-visual";
 import { SpecList } from "./spec-list";

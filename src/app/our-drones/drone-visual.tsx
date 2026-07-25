@@ -1,4 +1,5 @@
 import type { Drone } from "./drone-data";
+import { useEffect } from "react";
 import { GalleryImage } from "./gallery-image";
 
 type DroneVisualProps = {
@@ -12,7 +13,6 @@ type DroneVisualProps = {
 export function DroneVisual({
   drone,
   className = "",
-  priority = false,
   onLoad,
 }: DroneVisualProps) {
   useEffect(() => {
