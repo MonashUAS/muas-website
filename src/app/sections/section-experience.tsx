@@ -132,6 +132,21 @@ async function prepareVideoForReveal(video: HTMLVideoElement) {
   await resetVideoToStart(video);
 }
 
+function getMountedSlideIndexes(
+  visibleSlide: number,
+  requestedSlide: number,
+  slideCount: number,
+) {
+  const indexes = new Set<number>([visibleSlide, requestedSlide]);
+
+  if (slideCount > 1) {
+    indexes.add((visibleSlide + 1) % slideCount);
+    indexes.add((visibleSlide - 1 + slideCount) % slideCount);
+  }
+
+  return indexes;
+}
+
 // SectionExperience renders the complete shared page layout for each MUAS team section.
 export function SectionExperience({ nextSection, section }: SectionExperienceProps) {
   return (
@@ -172,11 +187,10 @@ function SectionHero({ section }: { section: TeamSection }) {
   }, [heroMedia.length]);
 
   useEffect(() => {
-    videoRefs.current.forEach((video) => {
-      video?.load();
-    });
+    warmedVideoIndexesRef.current.clear();
   }, [section.slug]);
 
+  // Warm only the upcoming video so inactive hero media stays off the network.
   useEffect(() => {
     if (
       !hasMultipleSlides ||
@@ -186,43 +200,38 @@ function SectionHero({ section }: { section: TeamSection }) {
       return;
     }
 
-    const visibleSlideData = heroMedia[visibleSlide];
+    const nextIndex = (visibleSlide + 1) % heroMedia.length;
+    const nextSlide = heroMedia[nextIndex];
 
-    if (!visibleSlideData || visibleSlideData.type !== "image") {
+    if (
+      !nextSlide ||
+      nextSlide.type !== "video" ||
+      warmedVideoIndexesRef.current.has(nextIndex)
+    ) {
+      return;
+    }
+
+    const video = videoRefs.current[nextIndex];
+
+    if (!video) {
       return;
     }
 
     let isCancelled = false;
 
-    const warmUpcomingVideos = async () => {
-      for (const [index, slide] of heroMedia.entries()) {
-        if (
-          isCancelled ||
-          slide.type !== "video" ||
-          warmedVideoIndexesRef.current.has(index)
-        ) {
-          continue;
+    const warmUpcomingVideo = async () => {
+      try {
+        await warmVideo(video);
+
+        if (!isCancelled) {
+          warmedVideoIndexesRef.current.add(nextIndex);
         }
-
-        const video = videoRefs.current[index];
-
-        if (!video) {
-          continue;
-        }
-
-        try {
-          await warmVideo(video);
-
-          if (!isCancelled) {
-            warmedVideoIndexesRef.current.add(index);
-          }
-        } catch {
-          warmedVideoIndexesRef.current.delete(index);
-        }
+      } catch {
+        warmedVideoIndexesRef.current.delete(nextIndex);
       }
     };
 
-    void warmUpcomingVideos();
+    void warmUpcomingVideo();
 
     return () => {
       isCancelled = true;
@@ -409,6 +418,12 @@ function SectionHero({ section }: { section: TeamSection }) {
     ],
   );
 
+  const mountedSlideIndexes = getMountedSlideIndexes(
+    visibleSlide,
+    requestedSlide,
+    heroMedia.length,
+  );
+
   return (
     <section
       id="team-overview"
@@ -416,6 +431,10 @@ function SectionHero({ section }: { section: TeamSection }) {
     >
       <div className="absolute inset-0 z-0">
         {heroMedia.map((media, index) => {
+          if (!mountedSlideIndexes.has(index)) {
+            return null;
+          }
+
           const isActive = index === visibleSlide;
 
           return (
@@ -504,7 +523,6 @@ function HeroMedia({
         alt={media.alt}
         className="object-cover"
         fill
-        loading={priority ? undefined : "eager"}
         onError={onError}
         priority={priority}
         sizes="100vw"
@@ -524,7 +542,7 @@ function HeroMedia({
       onEnded={onVideoEnded}
       onError={onError}
       playsInline
-      preload="auto"
+      preload={isSingleSlide ? "metadata" : "none"}
       ref={refCallback}
       src={media.src}
       style={mediaStyle}

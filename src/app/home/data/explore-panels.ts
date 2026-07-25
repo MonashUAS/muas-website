@@ -26,7 +26,7 @@ export const explorePanels: ExplorePanel[] = [
     title: "Recruitment",
     href: "/recruitment",
     preview: "Help shape the next generation of drone technology with MUAS.",
-    image: "/images/homepage/quick-nav/recruitment.png",
+    image: "/images/homepage/quick-nav/recruitment.jpg",
     alt: "MUAS recruitment and outreach activity",
   },
   {

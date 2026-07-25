@@ -9,6 +9,7 @@ import {
   useSearchNavigation,
   useSearchTarget,
 } from "@/global-components/search/search-navigation-provider";
+import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 import type { Drone } from "./drone-data";
 import { DroneVisual } from "./drone-visual";
 import { SpecList } from "./spec-list";
@@ -121,7 +122,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
                 dotTone="blue"
               />
             ) : (
-              <DroneSlide drone={drone} image={drone.heroImage} index={0} />
+              <DroneSlide drone={drone} image={drone.heroImage} index={0} loadImage />
             )}
           </div>
 
@@ -222,6 +223,13 @@ function getDroneSlides(drone: Drone) {
 
   return images.map((image, index) => ({
     key: `${drone.slug}-${image ?? "placeholder"}-${index}`,
-    content: <DroneSlide drone={drone} image={image} index={index} />,
+    renderContent: ({ isNearActive }: { isNearActive: boolean }) => (
+      <DroneSlide
+        drone={drone}
+        image={image}
+        index={index}
+        loadImage={isNearActive}
+      />
+    ),
   }));
 }

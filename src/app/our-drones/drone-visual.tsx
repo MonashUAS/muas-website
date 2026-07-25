@@ -4,10 +4,23 @@ import { GalleryImage } from "./gallery-image";
 type DroneVisualProps = {
   drone: Pick<Drone, "name" | "heroImage">;
   className?: string;
+  priority?: boolean;
+  onLoad?: () => void;
 };
 
 // DroneVisual renders a real drone image when available, otherwise a branded placeholder. 
-export function DroneVisual({ drone, className = "" }: DroneVisualProps) {
+export function DroneVisual({
+  drone,
+  className = "",
+  priority = false,
+  onLoad,
+}: DroneVisualProps) {
+  useEffect(() => {
+    if (!drone.heroImage) {
+      onLoad?.();
+    }
+  }, [drone.heroImage, onLoad]);
+
   if (drone.heroImage) {
     return (
       <div className={`relative h-full w-full ${className}`}>

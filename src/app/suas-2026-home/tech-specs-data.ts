@@ -37,7 +37,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     kicker: "Deployed State",
     subtitle: "Dimensions",
     image: {
-      src: "/images/redback-tech-specs/deployed.png",
+      src: "/images/redback-tech-specs/deployed.jpg",
       alt: "Redback aircraft deployed state detail",
     },
     metrics: [
@@ -51,7 +51,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Aerostructure",
     subtitle: "Materials",
     image: {
-      src: "/images/redback-tech-specs/deployed.png",
+      src: "/images/redback-tech-specs/deployed.jpg",
       alt: "Redback aircraft deployed state detail",
     },
     metrics: [
@@ -107,7 +107,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Vision",
     subtitle: "Camera and Detection",
     image: {
-      src: "/images/redback-tech-specs/vision.png",
+      src: "/images/redback-tech-specs/vision.jpg",
       alt: "Redback vision system detail",
     },
     metrics: [

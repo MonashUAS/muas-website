@@ -122,6 +122,21 @@ async function prepareVideoForReveal(video: HTMLVideoElement) {
   await startHiddenPlayback(video);
 }
 
+function getMountedSlideIndexes(
+  visibleSlide: number,
+  requestedSlide: number,
+  slideCount: number,
+) {
+  const indexes = new Set<number>([visibleSlide, requestedSlide]);
+
+  if (slideCount > 1) {
+    indexes.add((visibleSlide + 1) % slideCount);
+    indexes.add((visibleSlide - 1 + slideCount) % slideCount);
+  }
+
+  return indexes;
+}
+
 // The homepage hero owns only slideshow behavior; slide content lives in data
 // so the media sequence can be updated without touching interaction code.
 export function HomepageHero() {
@@ -129,71 +144,54 @@ export function HomepageHero() {
   const [visibleSlide, setVisibleSlide] = useState(0);
   const prefersReducedMotion = usePrefersReducedMotion();
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
-  const hasPreloadedVideosRef = useRef(false);
   const warmedVideoIndexesRef = useRef(new Set<number>());
   const goToNextSlide = useCallback(() => {
     setRequestedSlide((currentIndex) => (currentIndex + 1) % heroSlides.length);
   }, []);
 
-  useEffect(() => {
-    if (hasPreloadedVideosRef.current) {
-      return;
-    }
-
-    hasPreloadedVideosRef.current = true;
-    videoRefs.current.forEach((video) => {
-      video?.load();
-    });
-  }, []);
-
+  // Warm only the upcoming video so large .mov files do not contend with LCP.
   useEffect(() => {
     if (prefersReducedMotion || requestedSlide !== visibleSlide) {
       return;
     }
 
-    const visibleSlideData = heroSlides[visibleSlide];
+    const nextIndex = (visibleSlide + 1) % heroSlides.length;
+    const nextSlide = heroSlides[nextIndex];
 
-    if (!visibleSlideData || visibleSlideData.type !== "image") {
+    if (
+      !nextSlide ||
+      nextSlide.type !== "video" ||
+      warmedVideoIndexesRef.current.has(nextIndex)
+    ) {
+      return;
+    }
+
+    const video = videoRefs.current[nextIndex];
+
+    if (!video) {
       return;
     }
 
     let isCancelled = false;
 
-    const warmUpcomingVideos = async () => {
-      for (const [index, slide] of heroSlides.entries()) {
-        if (
-          isCancelled ||
-          slide.type !== "video" ||
-          warmedVideoIndexesRef.current.has(index)
-        ) {
-          continue;
+    const warmUpcomingVideo = async () => {
+      try {
+        await warmVideo(video);
+
+        if (!isCancelled) {
+          warmedVideoIndexesRef.current.add(nextIndex);
         }
-
-        const video = videoRefs.current[index];
-
-        if (!video) {
-          continue;
-        }
-
-        try {
-          await warmVideo(video);
-
-          if (!isCancelled) {
-            warmedVideoIndexesRef.current.add(index);
-          }
-        } catch {
-          warmedVideoIndexesRef.current.delete(index);
-        }
+      } catch {
+        warmedVideoIndexesRef.current.delete(nextIndex);
       }
     };
 
-    void warmUpcomingVideos();
+    void warmUpcomingVideo();
 
     return () => {
       isCancelled = true;
     };
   }, [prefersReducedMotion, requestedSlide, visibleSlide]);
-
   useEffect(() => {
     if (prefersReducedMotion || requestedSlide === visibleSlide) {
       return;
@@ -327,6 +325,12 @@ export function HomepageHero() {
     [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide],
   );
 
+  const mountedSlideIndexes = getMountedSlideIndexes(
+    visibleSlide,
+    requestedSlide,
+    heroSlides.length,
+  );
+
   return (
     <section
       id="homepage-hero"
@@ -334,6 +338,10 @@ export function HomepageHero() {
     >
       <div className="absolute inset-0">
         {heroSlides.map((slide, index) => {
+          if (!mountedSlideIndexes.has(index)) {
+            return null;
+          }
+
           const isActive = index === visibleSlide;
 
           return (
@@ -363,7 +371,7 @@ export function HomepageHero() {
                   src={slide.src}
                   muted
                   playsInline
-                  preload="auto"
+                  preload="none"
                   className="h-full w-full object-cover"
                   onEnded={() => handleVideoEnded(index)}
                   onError={() => handleMediaError(index)}

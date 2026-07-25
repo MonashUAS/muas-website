@@ -12,7 +12,7 @@ export function JoinTeamCallout() {
       <div className="mx-auto w-full max-w-[1720px] px-5 sm:px-8 lg:px-12">
         <div className="relative min-h-[30rem] overflow-hidden border border-white/10 bg-blue-950 shadow-[0_36px_120px_rgba(0,0,0,0.45)] sm:min-h-[34rem] lg:min-h-[38rem]">
           <Image
-            src="/images/our team page/want to become part of the team card/want-to-join-the-team_updated.png"
+            src="/images/our team page/want to become part of the team card/want-to-join-the-team_updated.jpg"
             alt="Monash UAS members speaking with prospective recruits"
             fill
             sizes="100vw"

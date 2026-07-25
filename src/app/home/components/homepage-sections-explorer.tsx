@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { headerContentContainerClass } from "@/global-components/layout/sidebar/navbar-classes";
 import { SingleWindowCarousel } from "@/global-components/modules/single-window-carousel";
+import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 import { homepageSections } from "../data/sections";
 
 // A dependency-free single-window carousel for the homepage team gallery.
@@ -15,7 +16,9 @@ export function HomepageSectionsExplorer() {
       homepageSections.map((section) => ({
         key: section.href,
         searchTargetId: `home-sections-${section.href.replaceAll("/", "-").replace(/^-/, "")}`,
-        content: <SectionTile section={section} />,
+        renderContent: ({ isNearActive }: { isNearActive: boolean }) => (
+          <SectionTile section={section} loadImage={isNearActive} />
+        ),
       })),
     [],
   );
@@ -58,22 +61,37 @@ export function HomepageSectionsExplorer() {
 
 type SectionTileProps = {
   section: (typeof homepageSections)[number];
+  loadImage: boolean;
 };
 
-function SectionTile({ section }: SectionTileProps) {
+function SectionTile({ section, loadImage }: SectionTileProps) {
   return (
     <Link
       href={section.href}
-      className="group relative block h-[360px] overflow-hidden rounded-[1.5rem] bg-blue-950 text-white outline-none transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-2xl hover:shadow-blue-950/18 focus-visible:ring-2 focus-visible:ring-blue-800/55 motion-reduce:transition-none sm:h-[430px] lg:h-[560px]"
+      className="group relative block h-[360px] overflow-hidden rounded-[1.5rem] bg-blue-950 text-white outline-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-blue-800/55 motion-reduce:transition-none sm:h-[430px] lg:h-[560px]"
     >
-      <Image
-        src={section.image}
-        alt={section.alt}
-        fill
-        sizes="(min-width: 1024px) 54vw, 100vw"
-        className="rounded-[inherit] object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.045] group-focus-visible:scale-[1.045] motion-reduce:transition-none"
-        style={{ objectPosition: section.objectPosition ?? "50% 50%" }}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 shadow-[0_25px_50px_-12px_rgba(0,31,73,0.45)] transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"
       />
+
+      <StickyLoadedImage shouldLoad={loadImage}>
+        {({ showImage, isDecoded, onDecoded }) =>
+          showImage ? (
+            <Image
+              src={section.image}
+              alt={section.alt}
+              fill
+              sizes="(min-width: 1024px) 54vw, 100vw"
+              onLoadingComplete={onDecoded}
+              className={`rounded-[inherit] object-cover transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.045] group-focus-visible:scale-[1.045] motion-reduce:transition-none ${
+                isDecoded ? "opacity-100" : "opacity-0"
+              }`}
+              style={{ objectPosition: section.objectPosition ?? "50% 50%" }}
+            />
+          ) : null
+        }
+      </StickyLoadedImage>
 
       <div className="absolute inset-0 rounded-[inherit] bg-[linear-gradient(180deg,rgba(0,0,0,0.08),rgba(0,31,73,0.4)_44%,rgba(0,0,0,0.88))]" />
       <div className="absolute inset-0 rounded-[inherit] bg-blue-500/0 transition-colors duration-500 group-hover:bg-blue-500/[0.08] group-focus-visible:bg-blue-500/[0.08] motion-reduce:transition-none" />
