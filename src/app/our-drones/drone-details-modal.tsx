@@ -75,8 +75,9 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
 
   return (
     <div
-      className={`absolute inset-0 z-40 h-full w-full overflow-hidden bg-blue-950/40 backdrop-blur-sm p-3 sm:p-6 lg:p-8 flex items-center justify-center transform-gpu will-change-[opacity] transition-opacity duration-300 ease-out ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+      className={`absolute inset-0 z-40 h-full w-full overflow-hidden bg-blue-950/40 backdrop-blur-sm p-3 sm:p-6 lg:p-8 flex items-center justify-center transform-gpu will-change-[opacity] transition-opacity duration-300 ease-out ${
+        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
       onClick={(e) => {
         if (e.target === e.currentTarget) requestClose();
       }}
@@ -193,7 +194,17 @@ function DroneInfoPanel({ drone }: { drone: Drone }) {
 }
 
 // DroneSlide renders a single slide within the drone details image gallery.
-function DroneSlide({ drone, image, index }: { drone: Drone; image?: string; index: number }) {
+function DroneSlide({
+  drone,
+  image,
+  index,
+  loadImage,
+}: {
+  drone: Drone;
+  image?: string;
+  index: number;
+  loadImage?: boolean;
+}) {
   return (
     <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[1.5rem] transform-gpu">
       {index === 0 ? (
