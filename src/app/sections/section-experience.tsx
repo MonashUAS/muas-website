@@ -444,9 +444,9 @@ function SectionHero({ section }: { section: TeamSection }) {
       <div className="absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(0,7,20,0.3)_0%,rgba(0,7,20,0.18)_42%,rgba(0,7,20,0.68)_100%)]" />
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_40%,rgba(84,134,200,0.18),transparent_34%)]" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-2 flex-col items-center py-12 text-center sm:-translate-y-4 sm:py-16">
+      <div className="relative z-10 mx-auto flex w-[calc(100vw-3rem)] max-w-6xl -translate-y-8 flex-col items-center py-10 text-center sm:w-full sm:-translate-y-4 sm:py-16">
         <div className="flex w-full min-w-0 max-w-full flex-col items-center">
-          <h1 className="w-full min-w-0 max-w-full text-balance text-[2.2rem] font-black leading-[0.95] tracking-[-0.065em] text-white sm:max-w-[12ch] sm:text-[clamp(3.5rem,7vw,7rem)]">
+          <h1 className="w-full min-w-0 max-w-full origin-center scale-x-[0.9] text-balance text-[clamp(2.3rem,9.4vw,2.8rem)] font-black leading-[0.95] tracking-[-0.065em] text-white sm:max-w-[12ch] sm:scale-x-100 sm:text-[clamp(3.5rem,7vw,7rem)]">
             <AnimatedTextHighlight
               className="inline max-w-full"
               variant="goldSingleUnderline"
@@ -455,12 +455,12 @@ function SectionHero({ section }: { section: TeamSection }) {
             </AnimatedTextHighlight>
           </h1>
 
-          <p className="mt-10 w-full max-w-[16rem] text-[clamp(1.15rem,1.55vw,1.6rem)] font-medium leading-[1.55] tracking-[-0.015em] text-blue-50 sm:max-w-[52rem]">
+          <p className="mt-6 w-full max-w-[20rem] text-[0.95rem] font-medium leading-[1.45] tracking-[-0.015em] text-blue-50 sm:mt-10 sm:max-w-[52rem] sm:text-[clamp(1.15rem,1.55vw,1.6rem)] sm:leading-[1.55]">
             {section.description}
           </p>
         </div>
 
-        <div className="mt-8 flex min-h-[10.5rem] w-full max-w-2xl flex-col items-center justify-start sm:mt-10 sm:min-h-[12.75rem]">
+        <div className="mt-6 flex min-h-[10.5rem] w-full max-w-2xl flex-col items-center justify-start sm:mt-10 sm:min-h-[12.75rem]">
           <h2 className="text-b1 font-medium uppercase leading-none tracking-[0.2em] text-blue-50/74">
             Led by
           </h2>

@@ -171,7 +171,7 @@ export const sections: TeamSection[] = [
       {
         id: "examining",
         type: "image",
-        src: "/images/teams/avionics/hero/hero-examining.png",
+        src: "/images/teams/avionics/hero/hero-examining_updated.png",
         alt: "Avionics members examining aircraft electronics in the field",
         position: "36% 52%",
       },
@@ -209,14 +209,14 @@ export const sections: TeamSection[] = [
         slug: "lifeline",
         name: "Lifeline",
         description: "Project Lifeline involves the development of a payload deployment system, which delivers items providing relief to individuals in need. The current Lifeline system is designed to lower a water bottle and light-emitting beacon from an altitude of 50m, utilising a resistive braking mechanism to ensure a safe, controlled deployment.",
-        image: "/images/teams/avionics/projects/lifeline.jpg",
+        image: "/images/teams/avionics/projects/lifeline_updated.JPG",
         imagePosition: "50% 50%",
       },
       {
         slug: "stack",
         name: "Stack",
         description: "The avionics stack manages the power and communication channels of the plane. The stack team is responsible both designing and managing the wiring harness for the plane and well as performing pre-flight checks to ensure that it can take off and land safely.",
-        image: "/images/teams/avionics/projects/stack.png",
+        image: "/images/teams/avionics/projects/stack_updated.png",
         imagePosition: "50% 50%",
       },
       {
@@ -431,7 +431,7 @@ export const sections: TeamSection[] = [
       {
         id: "motor-testing",
         type: "video",
-        src: "/images/teams/propulsion/hero/hero-motor-testing.mov",
+        src: "/images/teams/propulsion/hero/hero-motor-testing_updated2.mov",
         position: "50% 50%",
       },
       {

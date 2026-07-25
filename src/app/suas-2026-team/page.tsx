@@ -177,7 +177,7 @@ export default function SUAS2026TeamPage() {
           <div className="absolute inset-0 bg-black/45" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,7,20,0.3)_0%,rgba(0,7,20,0.18)_42%,rgba(0,7,20,0.68)_100%)]" />
 
-          <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-12 flex-col items-center text-center">
+          <div className="relative z-10 mx-auto flex w-full max-w-6xl -translate-y-20 flex-col items-center text-center sm:-translate-y-12">
             <h1 className="text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] text-white">
               The Team Behind{" "}
               <RedbackWebHighlight>Redback</RedbackWebHighlight>
