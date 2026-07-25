@@ -14,6 +14,7 @@ export type Project = {
   keyDecisions: KeyDesignDecision[];
   testingProcess?: string;
   images: string[];
+  imagePosition?: string;
 };
 
 export const placeholderImage =
@@ -32,7 +33,9 @@ export const projects: Project[] = [
       "Oliver Bilston — Chief Operating Officer",
     ],
     keyDecisions: [],
-    images: [],
+    images: [
+      "/images/suas-team-page/our-redback-projects/upper-management.JPG",
+    ],
   },
   {
     name: "Aerostructures",
@@ -53,7 +56,9 @@ export const projects: Project[] = [
         body: "The comparatively low loading placed on many mounting components made additive manufacturing a practical option. It supports rapid design iteration while allowing replacement parts to be manufactured quickly during maintenance and repair.",
       },
     ],
-    images: [],
+    images: [
+      "/images/suas-team-page/our-redback-projects/aerostructures.JPG",
+    ],
   },
   {
     name: "DNA",
@@ -72,7 +77,7 @@ export const projects: Project[] = [
         body: "The system asserts control through a companion computer while the aircraft operates in guided mode, allowing position, velocity and acceleration setpoints to be issued. Control can be revoked immediately through a flight-mode switch, preserving a direct safety override.",
       },
     ],
-    images: [],
+    images: ["/images/suas-team-page/our-redback-projects/DNA.png"],
   },
   {
     name: "Flight Operations",
@@ -104,7 +109,9 @@ export const projects: Project[] = [
         body: "Although 7 m/s was identified as the most energy-efficient cruise speed, flight testing showed that increasing the endurance-phase speed to 17 m/s reduced the mission's overall battery cost by significantly shortening its duration. This also provides greater competition flexibility by allowing additional endurance laps or a repeated search phase.",
       },
     ],
-    images: [],
+    images: [
+      "/images/suas-team-page/our-redback-projects/flight-operations.JPG",
+    ],
   },
   {
     name: "Lifeline",
@@ -127,10 +134,7 @@ export const projects: Project[] = [
     ],
     testingProcess:
       "The team bench-tests the control system and release mechanism as part of its pre-flight safety checks. Payload releases are then tested from the aircraft during flight to replicate mission conditions, while digital simulation supports the selection of components that control descent speed and delivery time.",
-    images: [
-      "/images/redback-projects/lifeline/lifeline-1.JPG",
-      "/images/redback-projects/lifeline/lifeline-2.JPG",
-    ],
+    images: ["/images/suas-team-page/our-redback-projects/lifeline.JPG"],
   },
   {
     name: "Mission Management",
@@ -147,7 +151,9 @@ export const projects: Project[] = [
         body: "An MQTT broker was selected to coordinate communication between Mission Management, DNA and Vision because it is widely used for connected systems and has extensive documentation. Protocol Buffers are used when communicating with DNA's Raspberry Pi, while Vision currently exchanges JSON messages.",
       },
     ],
-    images: [],
+    images: [
+      "/images/suas-team-page/our-redback-projects/mission_management_redback_related.jpg",
+    ],
   },
   {
     name: "Pilots",
@@ -157,7 +163,7 @@ export const projects: Project[] = [
     leadLabel: "Pilots",
     leads: ["Tom Machin", "Adwik Ghosh", "Sean Ashton"],
     keyDecisions: [],
-    images: [],
+    images: ["/images/suas-team-page/our-redback-projects/pilots.png"],
   },
   {
     name: "Propulsion",
@@ -174,10 +180,7 @@ export const projects: Project[] = [
         body: "The efficiency limitations of readily available propellers created concerns around achievable flight time. Custom propulsion components were therefore selected to improve energy efficiency and address Redback's endurance requirements.",
       },
     ],
-    images: [
-      "/images/redback-projects/propulsion/propulsion-1.JPG",
-      "/images/redback-projects/propulsion/propulsion-2.JPG",
-    ],
+    images: ["/images/suas-team-page/our-redback-projects/propulsion.JPG"],
   },
   {
     name: "Stack",
@@ -200,6 +203,6 @@ export const projects: Project[] = [
         body: "The power harness distributes regulated power from the main battery to systems including the flight controller, communications hardware and sensors. It protects sensitive electronics from voltage instability and allows each subsystem to receive reliable power without requiring separate batteries.",
       },
     ],
-    images: [],
+    images: ["/images/suas-team-page/our-redback-projects/stack.JPG"],
   },
 ];

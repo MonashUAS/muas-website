@@ -6,7 +6,7 @@ export function Video() {
       <div className="relative z-10 flex aspect-video w-full max-w-[1600px] items-center justify-center overflow-hidden border border-red-900/90 bg-black">
         <video
           className="h-full w-full object-contain"
-          src="/videos/placeholder-vid.mov"
+          src="/videos/redback-video.mp4"
           autoPlay
           loop
           muted

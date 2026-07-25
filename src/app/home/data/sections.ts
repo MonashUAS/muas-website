@@ -43,7 +43,7 @@ export const homepageSections: HomepageSection[] = [
     title: "Operations",
     href: "/sections/operations",
     description: "Coordinating the people, logistics, and planning behind the team.",
-    image: "/images/homepage/sections/operations.jpg",
+    image: "/images/homepage/sections/operations_updated.jpg",
     alt: "Operations team coordinating MUAS activities",
   },
 ];

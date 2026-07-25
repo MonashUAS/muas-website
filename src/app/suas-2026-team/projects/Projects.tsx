@@ -18,7 +18,7 @@ import { ProjectInfoPanel } from "./project-info";
 import { placeholderImage, projects, type Project } from "./project-data";
 
 const AUTOPLAY_INTERVAL_MS = 4800;
-const CAROUSEL_TRANSITION_MS = 700;
+const CARD_TRANSITION_DURATION_MS = 700;
 const SLIDE_GAP_PX = 24;
 const SWIPE_THRESHOLD_PX = 48;
 const SEARCH_CONTROLLER_ID = "redback-projects-carousel";
@@ -41,6 +41,8 @@ const REFERENCE_CARD_SLUG =
   UPPER_MANAGEMENT_PROJECT?.slug ?? projects[0]?.slug ?? "";
 
 type ScrollbarState = {
+  isMeasured: boolean;
+  isOverflowing: boolean;
   thumbHeight: number;
   thumbTop: number;
 };
@@ -76,6 +78,7 @@ function RedbackTeamsCarousel() {
   );
 
   const [isPaused, setIsPaused] = useState(false);
+  const [isCardTransitioning, setIsCardTransitioning] = useState(false);
 
   const [referenceCardHeight, setReferenceCardHeight] = useState<
     number | undefined
@@ -83,7 +86,6 @@ function RedbackTeamsCarousel() {
 
   const dragStartXRef = useRef<number | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
-  const isTransitioningRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
 
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -94,6 +96,15 @@ function RedbackTeamsCarousel() {
   const slideOffset = `calc(-${activeIndex * 100}% - ${
     activeIndex * SLIDE_GAP_PX
   }px)`;
+
+  const clearTransitionTimeout = useCallback(() => {
+    if (transitionTimeoutRef.current === null) {
+      return;
+    }
+
+    window.clearTimeout(transitionTimeoutRef.current);
+    transitionTimeoutRef.current = null;
+  }, []);
 
   const recordReferenceCardHeight = useCallback(
     (slug: string, height: number) => {
@@ -120,31 +131,34 @@ function RedbackTeamsCarousel() {
         return;
       }
 
-      if (isTransitioningRef.current && !prefersReducedMotion) {
-        return;
-      }
-
       const normalizedIndex =
         nextIndex < 0 ? maxIndex : nextIndex > maxIndex ? 0 : nextIndex;
 
-      setActiveIndex(normalizedIndex);
-
-      if (prefersReducedMotion) {
+      if (normalizedIndex === activeIndex) {
         return;
       }
 
-      isTransitioningRef.current = true;
+      clearTransitionTimeout();
+      setActiveIndex(normalizedIndex);
 
-      if (transitionTimeoutRef.current !== null) {
-        window.clearTimeout(transitionTimeoutRef.current);
+      if (prefersReducedMotion) {
+        setIsCardTransitioning(false);
+        return;
       }
 
+      setIsCardTransitioning(true);
+
       transitionTimeoutRef.current = window.setTimeout(() => {
-        isTransitioningRef.current = false;
+        setIsCardTransitioning(false);
         transitionTimeoutRef.current = null;
-      }, CAROUSEL_TRANSITION_MS);
+      }, CARD_TRANSITION_DURATION_MS);
     },
-    [maxIndex, prefersReducedMotion],
+    [
+      activeIndex,
+      clearTransitionTimeout,
+      maxIndex,
+      prefersReducedMotion,
+    ],
   );
 
   useSearchRevealController(
@@ -181,13 +195,28 @@ function RedbackTeamsCarousel() {
             transitionTimeoutRef.current = null;
           }
 
-          isTransitioningRef.current = false;
+          setIsCardTransitioning(false);
           setActiveIndex(nextIndex);
         },
       }),
       [],
     ),
   );
+
+  useEffect(() => {
+    return () => {
+      clearTransitionTimeout();
+    };
+  }, [clearTransitionTimeout]);
+
+  useEffect(() => {
+    if (!prefersReducedMotion) {
+      return;
+    }
+
+    clearTransitionTimeout();
+    setIsCardTransitioning(false);
+  }, [clearTransitionTimeout, prefersReducedMotion]);
 
   useEffect(() => {
     const carousel = carouselRef.current;
@@ -268,17 +297,6 @@ function RedbackTeamsCarousel() {
   }, [activeIndex]);
 
   useEffect(() => {
-    if (
-      transitionTimeoutRef.current !== null &&
-      prefersReducedMotion
-    ) {
-      window.clearTimeout(transitionTimeoutRef.current);
-      transitionTimeoutRef.current = null;
-      isTransitioningRef.current = false;
-    }
-  }, [prefersReducedMotion]);
-
-  useEffect(() => {
     if (prefersReducedMotion || isPaused || maxIndex === 0) {
       return;
     }
@@ -298,14 +316,6 @@ function RedbackTeamsCarousel() {
     prefersReducedMotion,
   ]);
 
-  useEffect(() => {
-    return () => {
-      if (transitionTimeoutRef.current !== null) {
-        window.clearTimeout(transitionTimeoutRef.current);
-      }
-    };
-  }, []);
-
   const goToPreviousSlide = () => {
     navigateToSlide(activeIndex - 1);
   };
@@ -314,16 +324,12 @@ function RedbackTeamsCarousel() {
     navigateToSlide(activeIndex + 1);
   };
 
-  const handlePointerDown = (
-    event: PointerEvent<HTMLDivElement>,
-  ) => {
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     dragStartXRef.current = event.clientX;
     setIsPaused(true);
   };
 
-  const handlePointerUp = (
-    event: PointerEvent<HTMLDivElement>,
-  ) => {
+  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
     const dragStartX = dragStartXRef.current;
 
     dragStartXRef.current = null;
@@ -390,7 +396,7 @@ function RedbackTeamsCarousel() {
         <button
           type="button"
           onClick={goToPreviousSlide}
-          className="absolute left-0 top-[140px] z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-2xl text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:top-[190px] sm:h-12 sm:w-12 lg:top-[260px]"
+          className="absolute left-0 top-[140px] z-20 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white text-2xl text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:top-[190px] sm:h-12 sm:w-12 lg:top-[260px]"
           aria-label="Show previous team"
         >
           ‹
@@ -399,7 +405,7 @@ function RedbackTeamsCarousel() {
         <button
           type="button"
           onClick={goToNextSlide}
-          className="absolute right-0 top-[140px] z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-2xl text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:top-[190px] sm:h-12 sm:w-12 lg:top-[260px]"
+          className="absolute right-0 top-[140px] z-20 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white text-2xl text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:top-[190px] sm:h-12 sm:w-12 lg:top-[260px]"
           aria-label="Show next team"
         >
           ›
@@ -414,10 +420,8 @@ function RedbackTeamsCarousel() {
                 key={project.slug}
                 type="button"
                 onClick={() => navigateToSlide(pageIndex)}
-                className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
-                  isActive
-                    ? "w-9 bg-blue-50"
-                    : "w-2.5 bg-white/25"
+                className={`h-2.5 cursor-pointer rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
+                  isActive ? "w-9 bg-blue-50" : "w-2.5 bg-white/25"
                 }`}
                 aria-label={`View ${project.name} team`}
                 aria-current={isActive ? "true" : undefined}
@@ -455,6 +459,7 @@ function RedbackTeamsCarousel() {
                   <ScrollableProjectCard
                     project={project}
                     isActive={isActive}
+                    isCarouselTransitioning={isCardTransitioning}
                     referenceCardHeight={referenceCardHeight}
                     onMeasuredHeight={recordReferenceCardHeight}
                   />
@@ -471,6 +476,7 @@ function RedbackTeamsCarousel() {
 type ScrollableProjectCardProps = {
   project: Project;
   isActive: boolean;
+  isCarouselTransitioning: boolean;
   referenceCardHeight?: number;
   onMeasuredHeight: (slug: string, height: number) => void;
 };
@@ -478,20 +484,39 @@ type ScrollableProjectCardProps = {
 function ScrollableProjectCard({
   project,
   isActive,
+  isCarouselTransitioning,
   referenceCardHeight,
   onMeasuredHeight,
 }: ScrollableProjectCardProps) {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const [scrollbarState, setScrollbarState] = useState<ScrollbarState>({
+    isMeasured: false,
+    isOverflowing: false,
     thumbHeight: MIN_SCROLLBAR_THUMB_HEIGHT_PX,
     thumbTop: 0,
   });
 
+  const hideScrollbar = useCallback(() => {
+    setScrollbarState((currentState) =>
+      currentState.isMeasured ||
+      currentState.isOverflowing ||
+      currentState.thumbTop !== 0
+        ? {
+            isMeasured: false,
+            isOverflowing: false,
+            thumbHeight: MIN_SCROLLBAR_THUMB_HEIGHT_PX,
+            thumbTop: 0,
+          }
+        : currentState,
+    );
+  }, []);
+
   const updateScrollbar = useCallback(() => {
     const scrollContainer = scrollContainerRef.current;
 
-    if (!scrollContainer) {
+    if (!scrollContainer || !isActive) {
+      hideScrollbar();
       return;
     }
 
@@ -503,6 +528,7 @@ function ScrollableProjectCard({
     );
 
     if (trackHeight <= 0) {
+      hideScrollbar();
       return;
     }
 
@@ -510,6 +536,8 @@ function ScrollableProjectCard({
 
     if (maximumScrollTop === 0) {
       setScrollbarState({
+        isMeasured: true,
+        isOverflowing: false,
         thumbHeight: trackHeight,
         thumbTop: 0,
       });
@@ -522,10 +550,7 @@ function ScrollableProjectCard({
 
     const thumbHeight = Math.min(
       trackHeight,
-      Math.max(
-        MIN_SCROLLBAR_THUMB_HEIGHT_PX,
-        proportionalThumbHeight,
-      ),
+      Math.max(MIN_SCROLLBAR_THUMB_HEIGHT_PX, proportionalThumbHeight),
     );
 
     const maximumThumbTop = Math.max(trackHeight - thumbHeight, 0);
@@ -540,6 +565,8 @@ function ScrollableProjectCard({
       const nextThumbTop = Math.round(thumbTop);
 
       if (
+        currentState.isMeasured &&
+        currentState.isOverflowing &&
         currentState.thumbHeight === nextThumbHeight &&
         currentState.thumbTop === nextThumbTop
       ) {
@@ -547,11 +574,13 @@ function ScrollableProjectCard({
       }
 
       return {
+        isMeasured: true,
+        isOverflowing: true,
         thumbHeight: nextThumbHeight,
         thumbTop: nextThumbTop,
       };
     });
-  }, []);
+  }, [hideScrollbar, isActive]);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -583,22 +612,18 @@ function ScrollableProjectCard({
 
     return () => {
       window.cancelAnimationFrame(frameId);
-      scrollContainer.removeEventListener(
-        "scroll",
-        updateScrollbar,
-      );
+      scrollContainer.removeEventListener("scroll", updateScrollbar);
       resizeObserver.disconnect();
     };
-  }, [
-    project.slug,
-    referenceCardHeight,
-    updateScrollbar,
-  ]);
+  }, [project.slug, referenceCardHeight, updateScrollbar]);
 
   useEffect(() => {
     if (!isActive) {
+      hideScrollbar();
       return;
     }
+
+    hideScrollbar();
 
     const scrollContainer = scrollContainerRef.current;
 
@@ -616,7 +641,13 @@ function ScrollableProjectCard({
     return () => {
       window.cancelAnimationFrame(frameId);
     };
-  }, [isActive, updateScrollbar]);
+  }, [hideScrollbar, isActive, updateScrollbar]);
+
+  const shouldShowScrollbar =
+    isActive &&
+    !isCarouselTransitioning &&
+    scrollbarState.isMeasured &&
+    scrollbarState.isOverflowing;
 
   return (
     <div
@@ -645,18 +676,20 @@ function ScrollableProjectCard({
         </div>
       </div>
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-4 right-2 top-4 z-20 w-2 rounded-full border border-white/25 bg-white/15 shadow-[0_0_12px_rgba(255,255,255,0.08)]"
-      >
+      {shouldShowScrollbar ? (
         <div
-          className="absolute left-0 right-0 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-[height,transform] duration-150 ease-out motion-reduce:transition-none"
-          style={{
-            height: `${scrollbarState.thumbHeight}px`,
-            transform: `translate3d(0, ${scrollbarState.thumbTop}px, 0)`,
-          }}
-        />
-      </div>
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-4 right-2 top-4 z-20 w-2 rounded-full border border-white/25 bg-white/15 shadow-[0_0_12px_rgba(255,255,255,0.08)]"
+        >
+          <div
+            className="absolute left-0 right-0 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-[height,transform] duration-150 ease-out motion-reduce:transition-none"
+            style={{
+              height: `${scrollbarState.thumbHeight}px`,
+              transform: `translate3d(0, ${scrollbarState.thumbTop}px, 0)`,
+            }}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -674,6 +707,9 @@ function ProjectImagePanel({ project }: { project: Project }) {
           sizes="(min-width: 1024px) 78vw, 100vw"
           className="rounded-[inherit] object-cover"
           draggable={false}
+          style={{
+            objectPosition: project.imagePosition ?? "50% 50%",
+          }}
         />
       ) : (
         <div

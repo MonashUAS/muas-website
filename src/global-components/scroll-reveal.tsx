@@ -53,6 +53,39 @@ export function ScrollRevealProvider({
     let isRevealingTimelineItem = false;
     let timelineProgressFrame = 0;
     let timelineRevealTimeout: number | null = null;
+    let observer: IntersectionObserver;
+
+    const revealTimelineItem = (index: number) => {
+      const target = timelineTargets[index];
+
+      if (!target) {
+        return;
+      }
+
+      queuedTimelineIndexes.delete(index);
+      target.classList.add(VISIBLE_CLASS);
+      observer.unobserve(target);
+    };
+
+    const revealPassedTimelineItemsImmediately = (highestPassedIndex: number) => {
+      if (timelineRevealTimeout !== null) {
+        window.clearTimeout(timelineRevealTimeout);
+        timelineRevealTimeout = null;
+      }
+
+      isRevealingTimelineItem = false;
+
+      for (
+        let index = nextTimelineIndex;
+        index <= highestPassedIndex;
+        index += 1
+      ) {
+        revealTimelineItem(index);
+      }
+
+      nextTimelineIndex = Math.max(nextTimelineIndex, highestPassedIndex + 1);
+      revealQueuedTimelineItems();
+    };
 
     const revealQueuedTimelineItems = () => {
       if (
@@ -62,19 +95,12 @@ export function ScrollRevealProvider({
         return;
       }
 
-      const target = timelineTargets[nextTimelineIndex];
-
-      if (!target) {
-        return;
-      }
-
       isRevealingTimelineItem = true;
-      queuedTimelineIndexes.delete(nextTimelineIndex);
-      target.classList.add(VISIBLE_CLASS);
-      observer.unobserve(target);
+      revealTimelineItem(nextTimelineIndex);
       nextTimelineIndex += 1;
 
       timelineRevealTimeout = window.setTimeout(() => {
+        timelineRevealTimeout = null;
         isRevealingTimelineItem = false;
         revealQueuedTimelineItems();
       }, TIMELINE_REVEAL_STAGGER_MS);
@@ -88,18 +114,29 @@ export function ScrollRevealProvider({
       }
 
       const triggerLine = window.innerHeight * 0.88;
-      const highestPassedIndex = timelineTargets.reduce(
-        (highestIndex, target, index) => {
-          if (target.getBoundingClientRect().top <= triggerLine) {
-            return index;
-          }
+      let highestPassedIndex = -1;
+      let shouldRevealImmediately = false;
 
-          return highestIndex;
-        },
-        -1,
-      );
+      timelineTargets.forEach((target, index) => {
+        const rect = target.getBoundingClientRect();
+
+        if (rect.top > triggerLine) {
+          return;
+        }
+
+        highestPassedIndex = index;
+
+        if (index >= nextTimelineIndex && rect.bottom <= 0) {
+          shouldRevealImmediately = true;
+        }
+      });
 
       if (highestPassedIndex < nextTimelineIndex) {
+        return;
+      }
+
+      if (shouldRevealImmediately) {
+        revealPassedTimelineItemsImmediately(highestPassedIndex);
         return;
       }
 
@@ -120,7 +157,7 @@ export function ScrollRevealProvider({
       );
     };
 
-    const observer = new IntersectionObserver(
+    observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) {
@@ -151,6 +188,11 @@ export function ScrollRevealProvider({
     });
     window.addEventListener("resize", scheduleTimelineProgressUpdate);
     window.addEventListener("pageshow", scheduleTimelineProgressUpdate);
+    window.addEventListener("popstate", scheduleTimelineProgressUpdate);
+    document.addEventListener(
+      "visibilitychange",
+      scheduleTimelineProgressUpdate,
+    );
 
     return () => {
       if (timelineProgressFrame) {
@@ -164,6 +206,11 @@ export function ScrollRevealProvider({
       window.removeEventListener("scroll", scheduleTimelineProgressUpdate);
       window.removeEventListener("resize", scheduleTimelineProgressUpdate);
       window.removeEventListener("pageshow", scheduleTimelineProgressUpdate);
+      window.removeEventListener("popstate", scheduleTimelineProgressUpdate);
+      document.removeEventListener(
+        "visibilitychange",
+        scheduleTimelineProgressUpdate,
+      );
       observer.disconnect();
     };
   }, [selector]);
