@@ -31,7 +31,7 @@ export function BrandLink({ isMenuOpen, onClick }: BrandLinkProps) {
         priority
       />
 
-      {/* Expanded logo lockup. */}
+      {/* Expanded logo lockup — no priority so it does not compete with page LCP. */}
       <Image
         src="/logos/logo-with-text.svg"
         alt="MUAS Logo"
@@ -41,7 +41,6 @@ export function BrandLink({ isMenuOpen, onClick }: BrandLinkProps) {
         className={`h-auto w-[148px] transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
           isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-3 opacity-0"
         }`}
-        priority
       />
     </Link>
   );

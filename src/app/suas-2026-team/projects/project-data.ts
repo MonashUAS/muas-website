@@ -163,7 +163,7 @@ export const projects: Project[] = [
     leadLabel: "Pilots",
     leads: ["Tom Machin", "Adwik Ghosh", "Sean Ashton"],
     keyDecisions: [],
-    images: ["/images/suas-team-page/our-redback-projects/pilots.png"],
+    images: ["/images/suas-team-page/our-redback-projects/pilots.jpg"],
   },
   {
     name: "Propulsion",

@@ -53,7 +53,36 @@ export function ScrollRevealProvider({
     let isRevealingTimelineItem = false;
     let timelineProgressFrame = 0;
     let timelineRevealTimeout: number | null = null;
+    let timelineListenersAttached = false;
     let observer: IntersectionObserver;
+
+    const detachTimelineScrollListeners = () => {
+      if (!timelineListenersAttached) {
+        return;
+      }
+
+      timelineListenersAttached = false;
+
+      if (timelineProgressFrame) {
+        window.cancelAnimationFrame(timelineProgressFrame);
+        timelineProgressFrame = 0;
+      }
+
+      window.removeEventListener("scroll", scheduleTimelineProgressUpdate);
+      window.removeEventListener("resize", scheduleTimelineProgressUpdate);
+      window.removeEventListener("pageshow", scheduleTimelineProgressUpdate);
+      window.removeEventListener("popstate", scheduleTimelineProgressUpdate);
+      document.removeEventListener(
+        "visibilitychange",
+        scheduleTimelineProgressUpdate,
+      );
+    };
+
+    const maybeDetachTimelineScrollListeners = () => {
+      if (nextTimelineIndex >= timelineTargets.length) {
+        detachTimelineScrollListeners();
+      }
+    };
 
     const revealTimelineItem = (index: number) => {
       const target = timelineTargets[index];
@@ -65,6 +94,26 @@ export function ScrollRevealProvider({
       queuedTimelineIndexes.delete(index);
       target.classList.add(VISIBLE_CLASS);
       observer.unobserve(target);
+    };
+
+    const revealQueuedTimelineItems = () => {
+      if (
+        isRevealingTimelineItem ||
+        !queuedTimelineIndexes.has(nextTimelineIndex)
+      ) {
+        maybeDetachTimelineScrollListeners();
+        return;
+      }
+
+      isRevealingTimelineItem = true;
+      revealTimelineItem(nextTimelineIndex);
+      nextTimelineIndex += 1;
+
+      timelineRevealTimeout = window.setTimeout(() => {
+        timelineRevealTimeout = null;
+        isRevealingTimelineItem = false;
+        revealQueuedTimelineItems();
+      }, TIMELINE_REVEAL_STAGGER_MS);
     };
 
     const revealPassedTimelineItemsImmediately = (highestPassedIndex: number) => {
@@ -85,31 +134,17 @@ export function ScrollRevealProvider({
 
       nextTimelineIndex = Math.max(nextTimelineIndex, highestPassedIndex + 1);
       revealQueuedTimelineItems();
-    };
-
-    const revealQueuedTimelineItems = () => {
-      if (
-        isRevealingTimelineItem ||
-        !queuedTimelineIndexes.has(nextTimelineIndex)
-      ) {
-        return;
-      }
-
-      isRevealingTimelineItem = true;
-      revealTimelineItem(nextTimelineIndex);
-      nextTimelineIndex += 1;
-
-      timelineRevealTimeout = window.setTimeout(() => {
-        timelineRevealTimeout = null;
-        isRevealingTimelineItem = false;
-        revealQueuedTimelineItems();
-      }, TIMELINE_REVEAL_STAGGER_MS);
+      maybeDetachTimelineScrollListeners();
     };
 
     const enqueuePassedTimelineItems = () => {
       timelineProgressFrame = 0;
 
-      if (timelineTargets.length === 0) {
+      if (
+        timelineTargets.length === 0 ||
+        nextTimelineIndex >= timelineTargets.length
+      ) {
+        detachTimelineScrollListeners();
         return;
       }
 
@@ -117,19 +152,20 @@ export function ScrollRevealProvider({
       let highestPassedIndex = -1;
       let shouldRevealImmediately = false;
 
-      timelineTargets.forEach((target, index) => {
+      for (let index = nextTimelineIndex; index < timelineTargets.length; index += 1) {
+        const target = timelineTargets[index];
         const rect = target.getBoundingClientRect();
 
         if (rect.top > triggerLine) {
-          return;
+          break;
         }
 
         highestPassedIndex = index;
 
-        if (index >= nextTimelineIndex && rect.bottom <= 0) {
+        if (rect.bottom <= 0) {
           shouldRevealImmediately = true;
         }
-      });
+      }
 
       if (highestPassedIndex < nextTimelineIndex) {
         return;
@@ -145,15 +181,38 @@ export function ScrollRevealProvider({
       }
 
       revealQueuedTimelineItems();
+      maybeDetachTimelineScrollListeners();
     };
 
     const scheduleTimelineProgressUpdate = () => {
-      if (timelineProgressFrame || timelineTargets.length === 0) {
+      if (
+        timelineProgressFrame ||
+        timelineTargets.length === 0 ||
+        nextTimelineIndex >= timelineTargets.length
+      ) {
         return;
       }
 
       timelineProgressFrame = window.requestAnimationFrame(
         enqueuePassedTimelineItems,
+      );
+    };
+
+    const attachTimelineScrollListeners = () => {
+      if (timelineListenersAttached || timelineTargets.length === 0) {
+        return;
+      }
+
+      timelineListenersAttached = true;
+      window.addEventListener("scroll", scheduleTimelineProgressUpdate, {
+        passive: true,
+      });
+      window.addEventListener("resize", scheduleTimelineProgressUpdate);
+      window.addEventListener("pageshow", scheduleTimelineProgressUpdate);
+      window.addEventListener("popstate", scheduleTimelineProgressUpdate);
+      document.addEventListener(
+        "visibilitychange",
+        scheduleTimelineProgressUpdate,
       );
     };
 
@@ -182,17 +241,8 @@ export function ScrollRevealProvider({
     );
 
     targets.forEach((target) => observer.observe(target));
+    attachTimelineScrollListeners();
     scheduleTimelineProgressUpdate();
-    window.addEventListener("scroll", scheduleTimelineProgressUpdate, {
-      passive: true,
-    });
-    window.addEventListener("resize", scheduleTimelineProgressUpdate);
-    window.addEventListener("pageshow", scheduleTimelineProgressUpdate);
-    window.addEventListener("popstate", scheduleTimelineProgressUpdate);
-    document.addEventListener(
-      "visibilitychange",
-      scheduleTimelineProgressUpdate,
-    );
 
     return () => {
       if (timelineProgressFrame) {
@@ -203,14 +253,7 @@ export function ScrollRevealProvider({
         window.clearTimeout(timelineRevealTimeout);
       }
 
-      window.removeEventListener("scroll", scheduleTimelineProgressUpdate);
-      window.removeEventListener("resize", scheduleTimelineProgressUpdate);
-      window.removeEventListener("pageshow", scheduleTimelineProgressUpdate);
-      window.removeEventListener("popstate", scheduleTimelineProgressUpdate);
-      document.removeEventListener(
-        "visibilitychange",
-        scheduleTimelineProgressUpdate,
-      );
+      detachTimelineScrollListeners();
       observer.disconnect();
     };
   }, [selector]);

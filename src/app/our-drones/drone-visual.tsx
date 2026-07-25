@@ -1,13 +1,27 @@
 import type { Drone } from "./drone-data";
 import Image from "next/image";
+import { useEffect } from "react";
 
 type DroneVisualProps = {
   drone: Pick<Drone, "name" | "heroImage">;
   className?: string;
+  priority?: boolean;
+  onLoad?: () => void;
 };
 
 // DroneVisual renders a real drone image when available, otherwise a branded placeholder. 
-export function DroneVisual({ drone, className = "" }: DroneVisualProps) {
+export function DroneVisual({
+  drone,
+  className = "",
+  priority = false,
+  onLoad,
+}: DroneVisualProps) {
+  useEffect(() => {
+    if (!drone.heroImage) {
+      onLoad?.();
+    }
+  }, [drone.heroImage, onLoad]);
+
   if (drone.heroImage) {
     return (
       <div className={`relative h-full w-full ${className}`}>
@@ -16,9 +30,10 @@ export function DroneVisual({ drone, className = "" }: DroneVisualProps) {
           src={drone.heroImage}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-contain drop-shadow-2xl"
+          className="object-contain"
           draggable={false}
-          priority
+          priority={priority}
+          onLoadingComplete={onLoad}
         />
       </div>
     );

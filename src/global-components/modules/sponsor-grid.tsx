@@ -127,7 +127,7 @@ export const sponsorRows: SponsorRow[] = [
 export function SponsorGrid() {
   const rowElements = useRef<(HTMLDivElement | null)[]>([]);
   const [visibleRows, setVisibleRows] = useState<boolean[]>(() =>
-    sponsorRows.map(() => false),
+    sponsorRows.map((_, rowIndex) => rowIndex === 0),
   );
 
   useEffect(() => {
@@ -158,8 +158,8 @@ export function SponsorGrid() {
         }
       },
       {
-        rootMargin: "0px 0px -8%",
-        threshold: 0.15,
+        rootMargin: "200px 0px",
+        threshold: 0,
       },
     );
 

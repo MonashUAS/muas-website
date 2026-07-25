@@ -144,23 +144,23 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
             /* drone image - button */
             <button
               aria-label={isActive ? `Open ${drone.name} details` : `Show ${drone.name}`}
-              className="absolute flex cursor-pointer items-center justify-center transition-all duration-700 ease-out"
+              className="absolute flex h-[min(46vh,390px)] w-[min(64vw,720px)] cursor-pointer items-center justify-center transition-[transform,opacity] duration-700 ease-out will-change-transform"
               key={drone.slug}
               onMouseEnter={() => setIsActiveHovered(isActive)}
               onMouseLeave={() => setIsActiveHovered(false)}
               onClick={() => (isActive ? setSelectedDrone(drone) : navigateTo(index))}
               style={{
-                height: isActive ? "46vh" : "22vh",
-                maxHeight: isActive ? "390px" : "180px",
-                maxWidth: isActive ? "720px" : "240px",
                 opacity: isActive ? 1 : 0.7,
-                transform: `translateX(${offset * 205}%) translateY(${isActive ? 10 : -78}px) scale(${isActive ? (isActiveHovered ? 1.1 : 1) : 0.88})`,
-                width: isActive ? "64vw" : "22vw",
+                transform: `translateX(${offset * 205}%) translateY(${isActive ? 10 : -78}px) scale(${
+                  isActive ? (isActiveHovered ? 1.1 : 1) : 0.42
+                })`,
                 zIndex: isActive ? 2 : 1,
               }}
               type="button"
             >
-              <DroneVisual drone={drone} />
+              <div className="relative h-full w-full drop-shadow-2xl">
+                <DroneVisual drone={drone} priority={isActive} />
+              </div>
             </button>
           );
         })}

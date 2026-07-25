@@ -16,7 +16,7 @@ const deployedPanelIndex = techSpecPanels.findIndex(
   (panel) => panel.navTitle === "deployed",
 );
 
-const fallbackTechSpecImage = "/images/redback-tech-specs/deployed.png";
+const fallbackTechSpecImage = "/images/redback-tech-specs/deployed.jpg";
 
 const metricGradientClass =
   "bg-gradient-to-b from-red-500 to-red-200 bg-clip-text text-transparent";

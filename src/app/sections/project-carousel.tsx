@@ -15,6 +15,8 @@ import {
   useSearchNavigation,
   useSearchRevealController,
 } from "@/global-components/search/search-navigation-provider";
+import { isCircularNear } from "@/lib/is-circular-near";
+import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 
 type ProjectCarouselProps = {
   projects: SectionProject[];
@@ -189,6 +191,12 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
               >
                 <ProjectSlide
                   index={index}
+                  loadImage={isCircularNear(
+                    index,
+                    activeIndex,
+                    projects.length,
+                    1,
+                  )}
                   project={project}
                   sectionSlug={sectionSlug}
                 />
@@ -224,13 +232,18 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
             <button
               aria-current={isActive ? "true" : undefined}
               aria-label={`Show responsibility slide ${slideIndex + 1}`}
-              className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
-                isActive ? "w-9 bg-blue-50" : "w-2.5 bg-white/25 hover:bg-white/45"
-              }`}
+              className="relative h-2.5 w-9 overflow-hidden rounded-full bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
               key={slideIndex}
               onClick={() => navigateToSlide(slideIndex)}
               type="button"
-            />
+            >
+              <span
+                aria-hidden
+                className={`absolute inset-y-0 left-0 w-full origin-left rounded-full bg-blue-50 transition-transform duration-300 ease-out motion-reduce:transition-none ${
+                  isActive ? "scale-x-100" : "scale-x-[0.28]"
+                }`}
+              />
+            </button>
           );
         })}
       </div>
@@ -240,29 +253,39 @@ export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps)
 
 type ProjectSlideProps = {
   index: number;
+  loadImage: boolean;
   project: SectionProject;
   sectionSlug: string;
 };
 
 // ProjectSlide keeps every responsibility inside one fixed-size card layout.
-function ProjectSlide({ index, project, sectionSlug }: ProjectSlideProps) {
+function ProjectSlide({ index, loadImage, project, sectionSlug }: ProjectSlideProps) {
   return (
     <article className="grid h-full grid-rows-[minmax(0,1.15fr)_minmax(0,0.85fr)] bg-[linear-gradient(155deg,rgba(255,255,255,0.08)_0%,rgba(84,134,200,0.09)_44%,rgba(0,31,73,0.38)_100%)] text-white lg:grid-cols-[minmax(0,0.58fr)_minmax(320px,0.42fr)] lg:grid-rows-none">
       <div className="relative min-h-0 overflow-hidden bg-blue-900">
-        <Image
-          alt={`${project.name} responsibility`}
-          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
-          decoding="async"
-          draggable={false}
-          fill
-          priority={index === 0}
-          sizes="(min-width: 1024px) 46vw, 100vw"
-          src={project.image}
-          style={{
-            objectFit: project.imageFit ?? "cover",
-            objectPosition: project.imagePosition ?? "center",
-          }}
-        />
+        <StickyLoadedImage shouldLoad={loadImage}>
+          {({ showImage, isDecoded, onDecoded }) =>
+            showImage ? (
+              <Image
+                alt={`${project.name} responsibility`}
+                className={`object-cover transition-opacity duration-500 ease-out motion-reduce:transition-none ${
+                  isDecoded ? "opacity-100" : "opacity-0"
+                }`}
+                decoding="async"
+                draggable={false}
+                fill
+                onLoadingComplete={onDecoded}
+                priority={index === 0}
+                sizes="(min-width: 1024px) 46vw, 100vw"
+                src={project.image}
+                style={{
+                  objectFit: project.imageFit ?? "cover",
+                  objectPosition: project.imagePosition ?? "center",
+                }}
+              />
+            ) : null
+          }
+        </StickyLoadedImage>
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,31,73,0.46)_100%)]" />
         <div className="absolute inset-x-6 top-5 h-px bg-blue-100/35" />
         <div className="absolute bottom-5 right-7 h-10 w-28 border-b border-r border-blue-100/30" />

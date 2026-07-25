@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { sponsorRows } from "@/global-components/modules/sponsor-grid";
 
 // Reuse the sponsor page data so adding or removing sponsors only needs one
 // data update in SponsorGrid. The duplicated array creates a seamless loop.
 const sponsors = sponsorRows.flatMap((row) => row.sponsors);
+const uniqueSponsorSrcs = [...new Set(sponsors.map((sponsor) => sponsor.src))];
 const duplicatedSponsors = [...sponsors, ...sponsors];
 
 type HomepageSponsorCarouselProps = {
@@ -17,6 +19,37 @@ export function HomepageSponsorCarousel({
   heading = "Made Possible By",
   headingId = "homepage-sponsors-heading",
 }: HomepageSponsorCarouselProps) {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [isInView, setIsInView] = useState(true);
+
+  // Warm unique logos early so the marquee is ready before it enters view.
+  useEffect(() => {
+    uniqueSponsorSrcs.forEach((src) => {
+      const image = new window.Image();
+      image.decoding = "async";
+      image.src = `/_next/image?url=${encodeURIComponent(src)}&w=384&q=75`;
+    });
+  }, []);
+
+  useEffect(() => {
+    const track = trackRef.current;
+
+    if (!track || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { rootMargin: "600px 0px" },
+    );
+
+    observer.observe(track);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
       className="overflow-hidden bg-white px-4 py-14 text-blue-900 sm:px-6 sm:py-16 lg:px-8"
@@ -39,7 +72,11 @@ export function HomepageSponsorCarousel({
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-[linear-gradient(270deg,#ffffff,rgba(255,255,255,0))] sm:w-28" />
 
           {/* The logo list is duplicated so the marquee can loop without a visible jump. */}
-          <div className="flex w-max animate-sponsor-marquee items-center gap-12 py-4 group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused] motion-reduce:animate-none sm:gap-16 lg:gap-24">
+          <div
+            ref={trackRef}
+            className="flex w-max animate-sponsor-marquee items-center gap-12 py-4 group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused] motion-reduce:animate-none sm:gap-16 lg:gap-24"
+            style={{ animationPlayState: isInView ? undefined : "paused" }}
+          >
             {duplicatedSponsors.map((sponsor, index) => (
               <div
                 key={`${sponsor.name}-${index}`}

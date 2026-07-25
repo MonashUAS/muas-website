@@ -9,6 +9,7 @@ import {
   useSearchNavigation,
   useSearchTarget,
 } from "@/global-components/search/search-navigation-provider";
+import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 import type { Drone } from "./drone-data";
 import { DroneVisual } from "./drone-visual";
 import { SpecList } from "./spec-list";
@@ -74,7 +75,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
 
   return (
     <div
-      className={`absolute inset-0 z-40 h-full w-full overflow-hidden bg-blue-950/40 backdrop-blur-sm p-3 sm:p-6 lg:p-8 flex items-center justify-center transition-opacity duration-[520ms] ease-out ${isVisible ? "opacity-100" : "opacity-0"
+      className={`absolute inset-0 z-40 h-full w-full overflow-hidden bg-blue-950/72 p-3 sm:p-6 lg:p-8 flex items-center justify-center transition-opacity duration-[520ms] ease-out ${isVisible ? "opacity-100" : "opacity-0"
         }`}
       onClick={(e) => {
         if (e.target === e.currentTarget) requestClose();
@@ -121,7 +122,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
                 dotTone="blue"
               />
             ) : (
-              <DroneSlide drone={drone} image={drone.heroImage} index={0} />
+              <DroneSlide drone={drone} image={drone.heroImage} index={0} loadImage />
             )}
           </div>
 
@@ -199,27 +200,54 @@ function DroneInfoPanel({
   );
 }
 
-function DroneSlide({ drone, image, index }: { drone: Drone; image?: string; index: number }) {
+function DroneSlide({
+  drone,
+  image,
+  index,
+  loadImage,
+}: {
+  drone: Drone;
+  image?: string;
+  index: number;
+  loadImage: boolean;
+}) {
   return (
-    <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[1.5rem]">
-      {index === 0 ? (
-        <div className="absolute inset-0">
-          <DroneVisual drone={drone} />
-        </div>
-      ) : image ? (
-        <Image
-          alt={`${drone.name} gallery image ${index}`}
-          src={image}
-          fill
-          sizes="(min-width: 1024px) 62vw, 100vw"
-          className="rounded-[inherit] object-cover"
-          draggable={false}
-        />
-      ) : (
-        <div className="absolute inset-0 p-8 sm:p-12 lg:p-16">
-          <DroneVisual drone={{ name: drone.name }} />
-        </div>
-      )}
+    <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[1.5rem] bg-blue-950">
+      <StickyLoadedImage shouldLoad={loadImage}>
+        {({ showImage, isDecoded, onDecoded }) =>
+          showImage ? (
+            index === 0 ? (
+              <div
+                className={`absolute inset-0 transition-opacity duration-500 ${
+                  isDecoded ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <DroneVisual
+                  drone={drone}
+                  priority={index === 0}
+                  onLoad={onDecoded}
+                />
+              </div>
+            ) : image ? (
+              <Image
+                alt={`${drone.name} gallery image ${index}`}
+                src={image}
+                fill
+                sizes="(min-width: 1024px) 62vw, 100vw"
+                className={`rounded-[inherit] object-cover transition-opacity duration-500 ${
+                  isDecoded ? "opacity-100" : "opacity-0"
+                }`}
+                draggable={false}
+                onLoadingComplete={onDecoded}
+              />
+            ) : (
+              <div className="absolute inset-0 p-8 sm:p-12 lg:p-16">
+                <DroneVisual drone={{ name: drone.name }} onLoad={onDecoded} />
+              </div>
+            )
+          ) : null
+        }
+      </StickyLoadedImage>
 
       <div className="absolute inset-0 rounded-[inherit]" />
     </div>
@@ -231,6 +259,13 @@ function getDroneSlides(drone: Drone) {
 
   return images.map((image, index) => ({
     key: `${drone.slug}-${image ?? "placeholder"}-${index}`,
-    content: <DroneSlide drone={drone} image={image} index={index} />,
+    renderContent: ({ isNearActive }: { isNearActive: boolean }) => (
+      <DroneSlide
+        drone={drone}
+        image={image}
+        index={index}
+        loadImage={isNearActive}
+      />
+    ),
   }));
 }

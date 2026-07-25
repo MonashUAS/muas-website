@@ -13,6 +13,7 @@ import {
   useSearchNavigation,
   useSearchRevealController,
 } from "@/global-components/search/search-navigation-provider";
+import { isCircularNear } from "@/lib/is-circular-near";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 const AUTOPLAY_INTERVAL_MS = 4800;
@@ -22,7 +23,11 @@ const SWIPE_THRESHOLD_PX = 48;
 
 export type SingleWindowCarouselSlide = {
   key: string;
-  content: ReactNode;
+  content?: ReactNode;
+  renderContent?: (state: {
+    isNearActive: boolean;
+    isActive: boolean;
+  }) => ReactNode;
   searchTargetId?: string;
 };
 
@@ -56,6 +61,7 @@ export function SingleWindowCarousel({
     clampIndex(initialIndex, slides.length),
   );
   const [isPaused, setIsPaused] = useState(false);
+  const [isInView, setIsInView] = useState(true);
   const dragStartXRef = useRef<number | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const isTransitioningRef = useRef(false);
@@ -71,9 +77,6 @@ export function SingleWindowCarousel({
     () => Array.from({ length: maxIndex + 1 }, (_, index) => index),
     [maxIndex],
   );
-  const activeDotClass = dotTone === "blue" ? "w-9 bg-blue-900" : "w-9 bg-blue-50";
-  const inactiveDotClass =
-    dotTone === "blue" ? "w-2.5 bg-blue-900/25" : "w-2.5 bg-white/25";
 
   useSearchRevealController(
     searchControllerId ?? "__single-window-carousel-unregistered",
@@ -216,7 +219,7 @@ export function SingleWindowCarousel({
   );
 
   useEffect(() => {
-    if (!autoplay || prefersReducedMotion || isPaused || maxIndex === 0) {
+    if (!autoplay || prefersReducedMotion || isPaused || !isInView || maxIndex === 0) {
       return;
     }
 
@@ -228,11 +231,31 @@ export function SingleWindowCarousel({
   }, [
     activeIndex,
     autoplay,
+    isInView,
     isPaused,
     maxIndex,
     navigateToSlide,
     prefersReducedMotion,
   ]);
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+
+    if (!carousel || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { rootMargin: "120px 0px" },
+    );
+
+    observer.observe(carousel);
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -309,7 +332,19 @@ export function SingleWindowCarousel({
               transform: `translate3d(${slideOffset}, 0, 0)`,
             }}
           >
-            {slides.map((slide) => (
+            {slides.map((slide, index) => {
+              const isNearActive = isCircularNear(
+                index,
+                activeIndex,
+                slides.length,
+                1,
+              );
+              const isActive = index === activeIndex;
+              const content =
+                slide.renderContent?.({ isNearActive, isActive }) ??
+                slide.content;
+
+              return (
               <div
                 key={slide.key}
                 data-search-target-id={slide.searchTargetId}
@@ -317,9 +352,10 @@ export function SingleWindowCarousel({
                 data-search-slide-key={slide.key}
                 className="shrink-0 basis-full overflow-hidden rounded-[1.5rem]"
               >
-                {slide.content}
+                {content}
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -345,17 +381,27 @@ export function SingleWindowCarousel({
       <div className="mt-7 flex justify-center gap-2">
         {pageIndexes.map((pageIndex) => {
           const isActive = pageIndex === activeIndex;
+          const fillClass =
+            dotTone === "blue" ? "bg-blue-900" : "bg-blue-50";
+          const trackClass =
+            dotTone === "blue" ? "bg-blue-900/25" : "bg-white/25";
 
           return (
             <button
               key={pageIndex}
               type="button"
               onClick={() => navigateToSlide(pageIndex)}
-              className={`h-2.5 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${isActive ? activeDotClass : inactiveDotClass
-                }`}
+              className={`relative h-2.5 w-9 overflow-hidden rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${trackClass}`}
               aria-label={getDotLabel(pageIndex)}
               aria-current={isActive ? "true" : undefined}
-            />
+            >
+              <span
+                aria-hidden
+                className={`absolute inset-y-0 left-0 w-full origin-left rounded-full transition-transform duration-300 ease-out motion-reduce:transition-none ${fillClass} ${
+                  isActive ? "scale-x-100" : "scale-x-[0.28]"
+                }`}
+              />
+            </button>
           );
         })}
       </div>

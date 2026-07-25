@@ -73,7 +73,7 @@ function ModelCanvas({ src }: { src: string }) {
         <FeatureModel key={src} src={src} />
         <Environment preset="night" />
       </Suspense>
-      <OrbitControls />
+      <OrbitControls enableZoom={false} />
     </Canvas>
   );
 }
