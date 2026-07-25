@@ -43,9 +43,9 @@ export const projects: Project[] = [
     summary:
       "Aerostructures develops and manufactures Redback's airframe, creating a lightweight and mission-specific platform capable of meeting the performance requirements of the SUAS competition.",
     leadLabel: "Team lead",
-    leads: ["Lochlan Challis"],
+    leads: ["Lochlan Challis", "Chee Yong"],
     memberLabel: "Team members",
-    members: ["Sota Kawasaki"],
+    members: ["Sota Kawasaki", "Dimitris Bertakis", "Reuben Kobier", "Zi Song", "George Vasiliadis"],
     keyDecisions: [
       {
         title: "Carbon-fibre airframe",

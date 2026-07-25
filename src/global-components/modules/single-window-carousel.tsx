@@ -14,6 +14,7 @@ import {
   useSearchRevealController,
 } from "@/global-components/search/search-navigation-provider";
 import { isCircularNear } from "@/lib/is-circular-near";
+import { useCarouselAutoplay } from "@/lib/use-carousel-autoplay";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 const AUTOPLAY_INTERVAL_MS = 4800;
@@ -61,7 +62,6 @@ export function SingleWindowCarousel({
     clampIndex(initialIndex, slides.length),
   );
   const [isPaused, setIsPaused] = useState(false);
-  const [isInView, setIsInView] = useState(true);
   const dragStartXRef = useRef<number | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const isTransitioningRef = useRef(false);
@@ -218,44 +218,20 @@ export function SingleWindowCarousel({
     [maxIndex, prefersReducedMotion, slides.length],
   );
 
-  useEffect(() => {
-    if (!autoplay || prefersReducedMotion || isPaused || !isInView || maxIndex === 0) {
-      return;
-    }
+  const goToNextSlide = useCallback(() => {
+    navigateToSlide(activeIndex + 1);
+  }, [activeIndex, navigateToSlide]);
 
-    const interval = window.setInterval(() => {
-      navigateToSlide(activeIndex + 1);
-    }, AUTOPLAY_INTERVAL_MS);
-
-    return () => window.clearInterval(interval);
-  }, [
+  useCarouselAutoplay({
+    enabled: autoplay,
+    intervalMs: AUTOPLAY_INTERVAL_MS,
     activeIndex,
-    autoplay,
-    isInView,
-    isPaused,
     maxIndex,
-    navigateToSlide,
     prefersReducedMotion,
-  ]);
-
-  useEffect(() => {
-    const carousel = carouselRef.current;
-
-    if (!carousel || typeof IntersectionObserver === "undefined") {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsInView(entry.isIntersecting);
-      },
-      { rootMargin: "120px 0px" },
-    );
-
-    observer.observe(carousel);
-
-    return () => observer.disconnect();
-  }, []);
+    isInteractionPaused: isPaused,
+    containerRef: carouselRef,
+    onAdvance: goToNextSlide,
+  });
 
   useEffect(() => {
     return () => {
@@ -267,10 +243,6 @@ export function SingleWindowCarousel({
 
   const goToPreviousSlide = () => {
     navigateToSlide(activeIndex - 1);
-  };
-
-  const goToNextSlide = () => {
-    navigateToSlide(activeIndex + 1);
   };
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {

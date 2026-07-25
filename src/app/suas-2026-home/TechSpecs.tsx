@@ -13,10 +13,11 @@ import { techSpecPanels } from "./tech-specs-data";
 import type { TechSpecPanelMetric } from "./tech-specs-data";
 
 const deployedPanelIndex = techSpecPanels.findIndex(
-  (panel) => panel.navTitle === "deployed",
+  (panel) => panel.navTitle.toLowerCase() === "deployed",
 );
 
-const fallbackTechSpecImage = "/images/redback-tech-specs/deployed.jpg";
+const fallbackTechSpecImage =
+  "/images/suas initiative page/technical specifications/Deployed.jpg";
 
 const metricGradientClass =
   "bg-gradient-to-b from-red-500 to-red-200 bg-clip-text text-transparent";

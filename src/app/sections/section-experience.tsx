@@ -177,9 +177,12 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
 function SectionHero({ section }: { section: TeamSection }) {
   const [requestedSlide, setRequestedSlide] = useState(0);
   const [visibleSlide, setVisibleSlide] = useState(0);
+  const [isInView, setIsInView] = useState(true);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(true);
   const prefersReducedMotion = usePrefersReducedMotion();
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
   const warmedVideoIndexesRef = useRef(new Set<number>());
+  const sectionRef = useRef<HTMLElement | null>(null);
   const heroMedia = section.heroMedia;
   const hasMultipleSlides = heroMedia.length > 1;
   const goToNextSlide = useCallback(() => {
@@ -189,6 +192,38 @@ function SectionHero({ section }: { section: TeamSection }) {
   useEffect(() => {
     warmedVideoIndexesRef.current.clear();
   }, [section.slug]);
+
+  useEffect(() => {
+    const element = sectionRef.current;
+
+    if (!element || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { rootMargin: "80px 0px" },
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const syncVisibility = () => {
+      setIsDocumentVisible(document.visibilityState !== "hidden");
+    };
+
+    syncVisibility();
+    document.addEventListener("visibilitychange", syncVisibility);
+
+    return () => {
+      document.removeEventListener("visibilitychange", syncVisibility);
+    };
+  }, []);
 
   // Warm only the upcoming video so inactive hero media stays off the network.
   useEffect(() => {
@@ -304,7 +339,9 @@ function SectionHero({ section }: { section: TeamSection }) {
     if (
       !hasMultipleSlides ||
       prefersReducedMotion ||
-      requestedSlide !== visibleSlide
+      requestedSlide !== visibleSlide ||
+      !isInView ||
+      !isDocumentVisible
     ) {
       return;
     }
@@ -322,6 +359,8 @@ function SectionHero({ section }: { section: TeamSection }) {
     goToNextSlide,
     hasMultipleSlides,
     heroMedia,
+    isDocumentVisible,
+    isInView,
     prefersReducedMotion,
     requestedSlide,
     visibleSlide,
@@ -335,8 +374,12 @@ function SectionHero({ section }: { section: TeamSection }) {
       prefersReducedMotion ||
       requestedSlide !== visibleSlide ||
       !visibleSlideData ||
-      visibleSlideData.type !== "video"
+      visibleSlideData.type !== "video" ||
+      !isInView ||
+      !isDocumentVisible
     ) {
+      const video = videoRefs.current[visibleSlide];
+      video?.pause();
       return;
     }
 
@@ -357,6 +400,8 @@ function SectionHero({ section }: { section: TeamSection }) {
     goToNextSlide,
     hasMultipleSlides,
     heroMedia,
+    isDocumentVisible,
+    isInView,
     prefersReducedMotion,
     requestedSlide,
     visibleSlide,
@@ -427,6 +472,7 @@ function SectionHero({ section }: { section: TeamSection }) {
   return (
     <section
       id="team-overview"
+      ref={sectionRef}
       className="relative isolate flex min-h-[100svh] scroll-mt-20 items-center justify-center overflow-hidden bg-black-500 px-6 pt-[var(--header-height)] text-white sm:px-10"
     >
       <div className="absolute inset-0 z-0">
