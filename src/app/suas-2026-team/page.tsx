@@ -12,7 +12,7 @@ import { TimelineWebField } from "./timeline-web-field";
 const teamHeroImage = "/images/suas-team-page/hero/hero-redback.jpg";
 
 const storyImage =
-  "/images/suas-team-page/why-we-built-redback/why-we-built-redback.jpg";
+  "/images/suas-team-page/why-we-built-redback/Why We Built Redback.JPG";
 
 const timelineWebImages = {
   spire: "/images/suas-team-page/production-timeline/timeline-web-spire.png",
