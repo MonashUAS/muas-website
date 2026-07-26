@@ -284,7 +284,7 @@ export const sections: TeamSection[] = [
       },
     ],
     leads: [
-      { name: "Alexi Rampono", image: portraits.alexiRampono },
+      { name: "Alexi Rampono Kelly", image: portraits.alexiRampono },
       { name: "Alistair Mclennan", image: portraits.alastairMclennan },
     ],
     nextSectionImage: {

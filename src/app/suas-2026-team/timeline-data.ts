@@ -63,7 +63,7 @@ export const timelineItems: TimelineItemContent[] = [
     objectPosition: "50% 35%",
   }),
   timelineItem({
-    date: "09/02/2026",
+    date: "9 February 2026",
     title: "CAD V2 Design Finished",
     body: "The airframe design was completed and released for manufacturing, giving the team a ready-to-build Redback V2 structure.",
     image: `${timelineImageDir}/CAD V2 Design Finished.webp`,
@@ -71,7 +71,7 @@ export const timelineItems: TimelineItemContent[] = [
     objectPosition: "50% 40%",
   }),
   timelineItem({
-    date: "16/02/2026",
+    date: "16 February 2026",
     title: "Redback V2 Frame Manufactured",
     body: "The Redback V2 airframe was manufactured and assembled in three days, turning the completed design into flight-ready structure.",
     image: `${timelineImageDir}/V2 Frame Manufactured.webp`,
@@ -87,7 +87,7 @@ export const timelineItems: TimelineItemContent[] = [
     objectPosition: "50% 35%",
   }),
   timelineItem({
-    date: "27/04/2026",
+    date: "27 April 2026",
     title: "First Mission Management Mock Run",
     body: "The team completed beta testing of the full mission management system for a real-life flight, bringing the operational workflow into one coordinated run.",
     image: `${timelineImageDir}/First Mission Management Mock Run.webp`,
@@ -161,7 +161,7 @@ export const timelineItems: TimelineItemContent[] = [
   timelineItem({
     date: "24 July 2026",
     title: "First Full Mock Competition Run",
-    body: "A future full mock run will rehearse the competition mission end to end, giving every subteam a shared test of readiness under realistic operating conditions.",
+    body: "The team conducted a full competition mock to fine tune the autonomous mission execution, ensuring every subteam had experience under realistic operating conditions.",
     image: `${timelineImageDir}/First Full Mock Competition Run.webp`,
     alt: "Full mock competition run for Redback",
     objectPosition: "50% 40%",

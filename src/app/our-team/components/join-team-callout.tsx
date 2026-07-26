@@ -29,7 +29,7 @@ export function JoinTeamCallout() {
           <div className="relative z-10 flex min-h-[30rem] items-center px-6 py-14 sm:min-h-[34rem] sm:px-10 lg:min-h-[38rem] lg:px-16">
             <div className="max-w-3xl">
               <h2 className="text-h6 font-black leading-[0.96] tracking-[-0.05em] text-white sm:text-h4">
-                Want To Become Part of The Team?
+                Want To Become Part of Our Team?
               </h2>
 
               <p className="mt-6 max-w-2xl text-b1 leading-relaxed text-blue-50 sm:text-subtitle sm:leading-relaxed">

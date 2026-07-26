@@ -58,7 +58,7 @@ function componentTargetCheck(
 
 export function getSearchValidationReport(documents: SearchDocument[]) {
   return [
-    textTargetCheck(documents, "Explore Our Sections", "homepage-sections-heading"),
+    textTargetCheck(documents, "Explore our sections", "homepage-sections-heading"),
     textTargetCheck(
       documents,
       "From operations to propulsion",

@@ -89,9 +89,9 @@ export const drones: Drone[] = [
   },
   {
     slug: "ibis",
-    name: "IBIS",
+    name: "Ibis",
     description: [
-      "IBIS is a MUAS development aircraft used to explore dependable flight systems, payload integration, and team flight operations.",
+      "Ibis is a MUAS development aircraft used to explore dependable flight systems, payload integration, and team flight operations.",
     ],
     heroImage: "/images/drones/ibis.webp",
     features: [

@@ -118,7 +118,7 @@ export const ourTeamSearchDocument: SearchDocument = {
       text: [
         textSearchContent({
           id: "heading",
-          text: "Want to become part of the team?",
+          text: "WWant To Become Part of Our Team?",
           componentTargetId: "join-team-callout",
           highlightTargetId: "join-team-callout-heading",
         }),
