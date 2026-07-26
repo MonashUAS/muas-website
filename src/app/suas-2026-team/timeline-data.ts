@@ -119,7 +119,7 @@ export const timelineItems: TimelineItemContent[] = [
     objectPosition: "50% 40%",
   }),
   timelineItem({
-    date: "In Progress",
+    date: "5 July 2026",
     title: "Physical Avoidance and Diversion Test",
     body: "The avoidance and diversion functions will be physically tested at flight days, moving the autonomy stack from simulation into real aircraft behavior.",
     image: `${timelineImageDir}/Physical Avoidance and Diversion Test.jpg`,
@@ -127,7 +127,7 @@ export const timelineItems: TimelineItemContent[] = [
     objectPosition: "50% 40%",
   }),
   timelineItem({
-    date: "In Progress",
+    date: "5 July 2026",
     title: "First Braking System Drop Simulation",
     body: "The Lifeline team simulated payload release and brought the payload down to the desired drop speed, validating the braking concept before field deployment.",
     image: `${timelineImageDir}/First Braking System Drop Simulation.JPG`,
@@ -135,7 +135,7 @@ export const timelineItems: TimelineItemContent[] = [
     objectPosition: "50% 45%",
   }),
   timelineItem({
-    date: "Date TBC",
+    date: "8 July 2026",
     title: "Propulsion Wiring Harness Repair",
     body: "The propulsion wiring harness on Redback had to be repaired under time pressure so the aircraft could be prepared for the upcoming flight day.",
     image: `${timelineImageDir}/First Successful Propulsion Test.JPG`,
@@ -143,7 +143,7 @@ export const timelineItems: TimelineItemContent[] = [
     objectPosition: "50% 45%",
   }),
   timelineItem({
-    date: "Future",
+    date: "10 July 2026",
     title: "Vision Detection and Payload Deployment",
     body: "A future integrated milestone will combine vision detection and payload deployment in one flight, bringing perception and mission execution together.",
     image: `${timelineImageDir}/Vision Detection and Payload Deployment.JPG`,
