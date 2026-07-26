@@ -26,14 +26,14 @@ export const explorePanels: ExplorePanel[] = [
     title: "Recruitment",
     href: "/recruitment",
     preview: "Help shape the next generation of drone technology with MUAS.",
-    image: "/images/homepage/quick-nav/recruitment.webp",
+    image: "/images/homepage/quick-nav/recruitment_updated3.webp",
     alt: "MUAS recruitment and outreach activity",
   },
   {
     title: "Sponsor Us",
     href: "/our-sponsors",
     preview: "See the partners supporting student-led aerospace innovation.",
-    image: "/images/homepage/quick-nav/sponsor-us.webp",
+    image: "/images/homepage/quick-nav/sponsor-us_updated2.webp",
     alt: "MUAS aircraft and team activity supported by sponsors",
   },
   {
@@ -41,7 +41,7 @@ export const explorePanels: ExplorePanel[] = [
     href: "/contact-us",
     preview:
       "Start a conversation with MUAS about partnerships, recruitment, or enquiries.",
-    image: "/images/homepage/quick-nav/contact-us.webp",
+    image: "/images/homepage/quick-nav/contact-us_updated.webp",
     alt: "MUAS members discussing aircraft systems",
   },
 ];
