@@ -69,7 +69,7 @@ export default function LoadingScreen({
             }}
           >
             <Image
-              src="/logos/redback-loading.png"
+              src="/logos/redback-loading.webp"
               alt=""
               width={spiderSize}
               height={spiderSize}

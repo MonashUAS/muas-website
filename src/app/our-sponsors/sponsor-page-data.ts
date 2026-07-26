@@ -6,21 +6,21 @@ export const sponsorBenefitItems = [
     title: "Access Student Talent",
     description:
       "Connect with highly motivated students across engineering, computing, design, operations, and aerospace disciplines who are building real uncrewed aircraft systems.",
-    image: "/images/sponsor us page/IMG_7527.JPG",
+    image: "/images/sponsor us page/IMG_7527.webp",
     alt: "MUAS students and industry visitors discussing an uncrewed aircraft in the workshop",
   },
   {
     title: "Gain Meaningful Exposure",
     description:
       "Showcase your brand across MUAS events, competitions, team apparel, digital channels, and public engagement activities.",
-    image: "/images/sponsor us page/XT300347.JPG",
+    image: "/images/sponsor us page/XT300347.webp",
     alt: "MUAS presentation screen at a public team event",
   },
   {
     title: "Support Aerospace Innovation",
     description:
       "Help students design, manufacture, test, and fly autonomous aircraft for real-world engineering challenges and international competitions.",
-    image: "/images/sponsor us page/DSC00686.JPG",
+    image: "/images/sponsor us page/DSC00686.webp",
     alt: "MUAS student working on composite aerospace components in the workshop",
   },
 ];

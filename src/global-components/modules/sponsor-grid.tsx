@@ -22,12 +22,12 @@ export const sponsorRows: SponsorRow[] = [
     sponsors: [
       {
         name: "Monash University",
-        src: "/images/sponsors/Monash University.png",
+        src: "/images/sponsors/Monash University.webp",
         frameClassName: "h-48 w-full max-w-[32rem] sm:h-52 lg:h-56",
       },
       {
         name: "CubePilot",
-        src: "/images/sponsors/Cube Pilot.png",
+        src: "/images/sponsors/Cube Pilot.webp",
         frameClassName: "h-52 w-full max-w-[26rem] sm:h-56 lg:h-60",
       },
     ],
@@ -37,17 +37,17 @@ export const sponsorRows: SponsorRow[] = [
     sponsors: [
       {
         name: "Stahl Metall Engineering",
-        src: "/images/sponsors/Stahl Metall.png",
+        src: "/images/sponsors/Stahl Metall.webp",
         frameClassName: "h-28 w-full max-w-[20rem]",
       },
       {
         name: "SUAS-ROV",
-        src: "/images/sponsors/Suas_Rov.png",
+        src: "/images/sponsors/Suas_Rov.webp",
         frameClassName: "h-40 w-full max-w-[11rem]",
       },
       {
         name: "Altium",
-        src: "/images/sponsors/Altium.png",
+        src: "/images/sponsors/Altium.webp",
         frameClassName: "h-24 w-full max-w-[19rem]",
       },
     ],
@@ -57,17 +57,17 @@ export const sponsorRows: SponsorRow[] = [
     sponsors: [
       {
         name: "Leap Australia",
-        src: "/images/sponsors/Leap.png",
+        src: "/images/sponsors/Leap.webp",
         frameClassName: "h-36 w-full max-w-[14rem]",
       },
       {
         name: "Milliamp Diode",
-        src: "/images/sponsors/Milliamp_Diode.png",
+        src: "/images/sponsors/Milliamp_Diode.webp",
         frameClassName: "h-32 w-full max-w-[18rem]",
       },
       {
         name: "Ironbark Composites",
-        src: "/images/sponsors/Ironbark_Composites.png",
+        src: "/images/sponsors/Ironbark_Composites.webp",
         frameClassName: "h-28 w-full max-w-[21rem]",
       },
     ],
@@ -77,7 +77,7 @@ export const sponsorRows: SponsorRow[] = [
     sponsors: [
       {
         name: "Ansys",
-        src: "/images/sponsors/Ansys.png",
+        src: "/images/sponsors/Ansys.webp",
         frameClassName: "h-28 w-full max-w-[19rem]",
       },
       {
@@ -87,7 +87,7 @@ export const sponsorRows: SponsorRow[] = [
       },
       {
         name: "SAGE",
-        src: "/images/sponsors/Sage.png",
+        src: "/images/sponsors/Sage.webp",
         frameClassName: "h-28 w-full max-w-[19rem]",
       },
     ],
@@ -97,17 +97,17 @@ export const sponsorRows: SponsorRow[] = [
     sponsors: [
       {
         name: "PTC",
-        src: "/images/sponsors/PTC (2).png",
+        src: "/images/sponsors/PTC (2).webp",
         frameClassName: "h-32 w-full max-w-[18rem]",
       },
       {
         name: "freedcamp",
-        src: "/images/sponsors/Freedcamp.png",
+        src: "/images/sponsors/Freedcamp.webp",
         frameClassName: "h-28 w-full max-w-[19rem]",
       },
       {
         name: "SIYI",
-        src: "/images/sponsors/SIYI.png",
+        src: "/images/sponsors/SIYI.webp",
         frameClassName: "h-32 w-full max-w-[18rem]",
       },
     ],
@@ -117,7 +117,7 @@ export const sponsorRows: SponsorRow[] = [
     sponsors: [
       {
         name: "Kiteaero",
-        src: "/images/sponsors/Copy of KITEAEROLOGO-BLACK.png",
+        src: "/images/sponsors/Copy of KITEAEROLOGO-BLACK.webp",
         frameClassName: "h-16 w-full max-w-[18rem]",
       },
     ],

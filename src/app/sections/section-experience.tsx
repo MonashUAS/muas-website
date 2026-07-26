@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { ProjectCarousel } from "@/app/sections/project-carousel";
 import { defaultPortraitPosition } from "@/app/our-team/data/portrait-assets";
 import { AnimatedTextHighlight } from "@/global-components/animated-text-highlight";
 import { headerContentContainerClass } from "@/global-components/layout/sidebar/navbar-classes";
 import { NextDestinationLink } from "@/global-components/next-destination-link";
+import { getVideoPosterSrc } from "@/lib/media-paths";
+import { usePreparedMediaSlideshow } from "@/lib/use-prepared-media-slideshow";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import type { SectionHeroMedia, SectionLead, TeamSection } from "./section-data";
 
@@ -14,138 +15,6 @@ type SectionExperienceProps = {
   nextSection: TeamSection;
   section: TeamSection;
 };
-
-const imageDurationMs = 5000;
-const mediaTransitionMs = 1000;
-const haveMetadata = 1;
-const haveFutureData = 3;
-const videoReadyTimeoutMs = 8000;
-const videoFrameTimeoutMs = 1200;
-
-type VideoWithFrameCallback = HTMLVideoElement & {
-  requestVideoFrameCallback?: (
-    callback: (now: DOMHighResTimeStamp, metadata: unknown) => void,
-  ) => number;
-  cancelVideoFrameCallback?: (handle: number) => void;
-};
-
-function waitForVideoEvent(
-  video: HTMLVideoElement,
-  eventName: string,
-  timeoutMs = videoReadyTimeoutMs,
-) {
-  return new Promise<void>((resolve, reject) => {
-    const timeout = window.setTimeout(() => {
-      cleanup();
-      reject(new Error(`Timed out waiting for section hero video ${eventName}.`));
-    }, timeoutMs);
-    const cleanup = () => {
-      window.clearTimeout(timeout);
-      video.removeEventListener(eventName, handleEvent);
-      video.removeEventListener("error", handleError);
-    };
-    const handleEvent = () => {
-      cleanup();
-      resolve();
-    };
-    const handleError = () => {
-      cleanup();
-      reject(new Error(`Section hero video failed before ${eventName}.`));
-    };
-
-    video.addEventListener(eventName, handleEvent, { once: true });
-    video.addEventListener("error", handleError, { once: true });
-  });
-}
-
-function waitForDecodedFrame(video: HTMLVideoElement) {
-  const videoWithFrameCallback = video as VideoWithFrameCallback;
-
-  return new Promise<void>((resolve) => {
-    if (videoWithFrameCallback.requestVideoFrameCallback) {
-      const timeout = window.setTimeout(() => {
-        if (videoWithFrameCallback.cancelVideoFrameCallback) {
-          videoWithFrameCallback.cancelVideoFrameCallback(callbackHandle);
-        }
-
-        resolve();
-      }, videoFrameTimeoutMs);
-      const callbackHandle = videoWithFrameCallback.requestVideoFrameCallback(
-        () => {
-          window.clearTimeout(timeout);
-          resolve();
-        },
-      );
-
-      return;
-    }
-
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => resolve());
-    });
-  });
-}
-
-async function resetVideoToStart(video: HTMLVideoElement) {
-  if (video.readyState < haveMetadata) {
-    video.load();
-    await waitForVideoEvent(video, "loadedmetadata");
-  }
-
-  if (Math.abs(video.currentTime) > 0.05) {
-    video.currentTime = 0;
-    await waitForVideoEvent(video, "seeked");
-  } else {
-    video.currentTime = 0;
-  }
-
-  if (video.readyState < haveFutureData) {
-    await waitForVideoEvent(video, "canplay");
-  }
-}
-
-async function startHiddenPlayback(video: HTMLVideoElement) {
-  const playPromise = video.play();
-
-  if (playPromise !== undefined) {
-    await playPromise;
-  }
-
-  if (video.paused) {
-    await waitForVideoEvent(video, "playing");
-  }
-
-  await waitForDecodedFrame(video);
-}
-
-async function warmVideo(video: HTMLVideoElement) {
-  await resetVideoToStart(video);
-  await startHiddenPlayback(video);
-  video.pause();
-  await resetVideoToStart(video);
-}
-
-async function prepareVideoForReveal(video: HTMLVideoElement) {
-  await resetVideoToStart(video);
-  await startHiddenPlayback(video);
-  video.pause();
-  await resetVideoToStart(video);
-}
-
-function getMountedSlideIndexes(
-  visibleSlide: number,
-  requestedSlide: number,
-  slideCount: number,
-) {
-  const indexes = new Set<number>([visibleSlide, requestedSlide]);
-
-  if (slideCount > 1) {
-    indexes.add((visibleSlide + 1) % slideCount);
-    indexes.add((visibleSlide - 1 + slideCount) % slideCount);
-  }
-
-  return indexes;
-}
 
 // SectionExperience renders the complete shared page layout for each MUAS team section.
 export function SectionExperience({ nextSection, section }: SectionExperienceProps) {
@@ -162,7 +31,7 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
           imageSrc={
             section.nextSectionImage?.src ??
             nextSection.projects[0]?.image ??
-            "/images/homepage/quick-nav/our-drones.jpg"
+            "/images/homepage/quick-nav/our-drones.webp"
           }
           imageAlt={`${nextSection.name} preview`}
           imageFit={section.nextSectionImage?.fit}
@@ -175,299 +44,21 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
 
 // SectionHero introduces each team section with full-bleed media and lead profiles.
 function SectionHero({ section }: { section: TeamSection }) {
-  const [requestedSlide, setRequestedSlide] = useState(0);
-  const [visibleSlide, setVisibleSlide] = useState(0);
-  const [isInView, setIsInView] = useState(true);
-  const [isDocumentVisible, setIsDocumentVisible] = useState(true);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
-  const warmedVideoIndexesRef = useRef(new Set<number>());
-  const sectionRef = useRef<HTMLElement | null>(null);
   const heroMedia = section.heroMedia;
-  const hasMultipleSlides = heroMedia.length > 1;
-  const goToNextSlide = useCallback(() => {
-    setRequestedSlide((currentIndex) => (currentIndex + 1) % heroMedia.length);
-  }, [heroMedia.length]);
-
-  useEffect(() => {
-    warmedVideoIndexesRef.current.clear();
-  }, [section.slug]);
-
-  useEffect(() => {
-    const element = sectionRef.current;
-
-    if (!element || typeof IntersectionObserver === "undefined") {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsInView(entry.isIntersecting);
-      },
-      { rootMargin: "80px 0px" },
-    );
-
-    observer.observe(element);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const syncVisibility = () => {
-      setIsDocumentVisible(document.visibilityState !== "hidden");
-    };
-
-    syncVisibility();
-    document.addEventListener("visibilitychange", syncVisibility);
-
-    return () => {
-      document.removeEventListener("visibilitychange", syncVisibility);
-    };
-  }, []);
-
-  // Warm only the upcoming video so inactive hero media stays off the network.
-  useEffect(() => {
-    if (
-      !hasMultipleSlides ||
-      prefersReducedMotion ||
-      requestedSlide !== visibleSlide
-    ) {
-      return;
-    }
-
-    const nextIndex = (visibleSlide + 1) % heroMedia.length;
-    const nextSlide = heroMedia[nextIndex];
-
-    if (
-      !nextSlide ||
-      nextSlide.type !== "video" ||
-      warmedVideoIndexesRef.current.has(nextIndex)
-    ) {
-      return;
-    }
-
-    const video = videoRefs.current[nextIndex];
-
-    if (!video) {
-      return;
-    }
-
-    let isCancelled = false;
-
-    const warmUpcomingVideo = async () => {
-      try {
-        await warmVideo(video);
-
-        if (!isCancelled) {
-          warmedVideoIndexesRef.current.add(nextIndex);
-        }
-      } catch {
-        warmedVideoIndexesRef.current.delete(nextIndex);
-      }
-    };
-
-    void warmUpcomingVideo();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [
+  const {
+    handleImageDecoded,
+    handleMediaError,
+    handleVideoEnded,
     hasMultipleSlides,
-    heroMedia,
+    mountedSlideIndexes,
+    registerVideoRef,
+    sectionRef,
+    visibleSlide,
+  } = usePreparedMediaSlideshow({
+    slides: heroMedia,
     prefersReducedMotion,
-    requestedSlide,
-    visibleSlide,
-  ]);
-
-  useEffect(() => {
-    if (
-      !hasMultipleSlides ||
-      prefersReducedMotion ||
-      requestedSlide === visibleSlide
-    ) {
-      return;
-    }
-
-    const incomingSlide = heroMedia[requestedSlide];
-
-    if (!incomingSlide || incomingSlide.type === "image") {
-      const animationFrame = window.requestAnimationFrame(() => {
-        setVisibleSlide(requestedSlide);
-      });
-
-      return () => window.cancelAnimationFrame(animationFrame);
-    }
-
-    const video = videoRefs.current[requestedSlide];
-
-    if (!video) {
-      goToNextSlide();
-      return;
-    }
-
-    let isCancelled = false;
-
-    const prepareIncomingVideo = async () => {
-      try {
-        await prepareVideoForReveal(video);
-
-        if (!isCancelled) {
-          setVisibleSlide(requestedSlide);
-        }
-      } catch {
-        if (!isCancelled) {
-          goToNextSlide();
-        }
-      }
-    };
-
-    void prepareIncomingVideo();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [
-    goToNextSlide,
-    hasMultipleSlides,
-    heroMedia,
-    prefersReducedMotion,
-    requestedSlide,
-    visibleSlide,
-  ]);
-
-  useEffect(() => {
-    if (
-      !hasMultipleSlides ||
-      prefersReducedMotion ||
-      requestedSlide !== visibleSlide ||
-      !isInView ||
-      !isDocumentVisible
-    ) {
-      return;
-    }
-
-    const visibleSlideData = heroMedia[visibleSlide];
-
-    if (!visibleSlideData || visibleSlideData.type !== "image") {
-      return;
-    }
-
-    const timeout = window.setTimeout(goToNextSlide, imageDurationMs);
-
-    return () => window.clearTimeout(timeout);
-  }, [
-    goToNextSlide,
-    hasMultipleSlides,
-    heroMedia,
-    isDocumentVisible,
-    isInView,
-    prefersReducedMotion,
-    requestedSlide,
-    visibleSlide,
-  ]);
-
-  useEffect(() => {
-    const visibleSlideData = heroMedia[visibleSlide];
-
-    if (
-      !hasMultipleSlides ||
-      prefersReducedMotion ||
-      requestedSlide !== visibleSlide ||
-      !visibleSlideData ||
-      visibleSlideData.type !== "video" ||
-      !isInView ||
-      !isDocumentVisible
-    ) {
-      const video = videoRefs.current[visibleSlide];
-      video?.pause();
-      return;
-    }
-
-    const video = videoRefs.current[visibleSlide];
-
-    if (!video) {
-      return;
-    }
-
-    const playPromise = video.play();
-
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        goToNextSlide();
-      });
-    }
-  }, [
-    goToNextSlide,
-    hasMultipleSlides,
-    heroMedia,
-    isDocumentVisible,
-    isInView,
-    prefersReducedMotion,
-    requestedSlide,
-    visibleSlide,
-  ]);
-
-  useEffect(() => {
-    if (prefersReducedMotion || !hasMultipleSlides) {
-      videoRefs.current.forEach((video) => video?.pause());
-      return;
-    }
-
-    const timeout = window.setTimeout(() => {
-      videoRefs.current.forEach((video, index) => {
-        if (index !== visibleSlide) {
-          video?.pause();
-        }
-      });
-    }, mediaTransitionMs);
-
-    return () => window.clearTimeout(timeout);
-  }, [hasMultipleSlides, prefersReducedMotion, visibleSlide]);
-
-  const handleMediaError = useCallback(
-    (index: number) => {
-      if (
-        hasMultipleSlides &&
-        !prefersReducedMotion &&
-        (index === requestedSlide || index === visibleSlide)
-      ) {
-        goToNextSlide();
-      }
-    },
-    [
-      goToNextSlide,
-      hasMultipleSlides,
-      prefersReducedMotion,
-      requestedSlide,
-      visibleSlide,
-    ],
-  );
-
-  const handleVideoEnded = useCallback(
-    (index: number) => {
-      if (
-        hasMultipleSlides &&
-        !prefersReducedMotion &&
-        index === visibleSlide &&
-        requestedSlide === visibleSlide
-      ) {
-        goToNextSlide();
-      }
-    },
-    [
-      goToNextSlide,
-      hasMultipleSlides,
-      prefersReducedMotion,
-      requestedSlide,
-      visibleSlide,
-    ],
-  );
-
-  const mountedSlideIndexes = getMountedSlideIndexes(
-    visibleSlide,
-    requestedSlide,
-    heroMedia.length,
-  );
+  });
 
   return (
     <section
@@ -494,12 +85,11 @@ function SectionHero({ section }: { section: TeamSection }) {
               <HeroMedia
                 isSingleSlide={!hasMultipleSlides}
                 media={media}
+                onImageDecoded={() => handleImageDecoded(index)}
                 onError={() => handleMediaError(index)}
                 onVideoEnded={() => handleVideoEnded(index)}
                 priority={index === 0}
-                refCallback={(element) => {
-                  videoRefs.current[index] = element;
-                }}
+                refCallback={registerVideoRef(index)}
               />
             </div>
           );
@@ -544,6 +134,7 @@ function SectionHero({ section }: { section: TeamSection }) {
 type HeroMediaProps = {
   isSingleSlide: boolean;
   media: SectionHeroMedia;
+  onImageDecoded: () => void;
   onError: () => void;
   onVideoEnded: () => void;
   priority: boolean;
@@ -553,6 +144,7 @@ type HeroMediaProps = {
 function HeroMedia({
   isSingleSlide,
   media,
+  onImageDecoded,
   onError,
   onVideoEnded,
   priority,
@@ -570,7 +162,9 @@ function HeroMedia({
         className="object-cover"
         fill
         onError={onError}
-        priority={priority}
+        onLoadingComplete={onImageDecoded}
+        preload={priority}
+        fetchPriority={priority ? "high" : "auto"}
         sizes="100vw"
         src={media.src}
         style={mediaStyle}
@@ -588,6 +182,7 @@ function HeroMedia({
       onEnded={onVideoEnded}
       onError={onError}
       playsInline
+      poster={getVideoPosterSrc(media.src)}
       preload={isSingleSlide ? "metadata" : "none"}
       ref={refCallback}
       src={media.src}
@@ -631,7 +226,13 @@ function Projects({ section }: { section: TeamSection }) {
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:86px_86px] opacity-24" />
 
       <div className={headerContentContainerClass}>
-        <h2 className="text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white">
+        <h2
+          id={`${section.slug}-responsibilities-heading`}
+          data-search-target-id={`${section.slug}-responsibilities-heading`}
+          data-search-managed="true"
+          data-search-highlight-mode="text"
+          className="text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white"
+        >
           Responsibilities
         </h2>
 

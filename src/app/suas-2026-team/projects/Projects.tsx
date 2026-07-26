@@ -7,21 +7,16 @@ import {
   useMemo,
   useRef,
   useState,
-  type PointerEvent,
 } from "react";
-import {
-  useSearchNavigation,
-  useSearchRevealController,
-} from "@/global-components/search/search-navigation-provider";
-import { useCarouselAutoplay } from "@/lib/use-carousel-autoplay";
+import { SingleWindowCarousel } from "@/global-components/modules/single-window-carousel";
+import { useSearchNavigation } from "@/global-components/search/search-navigation-provider";
+import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { ProjectInfoPanel } from "./project-info";
 import { placeholderImage, projects, type Project } from "./project-data";
 
-const AUTOPLAY_INTERVAL_MS = 4800;
-const CARD_TRANSITION_DURATION_MS = 700;
+const CARD_TRANSITION_DURATION_MS = 400;
 const SLIDE_GAP_PX = 24;
-const SWIPE_THRESHOLD_PX = 48;
 const SEARCH_CONTROLLER_ID = "redback-projects-carousel";
 const MIN_SCROLLBAR_THUMB_HEIGHT_PX = 48;
 const SCROLLBAR_TRACK_VERTICAL_INSET_PX = 32;
@@ -77,26 +72,31 @@ function RedbackTeamsCarousel() {
   const [activeIndex, setActiveIndex] = useState(() =>
     clampIndex(INITIAL_PROJECT_INDEX, projects.length),
   );
-
-  const [isPaused, setIsPaused] = useState(false);
   const [isCardTransitioning, setIsCardTransitioning] = useState(false);
-
   const [referenceCardHeight, setReferenceCardHeight] = useState<
     number | undefined
   >(undefined);
-
-  const dragStartXRef = useRef<number | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const transitionTimeoutRef = useRef<number | null>(null);
-
   const prefersReducedMotion = usePrefersReducedMotion();
   const { registerSearchTarget } = useSearchNavigation();
-
-  const maxIndex = Math.max(projects.length - 1, 0);
-
   const slideOffset = `calc(-${activeIndex * 100}% - ${
     activeIndex * SLIDE_GAP_PX
   }px)`;
+  const mediaSlides = useMemo(
+    () =>
+      projects.map((project, index) => ({
+        key: project.slug,
+        renderContent: ({ isNearActive }: { isNearActive: boolean }) => (
+          <ProjectImagePanel
+            project={project}
+            loadImage={isNearActive}
+            priority={index === INITIAL_PROJECT_INDEX}
+          />
+        ),
+      })),
+    [],
+  );
 
   const clearTransitionTimeout = useCallback(() => {
     if (transitionTimeoutRef.current === null) {
@@ -126,21 +126,14 @@ function RedbackTeamsCarousel() {
     [],
   );
 
-  const navigateToSlide = useCallback(
+  const handleActiveIndexChange = useCallback(
     (nextIndex: number) => {
-      if (projects.length === 0) {
-        return;
-      }
-
-      const normalizedIndex =
-        nextIndex < 0 ? maxIndex : nextIndex > maxIndex ? 0 : nextIndex;
-
-      if (normalizedIndex === activeIndex) {
+      if (nextIndex === activeIndex) {
         return;
       }
 
       clearTransitionTimeout();
-      setActiveIndex(normalizedIndex);
+      setActiveIndex(nextIndex);
 
       if (prefersReducedMotion) {
         setIsCardTransitioning(false);
@@ -154,54 +147,7 @@ function RedbackTeamsCarousel() {
         transitionTimeoutRef.current = null;
       }, CARD_TRANSITION_DURATION_MS);
     },
-    [
-      activeIndex,
-      clearTransitionTimeout,
-      maxIndex,
-      prefersReducedMotion,
-    ],
-  );
-
-  useSearchRevealController(
-    SEARCH_CONTROLLER_ID,
-    useMemo(
-      () => ({
-        reveal: (state) => {
-          const carouselInteraction = state.interactions?.find(
-            (interaction) =>
-              interaction.type === "carousel" &&
-              interaction.groupId === SEARCH_CONTROLLER_ID,
-          );
-
-          if (
-            !carouselInteraction &&
-            state.carousel?.id !== SEARCH_CONTROLLER_ID
-          ) {
-            return;
-          }
-
-          const requestedSlideId =
-            carouselInteraction?.value ?? state.carousel?.slideId;
-
-          const nextIndex = projects.findIndex(
-            (project) => project.slug === requestedSlideId,
-          );
-
-          if (nextIndex < 0) {
-            return;
-          }
-
-          if (transitionTimeoutRef.current !== null) {
-            window.clearTimeout(transitionTimeoutRef.current);
-            transitionTimeoutRef.current = null;
-          }
-
-          setIsCardTransitioning(false);
-          setActiveIndex(nextIndex);
-        },
-      }),
-      [],
-    ),
+    [activeIndex, clearTransitionTimeout, prefersReducedMotion],
   );
 
   useEffect(() => {
@@ -227,7 +173,10 @@ function RedbackTeamsCarousel() {
       return;
     }
 
-    const slideElement = carousel.querySelector<HTMLElement>(
+    const cardTrack = carousel.querySelector<HTMLElement>(
+      "[data-redback-project-card-track]",
+    );
+    const slideElement = cardTrack?.querySelector<HTMLElement>(
       `[data-search-slide-key="${activeProject.slug}"]`,
     );
 
@@ -297,139 +246,26 @@ function RedbackTeamsCarousel() {
     };
   }, [activeIndex]);
 
-  const goToNextSlide = useCallback(() => {
-    navigateToSlide(activeIndex + 1);
-  }, [activeIndex, navigateToSlide]);
-
-  useCarouselAutoplay({
-    enabled: true,
-    intervalMs: AUTOPLAY_INTERVAL_MS,
-    activeIndex,
-    maxIndex,
-    prefersReducedMotion,
-    isInteractionPaused: isPaused,
-    containerRef: carouselRef,
-    onAdvance: goToNextSlide,
-  });
-
-  const goToPreviousSlide = () => {
-    navigateToSlide(activeIndex - 1);
-  };
-
-  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    dragStartXRef.current = event.clientX;
-    setIsPaused(true);
-  };
-
-  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
-    const dragStartX = dragStartXRef.current;
-
-    dragStartXRef.current = null;
-    setIsPaused(false);
-
-    if (dragStartX === null) {
-      return;
-    }
-
-    const dragDistance = event.clientX - dragStartX;
-
-    if (Math.abs(dragDistance) < SWIPE_THRESHOLD_PX) {
-      return;
-    }
-
-    if (dragDistance < 0) {
-      goToNextSlide();
-    } else {
-      goToPreviousSlide();
-    }
-  };
-
-  const handlePointerCancel = () => {
-    dragStartXRef.current = null;
-    setIsPaused(false);
-  };
-
   return (
-    <div
-      ref={carouselRef}
-      className="w-full"
-      role="region"
-      aria-labelledby="redback-projects-heading"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onFocus={() => setIsPaused(true)}
-      onBlur={() => setIsPaused(false)}
-    >
+    <div ref={carouselRef} className="w-full">
+      <SingleWindowCarousel
+        slides={mediaSlides}
+        labelledBy="redback-projects-heading"
+        previousLabel="Show previous Redback team"
+        nextLabel="Show next Redback team"
+        getDotLabel={(pageIndex) =>
+          `View ${projects[pageIndex]?.name ?? "Redback team"}`
+        }
+        initialIndex={INITIAL_PROJECT_INDEX}
+        onActiveIndexChange={handleActiveIndexChange}
+        searchControllerId={SEARCH_CONTROLLER_ID}
+      />
+
       <div className="relative px-12 sm:px-16 lg:px-20">
-        <div
-          className="overflow-hidden rounded-[1.5rem]"
-          onPointerDown={handlePointerDown}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerCancel}
-        >
+        <div className="mt-6 overflow-hidden rounded-[1.5rem]">
           <div
-            className="flex touch-pan-y rounded-[1.5rem] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-            style={{
-              gap: `${SLIDE_GAP_PX}px`,
-              transform: `translate3d(${slideOffset}, 0, 0)`,
-            }}
-          >
-            {projects.map((project) => (
-              <div
-                key={project.slug}
-                className="shrink-0 basis-full overflow-hidden rounded-[1.5rem]"
-              >
-                <ProjectImagePanel project={project} />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={goToPreviousSlide}
-          className="absolute left-0 top-[140px] z-20 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white text-2xl text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:top-[190px] sm:h-12 sm:w-12 lg:top-[260px]"
-          aria-label="Show previous team"
-        >
-          ‹
-        </button>
-
-        <button
-          type="button"
-          onClick={goToNextSlide}
-          className="absolute right-0 top-[140px] z-20 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white text-2xl text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:top-[190px] sm:h-12 sm:w-12 lg:top-[260px]"
-          aria-label="Show next team"
-        >
-          ›
-        </button>
-
-        <div className="mt-5 flex h-3 justify-center gap-2 sm:mt-6">
-          {projects.map((project, pageIndex) => {
-            const isActive = pageIndex === activeIndex;
-
-            return (
-              <button
-                key={project.slug}
-                type="button"
-                onClick={() => navigateToSlide(pageIndex)}
-                className={`h-2.5 cursor-pointer rounded-full transition-[width,background-color] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 motion-reduce:transition-none ${
-                  isActive ? "w-9 bg-blue-50" : "w-2.5 bg-white/25"
-                }`}
-                aria-label={`View ${project.name} team`}
-                aria-current={isActive ? "true" : undefined}
-              />
-            );
-          })}
-        </div>
-
-        <div
-          className="mt-6 overflow-hidden rounded-[1.5rem]"
-          onPointerDown={handlePointerDown}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerCancel}
-        >
-          <div
-            className="flex touch-pan-y transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+            data-redback-project-card-track="true"
+            className="flex touch-pan-y transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
             style={{
               gap: `${SLIDE_GAP_PX}px`,
               transform: `translate3d(${slideOffset}, 0, 0)`,
@@ -686,23 +522,41 @@ function ScrollableProjectCard({
   );
 }
 
-function ProjectImagePanel({ project }: { project: Project }) {
+function ProjectImagePanel({
+  project,
+  loadImage,
+  priority,
+}: {
+  project: Project;
+  loadImage: boolean;
+  priority: boolean;
+}) {
   const image = project.images[0];
 
   return (
     <div className="relative h-[280px] overflow-hidden rounded-[1.5rem] bg-blue-950 sm:h-[380px] lg:h-[520px]">
       {image ? (
-        <Image
-          alt={`${project.name} team`}
-          src={image}
-          fill
-          sizes="(min-width: 1024px) 78vw, 100vw"
-          className="rounded-[inherit] object-cover"
-          draggable={false}
-          style={{
-            objectPosition: project.imagePosition ?? "50% 50%",
-          }}
-        />
+        <StickyLoadedImage shouldLoad={loadImage}>
+          {({ showImage, isDecoded, onDecoded }) =>
+            showImage ? (
+              <Image
+                alt={`${project.name} team`}
+                src={image}
+                fill
+                sizes="(min-width: 1024px) 78vw, 100vw"
+                priority={priority}
+                onLoadingComplete={onDecoded}
+                className={`rounded-[inherit] object-cover transition-opacity duration-500 ease-out motion-reduce:transition-none ${
+                  isDecoded ? "opacity-100" : "opacity-0"
+                }`}
+                draggable={false}
+                style={{
+                  objectPosition: project.imagePosition ?? "50% 50%",
+                }}
+              />
+            ) : null
+          }
+        </StickyLoadedImage>
       ) : (
         <div
           className="flex h-full w-full items-center justify-center p-8 text-center"

@@ -9,6 +9,7 @@ import {
   useSearchNavigation,
   useSearchTarget,
 } from "@/global-components/search/search-navigation-provider";
+import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 import type { Drone } from "./drone-data";
 import { DroneVisual } from "./drone-visual";
 import { SpecList } from "./spec-list";
@@ -90,7 +91,7 @@ export function DroneDetailsModal({ drone, onClose }: DroneDetailsModalProps) {
       >
         <div className="absolute inset-0 z-0 overflow-hidden rounded-[inherit] bg-blue-100">
           <Image
-            src="/images/drones/clouds.jpg"
+            src="/images/drones/clouds.webp"
             alt=""
             fill
             sizes="100vw"
@@ -209,14 +210,21 @@ function DroneSlide({
     <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[1.5rem] transform-gpu">
       {index === 0 ? (
         <div className="absolute inset-0">
-          <DroneVisual drone={drone} />
+          <DroneVisual drone={drone} priority={loadImage} />
         </div>
       ) : image ? (
-        <GalleryImage
-          alt={`${drone.name} gallery image ${index}`}
-          src={image}
-          sizes="(min-width: 1024px) 62vw, 100vw"
-        />
+        <StickyLoadedImage shouldLoad={loadImage ?? false}>
+          {({ showImage, onDecoded }) =>
+            showImage ? (
+              <GalleryImage
+                alt={`${drone.name} gallery image ${index}`}
+                src={image}
+                sizes="(min-width: 1024px) 42rem, 100vw"
+                onLoad={onDecoded}
+              />
+            ) : null
+          }
+        </StickyLoadedImage>
       ) : (
         <div className="absolute inset-0 p-8 sm:p-12 lg:p-16">
           <DroneVisual drone={{ name: drone.name }} />

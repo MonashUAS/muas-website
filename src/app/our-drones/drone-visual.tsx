@@ -13,6 +13,7 @@ type DroneVisualProps = {
 export function DroneVisual({
   drone,
   className = "",
+  priority = false,
   onLoad,
 }: DroneVisualProps) {
   useEffect(() => {
@@ -30,7 +31,8 @@ export function DroneVisual({
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="drop-shadow-2xl"
           objectFit="contain"
-          priority
+          priority={priority}
+          onLoad={onLoad}
         />
       </div>
     );

@@ -50,7 +50,7 @@ export function OurTeamMission() {
               <div className="absolute -inset-8 bg-blue-500/15 blur-3xl" />
 
               <Image
-                src="/images/our team page/our mission/our mission.JPG"
+                src="/images/our team page/our mission/our mission.webp"
                 alt="Monash UAS members gathered around an aircraft display"
                 fill
                 sizes="(min-width:1024px) 62vw, 100vw"

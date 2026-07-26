@@ -1,3 +1,7 @@
+import { getVideoPosterSrc } from "@/lib/media-paths";
+
+const redbackVideoSrc = "/videos/redback-video.mp4";
+
 export function Video() {
   return (
     <section className="relative grid place-items-center overflow-hidden bg-black px-4 py-6 text-white sm:min-h-[62svh] sm:px-6 sm:py-10 lg:min-h-[72svh] lg:px-8 lg:py-14">
@@ -6,7 +10,8 @@ export function Video() {
       <div className="relative z-10 flex aspect-video w-full max-w-[1600px] items-center justify-center overflow-hidden border border-red-900/90 bg-black">
         <video
           className="h-full w-full object-contain"
-          src="/videos/redback-video.mp4"
+          src={redbackVideoSrc}
+          poster={getVideoPosterSrc(redbackVideoSrc)}
           autoPlay
           loop
           muted

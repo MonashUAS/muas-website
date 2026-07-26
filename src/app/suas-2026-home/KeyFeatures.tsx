@@ -16,6 +16,7 @@ import {
   useSearchNavigation,
   useSearchRevealController,
 } from "@/global-components/search/search-navigation-provider";
+import { getVideoPosterSrc } from "@/lib/media-paths";
 
 import { keyFeatures } from "./key-features-data";
 import type { KeyFeature } from "./key-features-data";
@@ -81,7 +82,7 @@ function ModelCanvas({ src }: { src: string }) {
 function StaticModelFallback() {
   return (
     <Image
-      src="/models/redback.png"
+      src="/models/redback.webp"
       alt="Redback rendering"
       fill
       sizes="(max-width: 1024px) 100vw, 50vw"
@@ -98,6 +99,7 @@ function FeatureVideo({ src }: { src: string }) {
       key={src}
       className="absolute inset-0 h-full w-full object-cover"
       src={src}
+      poster={getVideoPosterSrc(src)}
       autoPlay
       loop
       muted

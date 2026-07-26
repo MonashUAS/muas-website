@@ -34,7 +34,7 @@ export const projects: Project[] = [
     ],
     keyDecisions: [],
     images: [
-      "/images/suas-team-page/our-redback-projects/upper-management.JPG",
+      "/images/suas-team-page/our-redback-projects/upper-management.webp",
     ],
   },
   {
@@ -57,7 +57,7 @@ export const projects: Project[] = [
       },
     ],
     images: [
-      "/images/suas-team-page/our-redback-projects/aerostructures.JPG",
+      "/images/suas-team-page/our-redback-projects/aerostructures.webp",
     ],
   },
   {
@@ -77,7 +77,7 @@ export const projects: Project[] = [
         body: "The system asserts control through a companion computer while the aircraft operates in guided mode, allowing position, velocity and acceleration setpoints to be issued. Control can be revoked immediately through a flight-mode switch, preserving a direct safety override.",
       },
     ],
-    images: ["/images/suas-team-page/our-redback-projects/DNA.png"],
+    images: ["/images/suas-team-page/our-redback-projects/DNA.webp"],
   },
   {
     name: "Flight Operations",
@@ -110,7 +110,7 @@ export const projects: Project[] = [
       },
     ],
     images: [
-      "/images/suas-team-page/our-redback-projects/flight-operations.JPG",
+      "/images/suas-team-page/our-redback-projects/flight-operations.webp",
     ],
   },
   {
@@ -134,7 +134,7 @@ export const projects: Project[] = [
     ],
     testingProcess:
       "The team bench-tests the control system and release mechanism as part of its pre-flight safety checks. Payload releases are then tested from the aircraft during flight to replicate mission conditions, while digital simulation supports the selection of components that control descent speed and delivery time.",
-    images: ["/images/suas-team-page/our-redback-projects/lifeline.JPG"],
+    images: ["/images/suas-team-page/our-redback-projects/lifeline.webp"],
   },
   {
     name: "Mission Management",
@@ -152,7 +152,7 @@ export const projects: Project[] = [
       },
     ],
     images: [
-      "/images/suas-team-page/our-redback-projects/mission_management_redback_related.jpg",
+      "/images/suas-team-page/our-redback-projects/mission_management_redback_related.webp",
     ],
   },
   {
@@ -163,7 +163,7 @@ export const projects: Project[] = [
     leadLabel: "Pilots",
     leads: ["Tom Machin", "Adwik Ghosh", "Sean Ashton"],
     keyDecisions: [],
-    images: ["/images/suas-team-page/our-redback-projects/pilots.jpg"],
+    images: ["/images/suas-team-page/our-redback-projects/pilots.webp"],
   },
   {
     name: "Propulsion",
@@ -180,7 +180,7 @@ export const projects: Project[] = [
         body: "The efficiency limitations of readily available propellers created concerns around achievable flight time. Custom propulsion components were therefore selected to improve energy efficiency and address Redback's endurance requirements.",
       },
     ],
-    images: ["/images/suas-team-page/our-redback-projects/propulsion.JPG"],
+    images: ["/images/suas-team-page/our-redback-projects/propulsion.webp"],
   },
   {
     name: "Stack",
@@ -203,6 +203,6 @@ export const projects: Project[] = [
         body: "The power harness distributes regulated power from the main battery to systems including the flight controller, communications hardware and sensors. It protects sensitive electronics from voltage instability and allows each subsystem to receive reliable power without requiring separate batteries.",
       },
     ],
-    images: ["/images/suas-team-page/our-redback-projects/stack.JPG"],
+    images: ["/images/suas-team-page/our-redback-projects/stack.webp"],
   },
 ];

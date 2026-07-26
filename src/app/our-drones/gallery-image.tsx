@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
 
 type GalleryImageProps = {
   src: string;
@@ -12,6 +11,7 @@ type GalleryImageProps = {
   className?: string;
   priority?: boolean;
   objectFit?: "cover" | "contain";
+  onLoad?: () => void;
 };
 
 // GalleryImage renders an optimized image with GPU-accelerated smooth loading states and a lightweight loader spinner.
@@ -23,17 +23,16 @@ export function GalleryImage({
   className = "",
   priority = false,
   objectFit = "cover",
+  onLoad,
 }: GalleryImageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-[inherit] transform-gpu">
-      {/* Lightweight skeleton pulse & spinner overlay */}
+      {/* Keep a stable paint surface while near-active carousel images decode. */}
       {isLoading && !hasError && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center animate-pulse transform-gpu">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-900/70 sm:h-10 sm:w-10" />
-        </div>
+        <div className="absolute inset-0 z-10 bg-blue-100/40 transform-gpu" />
       )}
 
       {/* Error state fallback */}
@@ -49,10 +48,14 @@ export function GalleryImage({
           sizes={sizes}
           priority={priority}
           draggable={false}
+          decoding="async"
           className={`rounded-[inherit] transform-gpu will-change-[opacity] transition-opacity duration-300 ease-out ${
             objectFit === "contain" ? "object-contain" : "object-cover"
           } ${isLoading ? "opacity-0" : "opacity-100"} ${className}`}
-          onLoad={() => setIsLoading(false)}
+          onLoadingComplete={() => {
+            setIsLoading(false);
+            onLoad?.();
+          }}
           onError={() => {
             setIsLoading(false);
             setHasError(true);

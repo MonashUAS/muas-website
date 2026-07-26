@@ -1,276 +1,49 @@
 "use client";
 
 import Image from "next/image";
-import {
-  type PointerEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
+import { useMemo } from "react";
 import type { SectionProject } from "@/app/sections/section-data";
-import {
-  useSearchNavigation,
-  useSearchRevealController,
-} from "@/global-components/search/search-navigation-provider";
-import { isCircularNear } from "@/lib/is-circular-near";
+import { SingleWindowCarousel } from "@/global-components/modules/single-window-carousel";
 import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
-import { useCarouselAutoplay } from "@/lib/use-carousel-autoplay";
-import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 type ProjectCarouselProps = {
   projects: SectionProject[];
   sectionSlug: string;
 };
 
-const carouselTransitionMs = 700;
-const slideGapPx = 24;
-const swipeThresholdPx = 48;
-const autoplayIntervalMs = 4800;
-
 // ProjectCarousel follows the homepage carousel pattern for section responsibility slides.
 export function ProjectCarousel({ projects, sectionSlug }: ProjectCarouselProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const dragStartXRef = useRef<number | null>(null);
-  const carouselRef = useRef<HTMLDivElement | null>(null);
-  const { registerSearchTarget } = useSearchNavigation();
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const slideIndexes = useMemo(
-    () => Array.from({ length: projects.length }, (_, index) => index),
-    [projects.length],
+  const slides = useMemo(
+    () =>
+      projects.map((project, index) => ({
+        key: project.slug,
+        searchTargetId: `${sectionSlug}-project-${project.slug}`,
+        renderContent: ({ isNearActive }: { isNearActive: boolean }) => (
+          <ProjectSlide
+            index={index}
+            loadImage={isNearActive}
+            project={project}
+            sectionSlug={sectionSlug}
+          />
+        ),
+      })),
+    [projects, sectionSlug],
   );
-  const maxIndex = Math.max(projects.length - 1, 0);
-  const slideOffset = `calc(-${activeIndex * 100}% - ${
-    activeIndex * slideGapPx
-  }px)`;
-
-  const navigateToSlide = useCallback(
-    (index: number) => {
-      setActiveIndex(wrapIndex(index, projects.length));
-    },
-    [projects.length],
-  );
-
-  const goToNextSlide = useCallback(() => {
-    navigateToSlide(activeIndex + 1);
-  }, [activeIndex, navigateToSlide]);
-
-  useCarouselAutoplay({
-    enabled: true,
-    intervalMs: autoplayIntervalMs,
-    activeIndex,
-    maxIndex,
-    prefersReducedMotion,
-    isInteractionPaused: isPaused,
-    containerRef: carouselRef,
-    onAdvance: goToNextSlide,
-  });
-
-  useSearchRevealController(
-    `${sectionSlug}-projects-carousel`,
-    useMemo(
-      () => ({
-        reveal: (state) => {
-          const carouselInteraction = state.interactions?.find(
-            (interaction) =>
-              interaction.type === "carousel" &&
-              interaction.groupId === `${sectionSlug}-projects-carousel`,
-          );
-
-          if (
-            !carouselInteraction &&
-            state.carousel?.id !== `${sectionSlug}-projects-carousel`
-          ) {
-            return;
-          }
-
-          const nextIndex = projects.findIndex(
-            (project) =>
-              project.slug ===
-              (carouselInteraction?.value ?? state.carousel?.slideId),
-          );
-
-          if (nextIndex >= 0) {
-            setActiveIndex(nextIndex);
-          }
-        },
-      }),
-      [projects, sectionSlug],
-    ),
-  );
-
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    const activeProject = projects[activeIndex];
-
-    if (!carousel || !activeProject) {
-      return;
-    }
-
-    const targetIds = [
-      {
-        id: `${sectionSlug}-project-${activeProject.slug}`,
-        mode: "component" as const,
-      },
-      {
-        id: `${sectionSlug}-project-${activeProject.slug}-heading`,
-        mode: "text" as const,
-      },
-      {
-        id: `${sectionSlug}-project-${activeProject.slug}-description`,
-        mode: "text" as const,
-      },
-    ];
-    const cleanups = targetIds.flatMap(({ id, mode }) => {
-      const element = carousel.querySelector<HTMLElement>(
-        `[data-search-target-id="${id}"]`,
-      );
-
-      return element
-        ? [
-            registerSearchTarget(id, {
-              element,
-              highlightMode: mode,
-            }),
-          ]
-        : [];
-    });
-
-    return () => cleanups.forEach((cleanup) => cleanup());
-  }, [activeIndex, projects, registerSearchTarget, sectionSlug]);
-
-  const goToPreviousSlide = () => {
-    navigateToSlide(activeIndex - 1);
-  };
-
-  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    dragStartXRef.current = event.clientX;
-    setIsPaused(true);
-  };
-
-  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
-    const dragStartX = dragStartXRef.current;
-    dragStartXRef.current = null;
-    setIsPaused(false);
-
-    if (dragStartX === null) {
-      return;
-    }
-
-    const dragDistance = event.clientX - dragStartX;
-
-    if (Math.abs(dragDistance) < swipeThresholdPx) {
-      return;
-    }
-
-    if (dragDistance < 0) {
-      goToNextSlide();
-    } else {
-      goToPreviousSlide();
-    }
-  };
 
   if (projects.length === 0) {
     return null;
   }
 
   return (
-    <div
-      aria-label="Section responsibilities"
-      className="mt-8 w-full sm:mt-10 lg:mt-12"
-      role="region"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onFocus={() => setIsPaused(true)}
-      onBlur={() => setIsPaused(false)}
-    >
-      <div className="relative px-10 sm:px-12 lg:px-14">
-        <div
-          ref={carouselRef}
-          className="overflow-hidden rounded-[1.5rem] border border-white/12 bg-white/[0.045]"
-          onPointerCancel={() => {
-            dragStartXRef.current = null;
-            setIsPaused(false);
-          }}
-          onPointerDown={handlePointerDown}
-          onPointerUp={handlePointerUp}
-        >
-          <div
-            className="flex touch-pan-y rounded-[1.5rem] transition-transform ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-            style={{
-              gap: `${slideGapPx}px`,
-              transform: `translate3d(${slideOffset}, 0, 0)`,
-              transitionDuration: `${carouselTransitionMs}ms`,
-            }}
-          >
-            {projects.map((project, index) => (
-              <div
-                className="h-[min(70svh,36rem)] shrink-0 basis-full overflow-hidden rounded-[1.5rem] sm:h-[min(72svh,38rem)] lg:h-[min(68svh,40rem)]"
-                key={project.name}
-                data-search-target-id={`${sectionSlug}-project-${project.slug}`}
-                data-search-managed="true"
-              >
-                <ProjectSlide
-                  index={index}
-                  loadImage={isCircularNear(
-                    index,
-                    activeIndex,
-                    projects.length,
-                    1,
-                  )}
-                  project={project}
-                  sectionSlug={sectionSlug}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <button
-          aria-label="Previous responsibility"
-          className="absolute left-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
-          onClick={goToPreviousSlide}
-          type="button"
-        >
-          <LuChevronLeft aria-hidden className="h-5 w-5" />
-        </button>
-
-        <button
-          aria-label="Next responsibility"
-          className="absolute right-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
-          onClick={goToNextSlide}
-          type="button"
-        >
-          <LuChevronRight aria-hidden className="h-5 w-5" />
-        </button>
-      </div>
-
-      <div className="mt-7 flex justify-center gap-2">
-        {slideIndexes.map((slideIndex) => {
-          const isActive = slideIndex === activeIndex;
-
-          return (
-            <button
-              aria-current={isActive ? "true" : undefined}
-              aria-label={`Show responsibility slide ${slideIndex + 1}`}
-              className="relative h-2.5 w-9 overflow-hidden rounded-full bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-              key={slideIndex}
-              onClick={() => navigateToSlide(slideIndex)}
-              type="button"
-            >
-              <span
-                aria-hidden
-                className={`absolute inset-y-0 left-0 w-full origin-left rounded-full bg-blue-50 transition-transform duration-300 ease-out motion-reduce:transition-none ${
-                  isActive ? "scale-x-100" : "scale-x-[0.28]"
-                }`}
-              />
-            </button>
-          );
-        })}
-      </div>
+    <div className="mt-8 w-full sm:mt-10 lg:mt-12">
+      <SingleWindowCarousel
+        slides={slides}
+        labelledBy={`${sectionSlug}-responsibilities-heading`}
+        previousLabel="Show previous responsibility"
+        nextLabel="Show next responsibility"
+        getDotLabel={(pageIndex) => `Show responsibility slide ${pageIndex + 1}`}
+        searchControllerId={`${sectionSlug}-projects-carousel`}
+      />
     </div>
   );
 }
@@ -285,7 +58,7 @@ type ProjectSlideProps = {
 // ProjectSlide keeps every responsibility inside one fixed-size card layout.
 function ProjectSlide({ index, loadImage, project, sectionSlug }: ProjectSlideProps) {
   return (
-    <article className="grid h-full grid-rows-[minmax(0,1.15fr)_minmax(0,0.85fr)] bg-[linear-gradient(155deg,rgba(255,255,255,0.08)_0%,rgba(84,134,200,0.09)_44%,rgba(0,31,73,0.38)_100%)] text-white lg:grid-cols-[minmax(0,0.58fr)_minmax(320px,0.42fr)] lg:grid-rows-none">
+    <article className="grid h-[min(70svh,36rem)] grid-rows-[minmax(0,1.15fr)_minmax(0,0.85fr)] bg-[linear-gradient(155deg,rgba(255,255,255,0.08)_0%,rgba(84,134,200,0.09)_44%,rgba(0,31,73,0.38)_100%)] text-white sm:h-[min(72svh,38rem)] lg:h-[min(68svh,40rem)] lg:grid-cols-[minmax(0,0.58fr)_minmax(320px,0.42fr)] lg:grid-rows-none">
       <div className="relative min-h-0 overflow-hidden bg-blue-900">
         <StickyLoadedImage shouldLoad={loadImage}>
           {({ showImage, isDecoded, onDecoded }) =>
@@ -336,9 +109,4 @@ function ProjectSlide({ index, loadImage, project, sectionSlug }: ProjectSlidePr
       </div>
     </article>
   );
-}
-
-// wrapIndex loops carousel indices around the available project range.
-function wrapIndex(index: number, length: number) {
-  return ((index % length) + length) % length;
 }

@@ -29,7 +29,7 @@ export const drones: Drone[] = [
     description: [
       "Redback is our latest competition aircraft (SUAS 2026), designed around rapid deployment and search-and-rescue mission capability.",
     ],
-    heroImage: "/images/drones/redback.png",
+    heroImage: "/images/drones/redback.webp",
     banner: {
       text: "SUAS 2026 Submission:",
       buttonText: "Learn More",
@@ -48,10 +48,10 @@ export const drones: Drone[] = [
       { label: "Maximum Take-Off Weight", value: "12.488 kg" },
     ],
     gallery: [
-      "/images/drones/redback/redback-2.jpg",
-      "/images/drones/redback/redback-3.jpg",
-      "/images/drones/redback/redback-4.JPG",
-      "/images/drones/redback/redback-7.JPG",
+      "/images/drones/redback/redback-2.webp",
+      "/images/drones/redback/redback-3.webp",
+      "/images/drones/redback/redback-4.webp",
+      "/images/drones/redback/redback-7.webp",
     ],
   },
   {
@@ -60,7 +60,7 @@ export const drones: Drone[] = [
     description: [
       "Featuring a 3.4 metre wingspan and a cruise-capable multirotor design, Peregrine Mk II is engineered for maximum endurance and range. The Peregrine Mk II had also recently debuted in the New Flying Competition 2025.",
     ],
-    heroImage: "/images/drones/peregrine.png",
+    heroImage: "/images/drones/peregrine.webp",
     features: [
       { label: "Payload Capacity", value: "3.7 kg || 17L" },
       { label: "Range", value: "64 km" },
@@ -78,12 +78,12 @@ export const drones: Drone[] = [
     ],
     gallery: [
       "/images/drones/peregrine/peregrine-1.jpg",
-      "/images/drones/peregrine/peregrine-2.JPG",
-      "/images/drones/peregrine/peregrine-4.JPG",
-      "/images/drones/peregrine/peregrine-5.JPG",
-      "/images/drones/peregrine/peregrine-6.JPG",
-      "/images/drones/peregrine/peregrine-7.JPG",
-      "/images/drones/peregrine/peregrine-8.JPG",
+      "/images/drones/peregrine/peregrine-2.webp",
+      "/images/drones/peregrine/peregrine-4.webp",
+      "/images/drones/peregrine/peregrine-5.webp",
+      "/images/drones/peregrine/peregrine-6.webp",
+      "/images/drones/peregrine/peregrine-7.webp",
+      "/images/drones/peregrine/peregrine-8.webp",
       "/images/drones/peregrine/peregrine-9.jpg",
     ],
   },
@@ -93,7 +93,7 @@ export const drones: Drone[] = [
     description: [
       "IBIS is a MUAS development aircraft used to explore dependable flight systems, payload integration, and team flight operations.",
     ],
-    heroImage: "/images/drones/ibis.png",
+    heroImage: "/images/drones/ibis.webp",
     features: [
       { label: "Payload Capacity", value: "1 kg" },
     ],
@@ -105,10 +105,10 @@ export const drones: Drone[] = [
       { label: "Maximum Take-Off Weight", value: "7.8 kg" },
     ],
     gallery: [
-      "/images/drones/ibis/ibis-1.jpg",
-      "/images/drones/ibis/ibis-2.jpg",
-      "/images/drones/ibis/ibis-3.jpg",
-      "/images/drones/ibis/ibis-4.jpg",
+      "/images/drones/ibis/ibis-1.webp",
+      "/images/drones/ibis/ibis-2.webp",
+      "/images/drones/ibis/ibis-3.webp",
+      "/images/drones/ibis/ibis-4.webp",
     ],
   },
   // {
@@ -157,7 +157,7 @@ export const drones: Drone[] = [
     description: [
       "Mosquito is a lightweight MUAS platform used for agile testing, prototyping, and quick iteration across the team's systems.",
     ],
-    heroImage: "/images/drones/mosquito.png",
+    heroImage: "/images/drones/mosquito.webp",
     features: [
       { label: "Payload Capacity", value: "0.7 kg" },
       { label: "Range", value: "2 km" },
@@ -179,7 +179,7 @@ export const drones: Drone[] = [
       "The Albatross is a hybrid power-lift airframe developed over a two-year period. Designed for search and rescue missions, it is capable of vertical takeoff and landing, and can transition into sustained forward flight using its 3 metre wingspan.",
       "This design combines the ability to hover in place, which is ideal for precise operations, and has the extended range and efficiency of a conventional fixed-wing aircraft.",
     ],
-    heroImage: "/images/drones/albatross.png",
+    heroImage: "/images/drones/albatross.webp",
     features: [
       { label: "Payload Capacity", value: "2.5 kg" },
       { label: "Range", value: "26.6 km" },
@@ -193,14 +193,14 @@ export const drones: Drone[] = [
       { label: "Maximum Take-Off Weight", value: "19 kg" },
     ],
     gallery: [
-      "/images/drones/albatross/albatross-1.jpg",
+      "/images/drones/albatross/albatross-1.webp",
       "/images/drones/albatross/albatross-2.jpg",
       "/images/drones/albatross/albatross-3.jpg",
-      "/images/drones/albatross/albatross-5.JPG",
-      "/images/drones/albatross/albatross-6.JPG",
-      "/images/drones/albatross/albatross-7.JPG",
-      "/images/drones/albatross/albatross-8.JPG",
-      "/images/drones/albatross/albatross-9.jpg",
+      "/images/drones/albatross/albatross-5.webp",
+      "/images/drones/albatross/albatross-6.webp",
+      "/images/drones/albatross/albatross-7.webp",
+      "/images/drones/albatross/albatross-8.webp",
+      "/images/drones/albatross/albatross-9.webp",
     ],
   },
   {
@@ -209,7 +209,7 @@ export const drones: Drone[] = [
     description: [
       "Hydra is a DJI S800 Hexa-copter drone configured to carry both the Vision and Gimbal systems.",
     ],
-    heroImage: "/images/drones/hydra.png",
+    heroImage: "/images/drones/hydra.webp",
     features: [
       { label: "Payload Capacity", value: "2.5 kg" },
       { label: "Range", value: "10 km" },
@@ -228,7 +228,7 @@ export const drones: Drone[] = [
     description: [
       "Kraken is a DJI S1000 Octo-copter drone configured to carry both the Lifeline and DNA systems.",
     ],
-    heroImage: "/images/drones/kraken.png",
+    heroImage: "/images/drones/kraken.webp",
     features: [
       { label: "Payload Capacity", value: "6 kg" },
       { label: "Max Altitude Range", value: "500 m" },

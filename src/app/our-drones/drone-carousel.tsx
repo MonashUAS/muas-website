@@ -105,7 +105,7 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
       {/* Background cloud image */}
       <div className="absolute inset-0 z-0 select-none opacity-40">
         <Image
-          src="/images/drones/clouds.jpg"
+          src="/images/drones/clouds.webp"
           alt="Sky background with clouds"
           fill
           sizes="100vw"

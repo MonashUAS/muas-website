@@ -9,16 +9,16 @@ import { timelineItems } from "./timeline-data";
 import { TimelineItem } from "./timeline-item";
 import { TimelineWebField } from "./timeline-web-field";
 
-const teamHeroImage = "/images/suas-team-page/hero/hero-redback.jpg";
+const teamHeroImage = "/images/suas-team-page/hero/hero-redback.webp";
 
 const storyImage =
-  "/images/suas-team-page/why-we-built-redback/Why We Built Redback.JPG";
+  "/images/suas-team-page/why-we-built-redback/Why We Built Redback.webp";
 
 const timelineWebImages = {
-  spire: "/images/suas-team-page/production-timeline/timeline-web-spire.png",
-  bridge: "/images/suas-team-page/production-timeline/timeline-web-bridge.png",
-  shelf: "/images/suas-team-page/production-timeline/timeline-web-shelf.png",
-  lattice: "/images/suas-team-page/production-timeline/timeline-web-lattice.png",
+  spire: "/images/suas-team-page/production-timeline/timeline-web-spire.webp",
+  bridge: "/images/suas-team-page/production-timeline/timeline-web-bridge.webp",
+  shelf: "/images/suas-team-page/production-timeline/timeline-web-shelf.webp",
+  lattice: "/images/suas-team-page/production-timeline/timeline-web-lattice.webp",
 };
 
 export default function SUAS2026TeamPage() {

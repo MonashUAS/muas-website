@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { headerContentContainerClass } from "@/global-components/layout/sidebar/navbar-classes";
 import { SingleWindowCarousel } from "@/global-components/modules/single-window-carousel";
 import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
@@ -11,21 +11,60 @@ import { homepageSections } from "../data/sections";
 // A dependency-free single-window carousel for the homepage team gallery.
 // Placeholder image paths are maintained in sections.ts.
 export function HomepageSectionsExplorer() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [prepareAllSlides, setPrepareAllSlides] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (prepareAllSlides || !section) {
+      return;
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      setPrepareAllSlides(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+
+        setPrepareAllSlides(true);
+        observer.disconnect();
+      },
+      {
+        rootMargin: "2400px 0px",
+        threshold: 0,
+      },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [prepareAllSlides]);
+
   const slides = useMemo(
     () =>
       homepageSections.map((section) => ({
         key: section.href,
         searchTargetId: `home-sections-${section.href.replaceAll("/", "-").replace(/^-/, "")}`,
         renderContent: ({ isNearActive }: { isNearActive: boolean }) => (
-          <SectionTile section={section} loadImage={isNearActive} />
+          <SectionTile
+            section={section}
+            loadImage={prepareAllSlides || isNearActive}
+          />
         ),
       })),
-    [],
+    [prepareAllSlides],
   );
 
   return (
     <section
       id="homepage-sections"
+      ref={sectionRef}
       className="bg-[linear-gradient(180deg,#02040a_0%,#001f49_46%,#02040a_100%)] py-20 text-white sm:py-24 lg:py-28"
       aria-labelledby="homepage-sections-heading"
     >

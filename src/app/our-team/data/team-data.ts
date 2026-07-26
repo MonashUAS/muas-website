@@ -21,7 +21,7 @@ export type TeamSection = {
 };
 
 export const temporaryImage = {
-  src: "/images/placeholder (to be replaced)/placeholder image.jpg",
+  src: "/images/placeholder (to be replaced)/placeholder image.webp",
   missionAlt: "Temporary placeholder for Monash UAS members working together",
 };
 

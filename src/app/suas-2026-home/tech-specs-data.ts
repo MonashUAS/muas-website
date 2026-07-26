@@ -25,7 +25,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     kicker: "Collapsed State",
     subtitle: "Dimensions",
     image: {
-      src: `${techSpecImageDir}/Collapsed.jpg`,
+      src: `${techSpecImageDir}/Collapsed.webp`,
       alt: "Redback aircraft collapsed state detail",
     },
     metrics: [
@@ -54,7 +54,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Aerostructure",
     subtitle: "Materials",
     image: {
-      src: `${techSpecImageDir}/Airframe.jpg`,
+      src: `${techSpecImageDir}/Airframe.webp`,
       alt: "Redback aircraft airframe materials detail",
     },
     metrics: [
@@ -68,7 +68,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Aerostructure",
     subtitle: "Weight",
     image: {
-      src: `${techSpecImageDir}/Weight.JPG`,
+      src: `${techSpecImageDir}/Weight.webp`,
       alt: "Redback aircraft weight specification detail",
     },
     metrics: [
@@ -81,7 +81,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Flight Performance",
     subtitle: "Range and Speed",
     image: {
-      src: `${techSpecImageDir}/Performance.jpg`,
+      src: `${techSpecImageDir}/Performance.webp`,
       alt: "Redback aircraft flight performance detail",
     },
     metrics: [
@@ -94,7 +94,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Stack and Propulsion",
     subtitle: "Power and Propulsion",
     image: {
-      src: `${techSpecImageDir}/Power.jpg`,
+      src: `${techSpecImageDir}/Power.webp`,
       alt: "Redback propulsion system detail",
     },
     metrics: [
@@ -110,7 +110,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Vision",
     subtitle: "Camera and Detection",
     image: {
-      src: `${techSpecImageDir}/Vision.jpg`,
+      src: `${techSpecImageDir}/Vision.webp`,
       alt: "Redback vision system detail",
     },
     metrics: [
@@ -130,7 +130,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Lifeline",
     subtitle: "Payload Delivery",
     image: {
-      src: `${techSpecImageDir}/Payload.JPG`,
+      src: `${techSpecImageDir}/Payload.webp`,
       alt: "Redback lifeline payload delivery detail",
     },
     metrics: [
@@ -146,7 +146,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Flight Operations",
     subtitle: "Controller",
     image: {
-      src: `${techSpecImageDir}/Controller.JPG`,
+      src: `${techSpecImageDir}/Controller.webp`,
       alt: "Redback flight controller detail",
     },
     metrics: [

@@ -2,392 +2,28 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { SearchableText } from "@/global-components/search/searchable-text";
+import { getVideoPosterSrc } from "@/lib/media-paths";
+import { usePreparedMediaSlideshow } from "@/lib/use-prepared-media-slideshow";
 import { heroSlides } from "../data/hero-slides";
 import { usePrefersReducedMotion } from "../utils/use-prefers-reduced-motion";
-
-const IMAGE_DURATION_MS = 5000;
-const MEDIA_TRANSITION_MS = 1000;
-const HAVE_METADATA = 1;
-const HAVE_FUTURE_DATA = 3;
-const VIDEO_READY_TIMEOUT_MS = 8000;
-const VIDEO_FRAME_TIMEOUT_MS = 1200;
-
-type VideoWithFrameCallback = HTMLVideoElement & {
-  requestVideoFrameCallback?: (
-    callback: (now: DOMHighResTimeStamp, metadata: unknown) => void,
-  ) => number;
-  cancelVideoFrameCallback?: (handle: number) => void;
-};
-
-function waitForVideoEvent(
-  video: HTMLVideoElement,
-  eventName: string,
-  timeoutMs = VIDEO_READY_TIMEOUT_MS,
-) {
-  return new Promise<void>((resolve, reject) => {
-    const timeout = window.setTimeout(() => {
-      cleanup();
-      reject(new Error(`Timed out waiting for hero video ${eventName}.`));
-    }, timeoutMs);
-    const cleanup = () => {
-      window.clearTimeout(timeout);
-      video.removeEventListener(eventName, handleEvent);
-      video.removeEventListener("error", handleError);
-    };
-    const handleEvent = () => {
-      cleanup();
-      resolve();
-    };
-    const handleError = () => {
-      cleanup();
-      reject(new Error(`Hero video failed before ${eventName}.`));
-    };
-
-    video.addEventListener(eventName, handleEvent, { once: true });
-    video.addEventListener("error", handleError, { once: true });
-  });
-}
-
-function waitForDecodedFrame(video: HTMLVideoElement) {
-  const videoWithFrameCallback = video as VideoWithFrameCallback;
-
-  return new Promise<void>((resolve) => {
-    if (videoWithFrameCallback.requestVideoFrameCallback) {
-      const timeout = window.setTimeout(() => {
-        if (videoWithFrameCallback.cancelVideoFrameCallback) {
-          videoWithFrameCallback.cancelVideoFrameCallback(callbackHandle);
-        }
-
-        resolve();
-      }, VIDEO_FRAME_TIMEOUT_MS);
-      const callbackHandle = videoWithFrameCallback.requestVideoFrameCallback(
-        () => {
-          window.clearTimeout(timeout);
-          resolve();
-        },
-      );
-
-      return;
-    }
-
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => resolve());
-    });
-  });
-}
-
-async function resetVideoToStart(video: HTMLVideoElement) {
-  if (video.readyState < HAVE_METADATA) {
-    video.load();
-    await waitForVideoEvent(video, "loadedmetadata");
-  }
-
-  if (Math.abs(video.currentTime) > 0.05) {
-    video.currentTime = 0;
-    await waitForVideoEvent(video, "seeked");
-  } else {
-    video.currentTime = 0;
-  }
-
-  if (video.readyState < HAVE_FUTURE_DATA) {
-    await waitForVideoEvent(video, "canplay");
-  }
-}
-
-async function startHiddenPlayback(video: HTMLVideoElement) {
-  const playPromise = video.play();
-
-  if (playPromise !== undefined) {
-    await playPromise;
-  }
-
-  if (video.paused) {
-    await waitForVideoEvent(video, "playing");
-  }
-
-  await waitForDecodedFrame(video);
-}
-
-async function warmVideo(video: HTMLVideoElement) {
-  await resetVideoToStart(video);
-  await startHiddenPlayback(video);
-  video.pause();
-  await resetVideoToStart(video);
-}
-
-async function prepareVideoForReveal(video: HTMLVideoElement) {
-  await resetVideoToStart(video);
-  await startHiddenPlayback(video);
-}
-
-function getMountedSlideIndexes(
-  visibleSlide: number,
-  requestedSlide: number,
-  slideCount: number,
-) {
-  const indexes = new Set<number>([visibleSlide, requestedSlide]);
-
-  if (slideCount > 1) {
-    indexes.add((visibleSlide + 1) % slideCount);
-    indexes.add((visibleSlide - 1 + slideCount) % slideCount);
-  }
-
-  return indexes;
-}
 
 // The homepage hero owns only slideshow behavior; slide content lives in data
 // so the media sequence can be updated without touching interaction code.
 export function HomepageHero() {
-  const [requestedSlide, setRequestedSlide] = useState(0);
-  const [visibleSlide, setVisibleSlide] = useState(0);
-  const [isInView, setIsInView] = useState(true);
-  const [isDocumentVisible, setIsDocumentVisible] = useState(true);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
-  const warmedVideoIndexesRef = useRef(new Set<number>());
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const goToNextSlide = useCallback(() => {
-    setRequestedSlide((currentIndex) => (currentIndex + 1) % heroSlides.length);
-  }, []);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-
-    if (!section || typeof IntersectionObserver === "undefined") {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsInView(entry.isIntersecting);
-      },
-      { rootMargin: "80px 0px" },
-    );
-
-    observer.observe(section);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const syncVisibility = () => {
-      setIsDocumentVisible(document.visibilityState !== "hidden");
-    };
-
-    syncVisibility();
-    document.addEventListener("visibilitychange", syncVisibility);
-
-    return () => {
-      document.removeEventListener("visibilitychange", syncVisibility);
-    };
-  }, []);
-
-  // Warm only the upcoming video so large .mov files do not contend with LCP.
-  useEffect(() => {
-    if (prefersReducedMotion || requestedSlide !== visibleSlide) {
-      return;
-    }
-
-    const nextIndex = (visibleSlide + 1) % heroSlides.length;
-    const nextSlide = heroSlides[nextIndex];
-
-    if (
-      !nextSlide ||
-      nextSlide.type !== "video" ||
-      warmedVideoIndexesRef.current.has(nextIndex)
-    ) {
-      return;
-    }
-
-    const video = videoRefs.current[nextIndex];
-
-    if (!video) {
-      return;
-    }
-
-    let isCancelled = false;
-
-    const warmUpcomingVideo = async () => {
-      try {
-        await warmVideo(video);
-
-        if (!isCancelled) {
-          warmedVideoIndexesRef.current.add(nextIndex);
-        }
-      } catch {
-        warmedVideoIndexesRef.current.delete(nextIndex);
-      }
-    };
-
-    void warmUpcomingVideo();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [prefersReducedMotion, requestedSlide, visibleSlide]);
-  useEffect(() => {
-    if (prefersReducedMotion || requestedSlide === visibleSlide) {
-      return;
-    }
-
-    const incomingSlide = heroSlides[requestedSlide];
-
-    if (!incomingSlide || incomingSlide.type === "image") {
-      const animationFrame = window.requestAnimationFrame(() => {
-        setVisibleSlide(requestedSlide);
-      });
-
-      return () => window.cancelAnimationFrame(animationFrame);
-    }
-
-    const video = videoRefs.current[requestedSlide];
-
-    if (!video) {
-      goToNextSlide();
-      return;
-    }
-
-    let isCancelled = false;
-
-    const prepareIncomingVideo = async () => {
-      try {
-        await prepareVideoForReveal(video);
-
-        if (!isCancelled) {
-          setVisibleSlide(requestedSlide);
-        }
-      } catch {
-        if (!isCancelled) {
-          goToNextSlide();
-        }
-      }
-    };
-
-    void prepareIncomingVideo();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide]);
-
-  // Image slides advance by fixed timer; video slides advance onEnded.
-  useEffect(() => {
-    if (
-      prefersReducedMotion ||
-      requestedSlide !== visibleSlide ||
-      !isInView ||
-      !isDocumentVisible
-    ) {
-      return;
-    }
-
-    const visibleSlideData = heroSlides[visibleSlide];
-
-    if (!visibleSlideData || visibleSlideData.type !== "image") {
-      return;
-    }
-
-    const timeout = window.setTimeout(goToNextSlide, IMAGE_DURATION_MS);
-
-    return () => window.clearTimeout(timeout);
-  }, [
-    goToNextSlide,
-    isDocumentVisible,
-    isInView,
+  const {
+    handleImageDecoded,
+    handleMediaError,
+    handleVideoEnded,
+    mountedSlideIndexes,
+    registerVideoRef,
+    sectionRef,
+    visibleSlide,
+  } = usePreparedMediaSlideshow({
+    slides: heroSlides,
     prefersReducedMotion,
-    requestedSlide,
-    visibleSlide,
-  ]);
-
-  useEffect(() => {
-    const visibleSlideData = heroSlides[visibleSlide];
-
-    if (
-      prefersReducedMotion ||
-      requestedSlide !== visibleSlide ||
-      !visibleSlideData ||
-      visibleSlideData.type !== "video" ||
-      !isInView ||
-      !isDocumentVisible
-    ) {
-      const video = videoRefs.current[visibleSlide];
-      video?.pause();
-      return;
-    }
-
-    const video = videoRefs.current[visibleSlide];
-
-    if (!video) {
-      return;
-    }
-
-    const playPromise = video.play();
-
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        goToNextSlide();
-      });
-    }
-  }, [
-    goToNextSlide,
-    isDocumentVisible,
-    isInView,
-    prefersReducedMotion,
-    requestedSlide,
-    visibleSlide,
-  ]);
-
-  useEffect(() => {
-    if (prefersReducedMotion) {
-      videoRefs.current.forEach((video) => video?.pause());
-      return;
-    }
-
-    const timeout = window.setTimeout(() => {
-      videoRefs.current.forEach((video, index) => {
-        if (index !== visibleSlide) {
-          video?.pause();
-        }
-      });
-    }, MEDIA_TRANSITION_MS);
-
-    return () => window.clearTimeout(timeout);
-  }, [prefersReducedMotion, visibleSlide]);
-
-  const handleMediaError = useCallback(
-    (index: number) => {
-      // If the active asset fails to load, skip forward so one file cannot freeze the hero.
-      if (
-        !prefersReducedMotion &&
-        (index === requestedSlide || index === visibleSlide)
-      ) {
-        goToNextSlide();
-      }
-    },
-    [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide],
-  );
-
-  const handleVideoEnded = useCallback(
-    (index: number) => {
-      // Videos advance from their natural ended event instead of replaying indefinitely.
-      if (
-        !prefersReducedMotion &&
-        index === visibleSlide &&
-        requestedSlide === visibleSlide
-      ) {
-        goToNextSlide();
-      }
-    },
-    [goToNextSlide, prefersReducedMotion, requestedSlide, visibleSlide],
-  );
-
-  const mountedSlideIndexes = getMountedSlideIndexes(
-    visibleSlide,
-    requestedSlide,
-    heroSlides.length,
-  );
+  });
 
   return (
     <section
@@ -417,17 +53,18 @@ export function HomepageHero() {
                   src={slide.src}
                   alt={slide.alt}
                   fill
-                  priority={index === 0}
+                  preload={index === 0}
+                  fetchPriority={index === 0 ? "high" : "auto"}
                   sizes="100vw"
                   className="object-cover"
+                  onLoadingComplete={() => handleImageDecoded(index)}
                   onError={() => handleMediaError(index)}
                 />
               ) : (
                 <video
-                  ref={(element) => {
-                    videoRefs.current[index] = element;
-                  }}
+                  ref={registerVideoRef(index)}
                   src={slide.src}
+                  poster={getVideoPosterSrc(slide.src)}
                   muted
                   playsInline
                   preload="none"

@@ -11,7 +11,7 @@ import LoadingScreen from "./LoadingScreen"
 
 const FRAME_COUNT = 420;
 const FRAME_PATH = "/images/redback-animation/";
-const PRELOAD_CONCURRENCY = 12;
+const PRELOAD_CONCURRENCY = 6;
 
 // Increase this value to make the scroll animation slower, or reduce it to make it faster.
 const SCROLL_LENGTH_VH = 1200;
@@ -226,7 +226,7 @@ function preloadFrames(onProgress: (loadedCount: number) => void) {
 
 // getFramePath formats the current frame number into the matching public image URL.
 function getFramePath(frame: number) {
-  return `${FRAME_PATH}${String(frame).padStart(4, "0")}.png`;
+  return `${FRAME_PATH}${String(frame).padStart(4, "0")}.webp`;
 }
 
 // clamp keeps scroll and opacity values inside a predictable range.

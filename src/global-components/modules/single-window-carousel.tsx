@@ -9,6 +9,7 @@ import {
   type PointerEvent,
   type ReactNode,
 } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   useSearchNavigation,
   useSearchRevealController,
@@ -62,17 +63,22 @@ export function SingleWindowCarousel({
     clampIndex(initialIndex, slides.length),
   );
   const [isPaused, setIsPaused] = useState(false);
+
   const dragStartXRef = useRef<number | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const isTransitioningRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
   const hasNotifiedParentRef = useRef(false);
+
   const prefersReducedMotion = usePrefersReducedMotion();
   const { registerSearchTarget } = useSearchNavigation();
 
   const maxIndex = Math.max(slides.length - 1, 0);
-  const slideOffset = `calc(-${activeIndex * 100}% - ${activeIndex * SLIDE_GAP_PX
-    }px)`;
+
+  const slideOffset = `calc(-${activeIndex * 100}% - ${
+    activeIndex * SLIDE_GAP_PX
+  }px)`;
+
   const pageIndexes = useMemo(
     () => Array.from({ length: maxIndex + 1 }, (_, index) => index),
     [maxIndex],
@@ -91,15 +97,17 @@ export function SingleWindowCarousel({
 
           if (
             !searchControllerId ||
-            (!carouselInteraction && state.carousel?.id !== searchControllerId)
+            (!carouselInteraction &&
+              state.carousel?.id !== searchControllerId)
           ) {
             return;
           }
 
+          const requestedSlideId =
+            carouselInteraction?.value ?? state.carousel?.slideId;
+
           const nextIndex = slides.findIndex(
-            (slide) =>
-              slide.key ===
-              (carouselInteraction?.value ?? state.carousel?.slideId),
+            (slide) => slide.key === requestedSlideId,
           );
 
           if (nextIndex < 0) {
@@ -121,8 +129,9 @@ export function SingleWindowCarousel({
   );
 
   useEffect(() => {
-    // Skip the mount notification — the parent already owns the initial index.
-    // Syncing during the first commit can race App Router transitions.
+    // Skip the mount notification because the parent already owns the
+    // initial index. Syncing during the first commit can race App Router
+    // transitions.
     if (!onActiveIndexChange) {
       return;
     }
@@ -182,7 +191,9 @@ export function SingleWindowCarousel({
         );
       });
 
-    return () => cleanups.forEach((cleanup) => cleanup());
+    return () => {
+      cleanups.forEach((cleanup) => cleanup());
+    };
   }, [activeIndex, registerSearchTarget, slides]);
 
   const navigateToSlide = useCallback(
@@ -222,6 +233,10 @@ export function SingleWindowCarousel({
     navigateToSlide(activeIndex + 1);
   }, [activeIndex, navigateToSlide]);
 
+  const goToPreviousSlide = useCallback(() => {
+    navigateToSlide(activeIndex - 1);
+  }, [activeIndex, navigateToSlide]);
+
   useCarouselAutoplay({
     enabled: autoplay,
     intervalMs: AUTOPLAY_INTERVAL_MS,
@@ -241,10 +256,6 @@ export function SingleWindowCarousel({
     };
   }, []);
 
-  const goToPreviousSlide = () => {
-    navigateToSlide(activeIndex - 1);
-  };
-
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     dragStartXRef.current = event.clientX;
     setIsPaused(true);
@@ -252,6 +263,7 @@ export function SingleWindowCarousel({
 
   const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
     const dragStartX = dragStartXRef.current;
+
     dragStartXRef.current = null;
     setIsPaused(false);
 
@@ -270,6 +282,11 @@ export function SingleWindowCarousel({
     } else {
       goToPreviousSlide();
     }
+  };
+
+  const handlePointerCancel = () => {
+    dragStartXRef.current = null;
+    setIsPaused(false);
   };
 
   if (slides.length === 0) {
@@ -292,13 +309,10 @@ export function SingleWindowCarousel({
           className="overflow-hidden rounded-[1.5rem]"
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
-          onPointerCancel={() => {
-            dragStartXRef.current = null;
-            setIsPaused(false);
-          }}
+          onPointerCancel={handlePointerCancel}
         >
           <div
-            className="flex touch-pan-y rounded-[1.5rem] transform-gpu will-change-transform transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+            className="flex touch-pan-y transform-gpu rounded-[1.5rem] transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:transition-none"
             style={{
               gap: `${SLIDE_GAP_PX}px`,
               transform: `translate3d(${slideOffset}, 0, 0)`,
@@ -313,20 +327,23 @@ export function SingleWindowCarousel({
                 1,
               );
               const isActive = index === activeIndex;
+
               const content =
-                slide.renderContent?.({ isNearActive, isActive }) ??
-                slide.content;
+                slide.renderContent?.({
+                  isNearActive,
+                  isActive,
+                }) ?? slide.content;
 
               return (
-              <div
-                key={slide.key}
-                data-search-target-id={slide.searchTargetId}
-                data-search-managed="true"
-                data-search-slide-key={slide.key}
-                className="shrink-0 basis-full overflow-hidden rounded-[1.5rem] transform-gpu"
-              >
-                {content}
-              </div>
+                <div
+                  key={slide.key}
+                  data-search-target-id={slide.searchTargetId}
+                  data-search-managed="true"
+                  data-search-slide-key={slide.key}
+                  className="shrink-0 basis-full transform-gpu overflow-hidden rounded-[1.5rem]"
+                >
+                  {content}
+                </div>
               );
             })}
           </div>
@@ -335,27 +352,37 @@ export function SingleWindowCarousel({
         <button
           type="button"
           onClick={goToPreviousSlide}
-          className="absolute left-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-2xl text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
+          className="absolute left-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
           aria-label={previousLabel}
         >
-          ‹
+          <ChevronLeft
+            aria-hidden
+            className="h-5 w-5"
+            strokeWidth={2.7}
+          />
         </button>
 
         <button
           type="button"
           onClick={goToNextSlide}
-          className="absolute right-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-2xl text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
+          className="absolute right-0 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 motion-reduce:transition-none sm:h-12 sm:w-12"
           aria-label={nextLabel}
         >
-          ›
+          <ChevronRight
+            aria-hidden
+            className="h-5 w-5"
+            strokeWidth={2.7}
+          />
         </button>
       </div>
 
       <div className="mt-7 flex justify-center gap-2">
         {pageIndexes.map((pageIndex) => {
           const isActive = pageIndex === activeIndex;
+
           const fillClass =
             dotTone === "blue" ? "bg-blue-900" : "bg-blue-50";
+
           const trackClass =
             dotTone === "blue" ? "bg-blue-900/25" : "bg-white/25";
 
@@ -364,7 +391,7 @@ export function SingleWindowCarousel({
               key={pageIndex}
               type="button"
               onClick={() => navigateToSlide(pageIndex)}
-              className={`relative h-2.5 w-9 overflow-hidden rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${trackClass}`}
+              className={`relative h-2.5 w-9 cursor-pointer overflow-hidden rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${trackClass}`}
               aria-label={getDotLabel(pageIndex)}
               aria-current={isActive ? "true" : undefined}
             >

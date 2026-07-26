@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 
 export type NextDestinationLinkProps = {
   description: string;
@@ -26,11 +27,46 @@ export function NextDestinationLink({
   imageSrc,
   title,
 }: NextDestinationLinkProps) {
+  const sectionRef = useRef<HTMLElement | null>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [shouldLoadImage, setShouldLoadImage] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (shouldLoadImage || !section) {
+      return;
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      setShouldLoadImage(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+
+        setShouldLoadImage(true);
+        observer.disconnect();
+      },
+      {
+        rootMargin: "6000px 0px",
+        threshold: 0,
+      },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [shouldLoadImage]);
 
   return (
     <section
       id={id}
+      ref={sectionRef}
       className="relative flex min-h-[calc(100vh-5rem)] scroll-mt-20 items-center justify-center bg-black-500 py-16 sm:py-20 lg:py-24"
     >
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_45%,rgba(0,74,173,0.22),transparent_34%)]" />
@@ -43,19 +79,28 @@ export function NextDestinationLink({
           onMouseLeave={() => setIsHovered(false)}
           className="group relative block min-h-[30rem] overflow-hidden border border-white/10 bg-blue-950 shadow-[0_36px_120px_rgba(0,0,0,0.45)] outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:min-h-[34rem] lg:min-h-[38rem]"
         >
-          <Image
-            src={imageSrc}
-            alt={imageAlt}
-            fill
-            sizes="100vw"
-            className={`object-cover object-center transition-all duration-700 ease-out motion-reduce:transition-none ${
-              isHovered ? "scale-110 brightness-100" : "scale-100 brightness-75"
-            }`}
-            style={{
-              objectFit: imageFit ?? "cover",
-              objectPosition: imagePosition ?? "center",
-            }}
-          />
+          <StickyLoadedImage shouldLoad={shouldLoadImage}>
+            {({ showImage, isDecoded, onDecoded }) =>
+              showImage ? (
+                <Image
+                  src={imageSrc}
+                  alt={imageAlt}
+                  fill
+                  loading="eager"
+                  fetchPriority="high"
+                  sizes="100vw"
+                  onLoadingComplete={onDecoded}
+                  className={`object-cover object-center transition-all duration-700 ease-out motion-reduce:transition-none ${
+                    isHovered ? "scale-110 brightness-100" : "scale-100 brightness-75"
+                  } ${isDecoded ? "opacity-100" : "opacity-0"}`}
+                  style={{
+                    objectFit: imageFit ?? "cover",
+                    objectPosition: imagePosition ?? "center",
+                  }}
+                />
+              ) : null
+            }
+          </StickyLoadedImage>
 
           <div className="pointer-events-none absolute inset-0 bg-black/30" />
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,8,25,0.97)_0%,rgba(0,8,25,0.86)_38%,rgba(0,8,25,0.42)_68%,rgba(0,8,25,0.12)_100%)]" />

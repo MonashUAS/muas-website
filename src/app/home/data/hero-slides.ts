@@ -17,41 +17,41 @@ export const heroSlides: HeroSlide[] = [
   {
     id: "composites",
     type: "image",
-    src: "/images/homepage/hero/composites.jpg",
+    src: "/images/homepage/hero/composites.webp",
     alt: "MUAS composites work in progress",
   },
   {
     id: "flight-monitor",
     type: "image",
-    src: "/images/homepage/hero/flight-monitor.jpg",
+    src: "/images/homepage/hero/flight-monitor.webp",
     alt: "MUAS members monitoring flight data",
   },
   {
     id: "explaining",
     type: "video",
-    src: "/images/homepage/hero/explaining.mov",
+    src: "/images/homepage/hero/explaining.mp4",
   },
   {
     id: "o-week",
     type: "image",
-    src: "/images/homepage/hero/o-week_updated.jpg",
+    src: "/images/homepage/hero/o-week_updated.webp",
     alt: "MUAS members speaking with students at O-Week",
   },
   {
     id: "drone-footage",
     type: "video",
-    src: "/images/homepage/hero/drone-footage.mov",
+    src: "/images/homepage/hero/drone-footage.mp4",
   },
   {
     id: "sunset-redback",
     type: "image",
-    src: "/images/homepage/hero/redback3.jpg",
+    src: "/images/homepage/hero/redback3.webp",
     alt: "Redback quadcopter at sunset",
   },
   {
     id: "tinkering",
     type: "image",
-    src: "/images/homepage/hero/tinkering.jpg",
+    src: "/images/homepage/hero/tinkering.webp",
     alt: "MUAS members working on aircraft hardware",
   },
 ];

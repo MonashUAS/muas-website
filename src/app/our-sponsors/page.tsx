@@ -14,7 +14,7 @@ import {
 
 // Hero image for the Sponsor Us page. Update this path when replacing the
 // sponsor-facing hero visual.
-const sponsorHeroImage = "/images/sponsor us page/our-sponsors-hero.jpg";
+const sponsorHeroImage = "/images/sponsor us page/our-sponsors-hero.webp";
 
 export default function OurSponsorsPage() {
   return (
