@@ -46,6 +46,7 @@ export function SectionExperience({ nextSection, section }: SectionExperiencePro
 function SectionHero({ section }: { section: TeamSection }) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const heroMedia = section.heroMedia;
+  const isFlightOperations = section.slug === "flight-ops";
   const {
     handleImageDecoded,
     handleMediaError,
@@ -101,9 +102,15 @@ function SectionHero({ section }: { section: TeamSection }) {
 
       <div className="relative z-10 mx-auto flex w-[calc(100vw-3rem)] max-w-6xl -translate-y-8 flex-col items-center py-10 text-center sm:w-full sm:-translate-y-4 sm:py-16">
         <div className="flex w-full min-w-0 max-w-full flex-col items-center">
-          <h1 className="w-full min-w-0 max-w-full origin-center scale-x-[0.9] text-balance text-[clamp(2.3rem,9.4vw,2.8rem)] font-black leading-[0.95] tracking-[-0.065em] text-white sm:max-w-[12ch] sm:scale-x-100 sm:text-[clamp(3.5rem,7vw,7rem)]">
+          <h1
+            className={`w-full min-w-0 max-w-full origin-center scale-x-[0.9] text-balance text-[clamp(2.3rem,9.4vw,2.8rem)] font-black leading-[0.95] tracking-[-0.065em] text-white sm:scale-x-100 sm:text-[clamp(3.5rem,7vw,7rem)] ${
+              isFlightOperations ? "sm:max-w-[15ch]" : "sm:max-w-[12ch]"
+            }`}
+          >
             <AnimatedTextHighlight
-              className="inline max-w-full"
+              className={`inline max-w-full ${
+                isFlightOperations ? "whitespace-nowrap pr-[0.18em]" : ""
+              }`}
               variant="goldSingleUnderline"
             >
               {section.name}

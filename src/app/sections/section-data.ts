@@ -346,7 +346,7 @@ export const sections: TeamSection[] = [
       {
         id: "events",
         type: "image",
-        src: "/images/teams/operations/hero/hero-events.webp",
+        src: "/images/teams/operations/hero/hero-events-updated.webp",
         alt: "MUAS members at an operations event",
         position: "50% 58%",
       },
