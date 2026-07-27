@@ -11,7 +11,9 @@ import LoadingScreen from "./LoadingScreen"
 
 const FRAME_COUNT = 420;
 const FRAME_PATH = "/images/redback-animation/";
-const PRELOAD_CONCURRENCY = 6;
+const PRELOAD_CONCURRENCY = 20;
+const INITIAL_CRITICAL_COUNT = 30;
+const KEYFRAME_STEP = 15;
 
 // Increase this value to make the scroll animation slower, or reduce it to make it faster.
 const SCROLL_LENGTH_VH = 1200;
@@ -26,13 +28,63 @@ function getLineText(line: ScrollHeroLine) {
     : line.segments.map((segment) => segment.text).join("");
 }
 
+/** Builds a list of frame indices ordered by loading priority (critical initial + keyframes, then remaining). */
+function getPriorityFrameList(): { criticalFrames: number[]; remainingFrames: number[] } {
+  const criticalSet = new Set<number>();
+
+  for (let f = 1; f <= Math.min(INITIAL_CRITICAL_COUNT, FRAME_COUNT); f += 1) {
+    criticalSet.add(f);
+  }
+
+  for (let f = INITIAL_CRITICAL_COUNT + 1; f <= FRAME_COUNT; f += KEYFRAME_STEP) {
+    criticalSet.add(f);
+  }
+  criticalSet.add(FRAME_COUNT);
+
+  const criticalFrames = Array.from(criticalSet);
+  const remainingFrames: number[] = [];
+
+  for (let f = 1; f <= FRAME_COUNT; f += 1) {
+    if (!criticalSet.has(f)) {
+      remainingFrames.push(f);
+    }
+  }
+
+  return { criticalFrames, remainingFrames };
+}
+
+/** Finds the requested frame if loaded, or the closest available loaded frame to prevent broken image states. */
+function getBestAvailableFrame(targetFrame: number, loadedFrames: Set<number>): number {
+  if (loadedFrames.size === 0 || loadedFrames.has(targetFrame)) {
+    return targetFrame;
+  }
+
+  let distance = 1;
+  while (distance <= FRAME_COUNT) {
+    const prev = targetFrame - distance;
+    if (prev >= 1 && loadedFrames.has(prev)) {
+      return prev;
+    }
+    const next = targetFrame + distance;
+    if (next <= FRAME_COUNT && loadedFrames.has(next)) {
+      return next;
+    }
+    distance += 1;
+  }
+
+  return targetFrame;
+}
+
 // ScrollHero maps scroll progress to a frame sequence and timed copy overlays.
 export function ScrollHero() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [frame, setFrame] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [loadedFrameCount, setLoadedFrameCount] = useState(0);
+  const [loadedCount, setLoadedCount] = useState(0);
+  const [criticalTotal, setCriticalTotal] = useState(INITIAL_CRITICAL_COUNT);
   const [progress, setProgress] = useState(0);
+  const loadedFramesRef = useRef<Set<number>>(new Set());
+  const imageCacheRef = useRef<(HTMLImageElement | null)[]>([]);
 
   // Tracks the section's scroll position and converts it into frame/progress state.
   useEffect(() => {
@@ -70,26 +122,36 @@ export function ScrollHero() {
     };
   }, []);
 
-  // Preloads the full sequence so scroll position can map directly to cached frames.
+  // Preloads the frame sequence in two stages (critical priority first, then background stream).
   useEffect(() => {
     let isCancelled = false;
+    const { criticalFrames, remainingFrames } = getPriorityFrameList();
+    setCriticalTotal(criticalFrames.length);
 
-    preloadFrames((loadedCount) => {
-      if (isCancelled) {
-        return;
-      }
+    preloadFramesProgressive(
+      criticalFrames,
+      remainingFrames,
+      (loadedFrameNum, isCriticalStageComplete) => {
+        if (isCancelled) {
+          return;
+        }
 
-      setLoadedFrameCount(loadedCount);
+        loadedFramesRef.current.add(loadedFrameNum);
+        setLoadedCount(loadedFramesRef.current.size);
 
-      if (loadedCount === FRAME_COUNT) {
-        setIsLoaded(true);
-      }
-    });
+        if (isCriticalStageComplete) {
+          setIsLoaded(true);
+        }
+      },
+      imageCacheRef.current
+    );
 
     return () => {
       isCancelled = true;
     };
   }, []);
+
+  const displayFrame = getBestAvailableFrame(frame, loadedFramesRef.current);
 
   return (
     <section ref={sectionRef} id="suas-hero" className="relative scroll-mt-20 bg-black-500" style={{ height: `${SCROLL_LENGTH_VH}vh` }}>
@@ -106,7 +168,7 @@ export function ScrollHero() {
           alt="Redback aircraft animation"
           className="relative z-10 h-full w-full object-cover transition-[object-position] duration-500 ease-in-out"
           draggable={false}
-          src={getFramePath(frame)}
+          src={getFramePath(displayFrame)}
           style={{
             objectPosition: frame >= 160 && frame <= 342 ? `${ANIMATION_PAN_OFFSET} center` : "center"
           }}
@@ -122,7 +184,7 @@ export function ScrollHero() {
 
         {!isLoaded && (
           <LoadingScreen
-            progress={(loadedFrameCount / FRAME_COUNT) * 100}
+            progress={Math.min(100, (loadedCount / criticalTotal) * 100)}
           />
         )}  
       </div>
@@ -194,33 +256,54 @@ function ScrollHeroLineText({ line }: { line: ScrollHeroLine }) {
   ));
 }
 
-// preloadFrames fills the browser cache with the complete frame sequence at a controlled pace.
-function preloadFrames(onProgress: (loadedCount: number) => void) {
-  let loadedCount = 0;
-  let nextFrame = 1;
+/** Preloads frame sequence in two stages: critical frames first to unblock UI, then remaining frames in background. */
+function preloadFramesProgressive(
+  criticalFrames: number[],
+  remainingFrames: number[],
+  onFrameLoaded: (frameNum: number, isCriticalStageComplete: boolean) => void,
+  imageCache: (HTMLImageElement | null)[]
+) {
+  let criticalLoadedCount = 0;
+  let criticalIndex = 0;
+  let remainingIndex = 0;
+  let isStage1Done = false;
 
-  const loadNext = () => {
-    if (nextFrame > FRAME_COUNT) {
+  const loadNextInBatch = () => {
+    let frameToLoad: number;
+    let isCritical = false;
+
+    if (criticalIndex < criticalFrames.length) {
+      frameToLoad = criticalFrames[criticalIndex];
+      criticalIndex += 1;
+      isCritical = true;
+    } else if (remainingIndex < remainingFrames.length) {
+      frameToLoad = remainingFrames[remainingIndex];
+      remainingIndex += 1;
+    } else {
       return;
     }
 
-    const frameToLoad = nextFrame;
-    nextFrame += 1;
-    const image = new Image();
+    const img = new Image();
 
-    const completeFrame = () => {
-      loadedCount += 1;
-      onProgress(loadedCount);
-      loadNext();
+    const onComplete = () => {
+      imageCache[frameToLoad] = img;
+      if (isCritical) {
+        criticalLoadedCount += 1;
+        if (criticalLoadedCount === criticalFrames.length) {
+          isStage1Done = true;
+        }
+      }
+      onFrameLoaded(frameToLoad, isStage1Done);
+      loadNextInBatch();
     };
 
-    image.onload = completeFrame;
-    image.onerror = completeFrame;
-    image.src = getFramePath(frameToLoad);
+    img.onload = onComplete;
+    img.onerror = onComplete;
+    img.src = getFramePath(frameToLoad);
   };
 
   for (let worker = 0; worker < PRELOAD_CONCURRENCY; worker += 1) {
-    loadNext();
+    loadNextInBatch();
   }
 }
 
