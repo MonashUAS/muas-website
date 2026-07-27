@@ -20,38 +20,25 @@ const techSpecImageDir =
 
 export const techSpecPanels: TechSpecPanel[] = [
   {
-    navTitle: "Collapsed",
-    title: "Aerostructure",
-    kicker: "Collapsed State",
-    subtitle: "Dimensions",
-    image: {
-      src: `${techSpecImageDir}/Collapsed.webp`,
-      alt: "Redback aircraft collapsed state detail",
-    },
-    metrics: [
-      { label: "Length", value: "22' (559mm)" },
-      { label: "Width", value: "14' (356mm)" },
-      { label: "Height", value: "9' (229mm)" },
-    ],
-  },
-  {
-    navTitle: "Deployed",
-    title: "Aerostructure",
-    kicker: "Deployed State",
-    subtitle: "Dimensions",
+    navTitle: "Dimensions",
+    title: "Aerostructures",
+    subtitle: "Collapsed and Deployed Dimensions",
     image: {
       src: `${techSpecImageDir}/Deployed.jpg`,
-      alt: "Redback aircraft deployed state detail",
+      alt: "Redback aircraft deployed dimensions detail",
     },
     metrics: [
-      { label: "Length", value: "36' (908mm)" },
-      { label: "Width", value: "36' (908mm)" },
-      { label: "Height", value: "14' (358mm)" },
+      { label: "Collapsed Length", value: "22' (559mm)" },
+      { label: "Collapsed Width", value: "14' (356mm)" },
+      { label: "Collapsed Height", value: "9' (229mm)" },
+      { label: "Deployed Length", value: "36' (908mm)" },
+      { label: "Deployed Width", value: "36' (908mm)" },
+      { label: "Deployed Height", value: "14' (358mm)" },
     ],
   },
   {
     navTitle: "Airframe",
-    title: "Aerostructure",
+    title: "Aerostructures",
     subtitle: "Materials",
     image: {
       src: `${techSpecImageDir}/Airframe.webp`,
@@ -65,7 +52,7 @@ export const techSpecPanels: TechSpecPanel[] = [
   },
   {
     navTitle: "Weight",
-    title: "Aerostructure",
+    title: "Aerostructures",
     subtitle: "Weight",
     image: {
       src: `${techSpecImageDir}/Weight.webp`,
@@ -73,7 +60,10 @@ export const techSpecPanels: TechSpecPanel[] = [
     },
     metrics: [
       { label: "Total Weight", value: "20.2lbs (9.124kg)" },
-      { label: "Maximum Takeoff Weight", value: "27.5lbs (12.488kg)" },
+      {
+        label: "Maximum Takeoff Weight",
+        value: "27.5lbs (12.488kg)",
+      },
     ],
   },
   {
@@ -101,8 +91,14 @@ export const techSpecPanels: TechSpecPanel[] = [
       { label: "Motor Model", value: "M6C10-150KV" },
       { label: "ESC Rating", value: "60A" },
       { label: "Propellor Size", value: "21'" },
-      { label: "Propulsion Battery", value: "599.4Wh (6 x 99.9Wh)" },
-      { label: "Avionics Battery", value: "32.56Wh (2.2 x 14.8Wh)" },
+      {
+        label: "Propulsion Battery",
+        value: "599.4Wh (6 × 99.9Wh)",
+      },
+      {
+        label: "Avionics Battery",
+        value: "32.56Wh (1 × 32.56Wh)",
+      },
     ],
   },
   {
@@ -114,15 +110,27 @@ export const techSpecPanels: TechSpecPanel[] = [
       alt: "Redback vision system detail",
     },
     metrics: [
-      { label: "Camera", value: "SIYI A8 Mini Gimbal Camera" },
-      { label: "Detection Model", value: "YOLOv8" },
+      {
+        label: "Camera",
+        value: "SIYI A8 Mini Gimbal Camera",
+      },
+      {
+        label: "Detection Model",
+        value: "YOLOv8",
+      },
+      {
+        label: "Ground Sample Distance",
+        value: "6cm/pixel",
+      },
+      {
+        label: "Map Resolution",
+        value: "1920 × 1080p",
+      },
       {
         label: "Mapping Software",
         value:
           "Microsoft Image Composite Editor (MICE) and Open Drone Model (ODM)",
       },
-      { label: "Ground Sample Distance", value: "6cm/pixel" },
-      { label: "Map Resolution", value: "1920 x 1080p" },
     ],
   },
   {
@@ -138,7 +146,10 @@ export const techSpecPanels: TechSpecPanel[] = [
         label: "Tethered Payload Delivery System",
         value: "Electromagnetic Braking",
       },
-      { label: "Payload Capacity", value: "14.5oz (410g)" },
+      {
+        label: "Payload Capacity",
+        value: "14.5oz (410g)",
+      },
     ],
   },
   {
@@ -150,8 +161,14 @@ export const techSpecPanels: TechSpecPanel[] = [
       alt: "Redback flight controller detail",
     },
     metrics: [
-      { label: "Flight Controller", value: "CubePilot Cube Orange+" },
-      { label: "Autopilot Firmware", value: "Arducopter 4.6.3" },
+      {
+        label: "Flight Controller",
+        value: "CubePilot Cube Orange+",
+      },
+      {
+        label: "Autopilot Firmware",
+        value: "Arducopter 4.6.3",
+      },
     ],
   },
 ];
