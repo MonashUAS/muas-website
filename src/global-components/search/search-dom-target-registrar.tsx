@@ -13,7 +13,7 @@ import {
 const semanticTextSelector = "h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption";
 const rootSelector = ".page-dissolve-shell, #site-footer";
 const rangeHighlightName = "search-active-range-highlight";
-const rangeOverlayId = "search-active-range-highlight-overlay";
+const rangeMarkAttribute = "data-search-dom-range-highlight";
 
 function getSearchRoots() {
   const roots = Array.from(
@@ -203,6 +203,7 @@ function applyCssRangeHighlight(
   element: HTMLElement,
   request: SearchRangeHighlightRequest,
   highlightName: string,
+  cleanupRef: { current: (() => void) | null },
 ) {
   const range = getRangeForRequest(element, request);
 
@@ -210,32 +211,46 @@ function applyCssRangeHighlight(
     return false;
   }
 
-  const rects = Array.from(range.getClientRects()).filter(
-    (rect) => rect.width > 0 && rect.height > 0,
-  );
-
-  if (rects.length === 0) {
+  if (
+    Array.from(range.getClientRects()).every(
+      (rect) => rect.width <= 0 || rect.height <= 0,
+    )
+  ) {
     return false;
   }
 
+  cleanupRef.current?.();
+  cleanupRef.current = null;
   CSS.highlights?.delete(highlightName);
-  window.document.getElementById(rangeOverlayId)?.remove();
 
-  const overlay = window.document.createElement("div");
-  overlay.id = rangeOverlayId;
-  overlay.setAttribute("aria-hidden", "true");
+  const mark = window.document.createElement("mark");
 
-  for (const rect of rects) {
-    const segment = window.document.createElement("span");
-    segment.className = "search-range-highlight-overlay";
-    segment.style.left = `${rect.left}px`;
-    segment.style.top = `${rect.top}px`;
-    segment.style.width = `${rect.width}px`;
-    segment.style.height = `${rect.height}px`;
-    overlay.append(segment);
+  mark.className = "search-text-range-highlight";
+  mark.setAttribute(rangeMarkAttribute, "true");
+
+  try {
+    mark.append(range.extractContents());
+    range.insertNode(mark);
+  } catch {
+    mark.remove();
+    return false;
   }
 
-  window.document.body.append(overlay);
+  cleanupRef.current = () => {
+    const parent = mark.parentNode;
+
+    if (!parent) {
+      return;
+    }
+
+    while (mark.firstChild) {
+      parent.insertBefore(mark.firstChild, mark);
+    }
+
+    mark.remove();
+    parent.normalize();
+  };
+
   return true;
 }
 
@@ -331,21 +346,37 @@ export function SearchDomTargetRegistrar() {
         continue;
       }
 
+      const rangeCleanupRef = { current: null as (() => void) | null };
+
       cleanups.push(
         registerSearchTarget(entry.highlightTargetId, {
           element,
           highlightMode: "text",
           isReady: () => isSearchVisible(element),
           applyRangeHighlight: (request) =>
-            applyCssRangeHighlight(element, request, rangeHighlightName),
-          fadeTextHighlight: () => undefined,
+            applyCssRangeHighlight(
+              element,
+              request,
+              rangeHighlightName,
+              rangeCleanupRef,
+            ),
+          fadeTextHighlight: () => {
+            element
+              .querySelectorAll<HTMLElement>(
+                `[${rangeMarkAttribute}="true"]`,
+              )
+              .forEach((mark) =>
+                mark.classList.add("search-text-range-highlight-fading"),
+              );
+          },
           clearTextHighlight: () => {
             const cssHighlights = CSS as typeof CSS & {
               highlights?: { delete: (name: string) => void };
             };
 
             cssHighlights.highlights?.delete(rangeHighlightName);
-            window.document.getElementById(rangeOverlayId)?.remove();
+            rangeCleanupRef.current?.();
+            rangeCleanupRef.current = null;
           },
         }),
       );
@@ -354,10 +385,6 @@ export function SearchDomTargetRegistrar() {
     }
 
     for (const target of searchDocument.targets) {
-      if (registeredIds.has(target.id)) {
-        continue;
-      }
-
       const hashTarget = target.hash
         ? window.document.getElementById(target.hash)
         : null;
@@ -366,12 +393,18 @@ export function SearchDomTargetRegistrar() {
         continue;
       }
 
-      cleanups.push(
-        registerSearchTarget(target.id, {
-          element: hashTarget,
-          highlightMode: "component",
-        }),
-      );
+      const fallbackTargetIds = [target.id, ...(target.hash ? [target.hash] : [])]
+        .filter((id) => !registeredIds.has(id));
+
+      for (const targetId of fallbackTargetIds) {
+        cleanups.push(
+          registerSearchTarget(targetId, {
+            element: hashTarget,
+            highlightMode: "component",
+          }),
+        );
+        registeredIds.add(targetId);
+      }
     }
 
     return () => cleanups.forEach((cleanup) => cleanup());

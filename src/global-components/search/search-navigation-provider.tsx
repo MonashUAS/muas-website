@@ -29,7 +29,7 @@ const HIGHLIGHT_MS = 2600;
 const TARGET_WAIT_MS = 4500;
 const SCROLL_STABLE_FRAMES = 3;
 const PROVIDER_RANGE_HIGHLIGHT_NAME = "search-active-range-highlight";
-const PROVIDER_RANGE_OVERLAY_ID = "search-active-range-highlight-overlay";
+const PROVIDER_RANGE_MARK_ATTRIBUTE = "data-search-provider-range-highlight";
 
 type SearchController = {
   reveal: (state: SearchRevealRequest) => void | Promise<void>;
@@ -62,6 +62,7 @@ type PendingSearchNavigation = {
 };
 
 type SearchNavigationContextValue = {
+  clearSearchHighlight: () => void;
   navigateToSearchDestination: (destination: SearchDestination) => void;
   registerSearchController: (id: string, controller: SearchController) => () => void;
   registerSearchTarget: (
@@ -116,18 +117,6 @@ function isRectInViewport(rect: DOMRectReadOnly) {
     rect.right > 0 &&
     rect.left < window.innerWidth
   );
-}
-
-function isFixedHighlightInViewport() {
-  const overlay = window.document.getElementById(PROVIDER_RANGE_OVERLAY_ID);
-
-  if (!overlay) {
-    return false;
-  }
-
-  return Array.from(
-    overlay.querySelectorAll<HTMLElement>(".search-range-highlight-overlay"),
-  ).some((segment) => isRectInViewport(segment.getBoundingClientRect()));
 }
 
 function isElementHighlightInViewport(element: HTMLElement) {
@@ -380,13 +369,8 @@ function getCssHighlights() {
   }).highlights;
 }
 
-function deleteRangeOverlay() {
-  window.document.getElementById(PROVIDER_RANGE_OVERLAY_ID)?.remove();
-}
-
 function deleteCssHighlight(name: string) {
   getCssHighlights()?.delete(name);
-  deleteRangeOverlay();
 }
 
 function getRangeForRequest(
@@ -440,6 +424,7 @@ function getRangeForRequest(
 function applyElementRangeHighlight(
   element: HTMLElement,
   request: SearchRangeHighlightRequest,
+  cleanupRef: MutableRefObject<(() => void) | null>,
 ) {
   const range = getRangeForRequest(element, request);
 
@@ -447,31 +432,46 @@ function applyElementRangeHighlight(
     return false;
   }
 
-  const rects = Array.from(range.getClientRects()).filter(
-    (rect) => rect.width > 0 && rect.height > 0,
-  );
-
-  if (rects.length === 0) {
+  if (
+    Array.from(range.getClientRects()).every(
+      (rect) => rect.width <= 0 || rect.height <= 0,
+    )
+  ) {
     return false;
   }
 
+  cleanupRef.current?.();
+  cleanupRef.current = null;
   deleteCssHighlight(PROVIDER_RANGE_HIGHLIGHT_NAME);
 
-  const overlay = document.createElement("div");
-  overlay.id = PROVIDER_RANGE_OVERLAY_ID;
-  overlay.setAttribute("aria-hidden", "true");
+  const mark = document.createElement("mark");
 
-  for (const rect of rects) {
-    const segment = document.createElement("span");
-    segment.className = "search-range-highlight-overlay";
-    segment.style.left = `${rect.left}px`;
-    segment.style.top = `${rect.top}px`;
-    segment.style.width = `${rect.width}px`;
-    segment.style.height = `${rect.height}px`;
-    overlay.append(segment);
+  mark.className = "search-text-range-highlight";
+  mark.setAttribute(PROVIDER_RANGE_MARK_ATTRIBUTE, "true");
+
+  try {
+    mark.append(range.extractContents());
+    range.insertNode(mark);
+  } catch {
+    mark.remove();
+    return false;
   }
 
-  document.body.append(overlay);
+  cleanupRef.current = () => {
+    const parent = mark.parentNode;
+
+    if (!parent) {
+      return;
+    }
+
+    while (mark.firstChild) {
+      parent.insertBefore(mark.firstChild, mark);
+    }
+
+    mark.remove();
+    parent.normalize();
+  };
+
   return true;
 }
 
@@ -577,6 +577,7 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
   const targetsRef = useRef(new Map<string, SearchTargetRegistration>());
   const controllersRef = useRef(new Map<string, SearchController>());
   const activeHighlightCleanupRef = useRef<(() => void) | null>(null);
+  const activeProviderRangeCleanupRef = useRef<(() => void) | null>(null);
   const activeNavigationIdRef = useRef(0);
   const previousPathnameRef = useRef(pathname);
   const waitersRef = useRef(
@@ -618,8 +619,16 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
   const clearActiveHighlight = useCallback(() => {
     activeHighlightCleanupRef.current?.();
     activeHighlightCleanupRef.current = null;
+    activeProviderRangeCleanupRef.current?.();
+    activeProviderRangeCleanupRef.current = null;
     deleteCssHighlight(PROVIDER_RANGE_HIGHLIGHT_NAME);
   }, []);
+
+  const clearSearchHighlight = useCallback(() => {
+    activeNavigationIdRef.current += 1;
+    clearActiveHighlight();
+    setPendingNavigation(null);
+  }, [clearActiveHighlight]);
 
   const waitForTarget = useCallback((id: string, navigationId: number) => {
     const currentTarget = targetsRef.current.get(id);
@@ -822,7 +831,11 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
       const usedProviderRangeHighlight = Boolean(
         rangeRequest &&
           !usedRegistrationRangeHighlight &&
-          applyElementRangeHighlight(activeRegistration.element, rangeRequest),
+          applyElementRangeHighlight(
+            activeRegistration.element,
+            rangeRequest,
+            activeProviderRangeCleanupRef,
+          ),
       );
       const usedRangeHighlight =
         usedRegistrationRangeHighlight || usedProviderRangeHighlight;
@@ -846,6 +859,8 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
       const clearTimer = window.setTimeout(() => {
         activeRegistration.clearTextHighlight?.();
         deleteCssHighlight(PROVIDER_RANGE_HIGHLIGHT_NAME);
+        activeProviderRangeCleanupRef.current?.();
+        activeProviderRangeCleanupRef.current = null;
         activeHighlightCleanupRef.current = null;
       }, HIGHLIGHT_MS + 700);
 
@@ -854,10 +869,16 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
         window.clearTimeout(clearTimer);
         activeRegistration.clearTextHighlight?.();
         deleteCssHighlight(PROVIDER_RANGE_HIGHLIGHT_NAME);
+        activeProviderRangeCleanupRef.current?.();
+        activeProviderRangeCleanupRef.current = null;
       };
 
       const acknowledged =
-        isFixedHighlightInViewport() ||
+        Boolean(
+          activeRegistration.element.querySelector(
+            `[${PROVIDER_RANGE_MARK_ATTRIBUTE}="true"], .search-text-range-highlight`,
+          ),
+        ) ||
         isElementHighlightInViewport(activeRegistration.element);
 
       if (!acknowledged) {
@@ -999,11 +1020,13 @@ export function SearchNavigationProvider({ children }: { children: ReactNode }) 
 
   const value = useMemo(
     () => ({
+      clearSearchHighlight,
       navigateToSearchDestination,
       registerSearchController,
       registerSearchTarget,
     }),
     [
+      clearSearchHighlight,
       navigateToSearchDestination,
       registerSearchController,
       registerSearchTarget,

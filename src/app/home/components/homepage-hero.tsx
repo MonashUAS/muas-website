@@ -84,7 +84,7 @@ export function HomepageHero() {
 
       <div className="relative z-10 mx-auto flex viewport-fold w-full max-w-6xl -translate-y-12 flex-col items-center justify-center px-6 py-20 text-center sm:px-8 lg:px-12">
         <Image
-          src="/logos/logo-with-text.svg"
+          src="/logos/logo-white-clear-background.png"
           alt="MUAS Logo"
           width={260}
           height={74}

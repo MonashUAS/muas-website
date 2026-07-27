@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useState } from "react";
+import { useSearchNavigation } from "@/global-components/search/search-navigation-provider";
 import { MenuOverlay } from "./menu-overlay";
 import { NavbarTopRow } from "./navbar-top-row";
 import type { OverlayMode } from "./navbar-top-row";
@@ -11,14 +12,16 @@ export default function Sidebar() {
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
   const menuId = useId();
   const searchId = useId();
+  const { clearSearchHighlight } = useSearchNavigation();
 
   const isOverlayOpen = overlayMode !== null;
   const isSearchMode = overlayMode === "search";
 
   const closeOverlay = useCallback(() => {
+    clearSearchHighlight();
     setOverlayMode(null);
     setExpandedGroup(null);
-  }, []);
+  }, [clearSearchHighlight]);
 
   // The menu and search views share one full-screen overlay shell.
   useEffect(() => {
@@ -44,11 +47,13 @@ export default function Sidebar() {
   }, [closeOverlay, isOverlayOpen]);
 
   const openMenu = () => {
+    clearSearchHighlight();
     setExpandedGroup(null);
     setOverlayMode("menu");
   };
 
   const openSearch = () => {
+    clearSearchHighlight();
     setExpandedGroup(null);
     setOverlayMode("search");
   };

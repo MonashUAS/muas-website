@@ -63,9 +63,11 @@ export function SingleWindowCarousel({
     clampIndex(initialIndex, slides.length),
   );
   const [isPaused, setIsPaused] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
 
   const dragStartXRef = useRef<number | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   const isTransitioningRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
   const hasNotifiedParentRef = useRef(false);
@@ -196,6 +198,41 @@ export function SingleWindowCarousel({
     };
   }, [activeIndex, registerSearchTarget, slides]);
 
+  useEffect(() => {
+    const viewport = viewportRef.current;
+
+    if (!viewport || slides.length === 0) {
+      setViewportHeight(null);
+      return;
+    }
+
+    const activeSlide = viewport.querySelector<HTMLElement>(
+      `[data-carousel-slide-index="${activeIndex}"]`,
+    );
+
+    if (!activeSlide) {
+      setViewportHeight(null);
+      return;
+    }
+
+    const updateHeight = () => {
+      const nextHeight = Math.ceil(activeSlide.getBoundingClientRect().height);
+
+      setViewportHeight((currentHeight) =>
+        currentHeight === nextHeight ? currentHeight : nextHeight,
+      );
+    };
+
+    updateHeight();
+
+    const resizeObserver = new ResizeObserver(updateHeight);
+
+    resizeObserver.observe(activeSlide);
+    void document.fonts?.ready.then(updateHeight);
+
+    return () => resizeObserver.disconnect();
+  }, [activeIndex, slides.length]);
+
   const navigateToSlide = useCallback(
     (nextIndex: number) => {
       if (slides.length === 0) {
@@ -306,7 +343,9 @@ export function SingleWindowCarousel({
     >
       <div className="relative px-12 sm:px-16 lg:px-20">
         <div
+          ref={viewportRef}
           className="overflow-hidden rounded-[1.5rem]"
+          style={viewportHeight ? { height: `${viewportHeight}px` } : undefined}
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerCancel}
@@ -340,6 +379,7 @@ export function SingleWindowCarousel({
                   data-search-target-id={slide.searchTargetId}
                   data-search-managed="true"
                   data-search-slide-key={slide.key}
+                  data-carousel-slide-index={index}
                   className="shrink-0 basis-full transform-gpu overflow-hidden rounded-[1.5rem]"
                 >
                   {content}

@@ -7,7 +7,7 @@ export const recruitmentConfig = {
     alt: "MUAS members carrying an aircraft during a flight day",
   },
   closedImage: {
-    src: "/images/recruitment/false.webp",
+    src: "/images/recruitment/false-updated.webp",
     alt: "MUAS team members wearing team polos",
   },
 };

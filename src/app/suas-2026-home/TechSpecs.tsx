@@ -26,8 +26,6 @@ const sectionHeadingClass =
   "text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white";
 
 const metricSlotCount = 5;
-const dissolveMs = 180;
-
 const techSpecPillItems = techSpecPanels.map((panel, index) => ({
   id: String(index),
   label: panel.navTitle,
@@ -61,85 +59,55 @@ export function TechSpecs() {
     deployedPanelIndex >= 0 ? deployedPanelIndex : 0;
 
   const [activeIndex, setActiveIndex] = useState(initialPanelIndex);
-  const [displayedIndex, setDisplayedIndex] =
-    useState(initialPanelIndex);
-  const [isDissolving, setIsDissolving] = useState(false);
   const [failedImageSources, setFailedImageSources] = useState<string[]>(
     [],
   );
-  const [visibleImageSrc, setVisibleImageSrc] = useState(() =>
-    resolvePanelImageSrc(
-      techSpecPanels[initialPanelIndex].image.src,
-      [],
-    ),
-  );
 
-  const transitionTimer = useRef<number | null>(null);
   const preloadGeneration = useRef(0);
   const sectionRef = useRef<HTMLElement | null>(null);
   const { registerSearchTarget } = useSearchNavigation();
 
-  const activePanel = techSpecPanels[displayedIndex];
+  const activePanel = techSpecPanels[activeIndex];
   const activePanelSlug = searchSlug(activePanel.navTitle);
+  const activeImageSrc = resolvePanelImageSrc(
+    activePanel.image.src,
+    failedImageSources,
+  );
   const emptyMetricSlotCount = Math.max(
     0,
     metricSlotCount - activePanel.metrics.length,
   );
 
-  // Clear the transition timer if the component unmounts.
   useEffect(() => {
     return () => {
-      if (transitionTimer.current !== null) {
-        window.clearTimeout(transitionTimer.current);
-      }
-
       preloadGeneration.current += 1;
     };
   }, []);
 
+  useEffect(() => {
+    const generation = ++preloadGeneration.current;
+
+    void Promise.all(
+      techSpecPanels.map((panel) =>
+        preloadImage(resolvePanelImageSrc(panel.image.src, failedImageSources)),
+      ),
+    ).then(() => {
+      if (generation !== preloadGeneration.current) {
+        return;
+      }
+    });
+  }, [failedImageSources]);
+
   const changePanel = useCallback(
     (index: number) => {
-      if (index === activeIndex || isDissolving) {
+      if (index === activeIndex || !techSpecPanels[index]) {
         return;
       }
 
-      const nextPanel = techSpecPanels[index];
-      const nextImageSrc = resolvePanelImageSrc(
-        nextPanel.image.src,
-        failedImageSources,
-      );
-
+      preloadGeneration.current += 1;
       setActiveIndex(index);
-      setIsDissolving(true);
-
-      if (transitionTimer.current !== null) {
-        window.clearTimeout(transitionTimer.current);
-      }
-
-      const generation = ++preloadGeneration.current;
-
-      const minimumDissolve = new Promise<void>((resolve) => {
-        transitionTimer.current = window.setTimeout(resolve, dissolveMs);
-      });
-
-      void Promise.all([preloadImage(nextImageSrc), minimumDissolve]).then(() => {
-        if (generation !== preloadGeneration.current) {
-          return;
-        }
-
-        setDisplayedIndex(index);
-        setVisibleImageSrc(nextImageSrc);
-
-        window.requestAnimationFrame(() => {
-          if (generation !== preloadGeneration.current) {
-            return;
-          }
-
-          setIsDissolving(false);
-        });
-      });
     },
-    [activeIndex, failedImageSources, isDissolving],
+    [activeIndex],
   );
 
   const searchController = useMemo(
@@ -194,14 +162,13 @@ export function TechSpecs() {
             ? "component"
             : "text",
         isReady: () =>
-          !isDissolving &&
           element.getClientRects().length > 0 &&
           element.closest("[aria-hidden='true']") === null,
       });
     });
 
     return () => cleanups.forEach((cleanup) => cleanup());
-  }, [activePanelSlug, isDissolving, registerSearchTarget]);
+  }, [activePanelSlug, registerSearchTarget]);
 
   const handleImageError = () => {
     setFailedImageSources((sources) =>
@@ -209,7 +176,6 @@ export function TechSpecs() {
         ? sources
         : [...sources, activePanel.image.src],
     );
-    setVisibleImageSrc(fallbackTechSpecImage);
   };
 
   return (
@@ -239,11 +205,7 @@ export function TechSpecs() {
         />
 
         <div
-          className={`mt-5 grid grid-cols-1 items-stretch bg-black-500 transition-all duration-200 ease-out motion-reduce:transition-none sm:mt-6 lg:mt-8 lg:h-[34rem] lg:grid-cols-[minmax(22rem,0.86fr)_minmax(0,1fr)] lg:overflow-hidden ${
-            isDissolving
-              ? "translate-y-1 opacity-0 blur-[3px]"
-              : "translate-y-0 opacity-100 blur-0"
-          }`}
+          className="mt-5 grid grid-cols-1 items-stretch bg-black-500 sm:mt-6 lg:mt-8 lg:h-[34rem] lg:grid-cols-[minmax(22rem,0.86fr)_minmax(0,1fr)] lg:overflow-hidden"
         >
           <div className="relative z-10 order-2 flex min-h-0 flex-col py-2 lg:order-1 lg:h-full lg:py-6 lg:pr-10">
             <h3
@@ -309,7 +271,8 @@ export function TechSpecs() {
 
           <div className="relative order-1 mb-4 h-[160px] shrink-0 overflow-hidden bg-black-500 sm:h-[210px] lg:order-2 lg:mb-0 lg:h-full">
             <Image
-              src={visibleImageSrc}
+              key={activeImageSrc}
+              src={activeImageSrc}
               alt={activePanel.image.alt}
               fill
               sizes="(min-width: 1024px) 58vw, 100vw"

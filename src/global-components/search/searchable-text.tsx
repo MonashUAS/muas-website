@@ -47,15 +47,74 @@ function isVisibleSearchElement(element: HTMLElement) {
   );
 }
 
-function getQueryRange(text: string, query: string) {
-  const match = new RegExp(escapeRegExp(query), "i").exec(text);
+function getNormalizedTextWithOffsets(value: string) {
+  let normalized = "";
+  const offsets: number[] = [];
+  let lastWasSpace = true;
 
-  return match
-    ? {
-        start: match.index,
-        end: match.index + match[0].length,
-      }
-    : null;
+  for (let index = 0; index < value.length; index += 1) {
+    const normalizedCharacter = value[index]
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/['’]/g, "");
+
+    if (!normalizedCharacter) {
+      continue;
+    }
+
+    if (/^[a-z0-9]$/.test(normalizedCharacter)) {
+      normalized += normalizedCharacter;
+      offsets.push(index);
+      lastWasSpace = false;
+      continue;
+    }
+
+    if (!lastWasSpace) {
+      normalized += " ";
+      offsets.push(index);
+      lastWasSpace = true;
+    }
+  }
+
+  if (normalized.endsWith(" ")) {
+    normalized = normalized.slice(0, -1);
+    offsets.pop();
+  }
+
+  return { normalized, offsets };
+}
+
+function getQueryRange(text: string, query: string) {
+  const directMatch = new RegExp(escapeRegExp(query), "i").exec(text);
+
+  if (directMatch) {
+    return {
+      start: directMatch.index,
+      end: directMatch.index + directMatch[0].length,
+    };
+  }
+
+  const { normalized, offsets } = getNormalizedTextWithOffsets(text);
+  const normalizedQuery = getNormalizedTextWithOffsets(query).normalized;
+  const normalizedStart = normalized.indexOf(normalizedQuery);
+
+  if (!normalizedQuery || normalizedStart < 0) {
+    return null;
+  }
+
+  const normalizedEnd = normalizedStart + normalizedQuery.length - 1;
+  const start = offsets[normalizedStart];
+  const end = offsets[normalizedEnd];
+
+  if (start === undefined || end === undefined) {
+    return null;
+  }
+
+  return {
+    start,
+    end: end + 1,
+  };
 }
 
 function getRequestRange(

@@ -19,7 +19,7 @@ export function OurTeamMission() {
             <div className="mt-7 max-w-[42rem] space-y-5 text-b1 leading-relaxed text-blue-50/85 sm:text-subtitle sm:leading-relaxed">
               <p>
                 Monash UAS brings together{" "}
-                <AnimatedTextHighlight variant="gold">
+                <AnimatedTextHighlight variant="goldDark">
                   more than 100 members
                 </AnimatedTextHighlight>{" "}
                 across five specialised sections, each contributing to the
@@ -28,7 +28,7 @@ export function OurTeamMission() {
 
               <p>
                 Our mission is to demonstrate the{" "}
-                <AnimatedTextHighlight variant="gold">
+                <AnimatedTextHighlight variant="goldDark">
                   humanitarian potential of uncrewed aerial systems
                 </AnimatedTextHighlight>{" "}
                 while giving students practical experience through competition,
@@ -37,7 +37,7 @@ export function OurTeamMission() {
 
               <p>
                 Through workshops and outreach, we also aim to{" "}
-                <AnimatedTextHighlight variant="gold">
+                <AnimatedTextHighlight variant="goldDark">
                   inspire the next generation of STEM students
                 </AnimatedTextHighlight>
                 .

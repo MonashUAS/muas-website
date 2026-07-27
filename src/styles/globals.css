@@ -319,21 +319,10 @@
   box-shadow: none;
 }
 
-.search-range-highlight-overlay {
-  position: fixed;
-  z-index: 9999;
-  border-radius: 0.18rem;
-  background-color: rgb(var(--search-highlight-color) / 0.46);
-  box-shadow: 0 0 0 2px rgb(var(--search-highlight-color) / 0.16);
-  pointer-events: none;
-  animation: search-highlight-pulse 2.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .search-target-highlight,
   .search-text-highlight,
-  .search-text-range-highlight,
-  .search-range-highlight-overlay {
+  .search-text-range-highlight {
     animation: none;
     transition: none;
   }

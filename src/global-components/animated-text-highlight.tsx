@@ -9,6 +9,7 @@ import {
 
 type AnimatedTextHighlightVariant =
   | "gold"
+  | "goldDark"
   | "redback"
   | "goldUnderline"
   | "goldSingleUnderline";
@@ -31,6 +32,11 @@ const HIGHLIGHT_VARIANTS: Record<
     color: "#e4c56a",
     fill: "rgb(228 197 106 / 0.58)",
     shadow: "rgb(228 197 106 / 0.38)",
+  },
+  goldDark: {
+    color: "#c0a659",
+    fill: "rgb(117 86 17 / 0.86)",
+    shadow: "rgb(55 40 8 / 0.72)",
   },
   redback: {
     color: "#d52b2b",
