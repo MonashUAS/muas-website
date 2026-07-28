@@ -30,7 +30,7 @@ export const keyFeatures: KeyFeature[] = [
   {
     slug: "risk-mapping",
     title: "Risk Mapping",
-    body: "Capturing targeted aerial sequences along preset flight paths, Redback's onboard stitching algorithms rapidly transform raw snapshots into a high-resolution overview of the entire search boundary.",
+    body: "Capturing targeted aerial sequences along preset flight paths, Redback streams environmental data back to ground station where stitching algorithms create a high-resolution overview of the entire search area.",
     media: {
       src: "/models/mapping.mp4",
       type: "video",

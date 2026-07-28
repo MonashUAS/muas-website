@@ -148,8 +148,6 @@ export function ModelViewer({
             {isModelLoading && <LoadingScreen progress={progress} />}
             <div className="pointer-events-none absolute inset-x-0 bottom-5 text-center text-caption uppercase text-white/55">
               <span>Drag to rotate</span>
-              <span className="mx-2">|</span>
-              <span>Scroll to zoom</span>
             </div>
           </>
         ) : (
