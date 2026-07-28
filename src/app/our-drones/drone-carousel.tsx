@@ -13,7 +13,7 @@ type DroneCarouselProps = {
 
 // DroneCarousel presents the fleet with arrow controls and adjacent-image navigation.
 export function DroneCarousel({ drones }: DroneCarouselProps) {
-  const [activeIndex, setActiveIndex] = useState(6);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [selectedDrone, setSelectedDrone] = useState<Drone | null>(null);
   const [isActiveHovered, setIsActiveHovered] = useState(false);
   const carouselRef = useRef<HTMLElement | null>(null);
@@ -100,7 +100,7 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
     <section
       id="our-drones-page"
       ref={carouselRef}
-      className="viewport-fold relative flex scroll-mt-20 flex-col items-center justify-between overflow-hidden bg-blue-100 px-4 py-6 sm:py-8"
+      className="viewport-fold relative flex scroll-mt-20 flex-col items-center justify-between overflow-hidden bg-blue-100 px-4 py-4 sm:py-8"
     >
       {/* Background cloud image */}
       <div className="absolute inset-0 z-0 select-none opacity-40">
@@ -116,17 +116,17 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
 
       {/* Header */}
       <div className="z-10 flex max-w-4xl flex-col items-center pt-2 text-center text-blue-900 sm:pt-4">
-        <h1 className="text-[clamp(2.75rem,6vw,5.75rem)] font-medium leading-[0.9] tracking-[-0.05em]">
+        <h1 className="text-[clamp(2.5rem,6vw,5.75rem)] font-medium leading-[0.9] tracking-[-0.05em]">
           Explore Our Drones
         </h1>
       </div>
 
       {/* Active drone name and carousel */}
-      <div className="relative z-10 my-auto flex w-full max-w-[1720px] flex-1 flex-col items-center justify-center">
+      <div className="relative z-10 my-auto flex w-full max-w-[1720px] flex-1 flex-col items-center justify-center py-2 sm:py-4">
         {/* Active drone name */}
         <button
           type="button"
-          className={`mb-1 max-w-[92vw] cursor-pointer text-balance text-[clamp(3rem,6vw,5.75rem)] font-medium leading-[0.9] tracking-[-0.05em] transition sm:mb-2 ${
+          className={`-mb-2 max-w-[92vw] cursor-pointer text-balance text-[clamp(2.75rem,6vw,5.75rem)] font-medium leading-[0.9] tracking-[-0.05em] transition sm:-mb-4 ${
             isActiveHovered
               ? "text-blue-500"
               : "text-blue-900 hover:text-blue-500"
@@ -137,7 +137,7 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
         </button>
 
         {/* Carousel */}
-        <div className="relative flex min-h-[380px] w-full items-center justify-center">
+        <div className="relative flex min-h-[340px] sm:min-h-[460px] lg:min-h-[540px] w-full items-center justify-center">
           {/* Navigation controls aligned beneath the navbar controls */}
           <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 grid w-full -translate-y-1/2 grid-cols-[84px_minmax(0,1fr)_84px] items-center px-5 sm:grid-cols-[132px_minmax(0,1fr)_132px] sm:px-8 lg:px-12">
             <button
@@ -160,7 +160,7 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
           </div>
 
           {/* Drone renders */}
-          <div className="relative flex min-h-[380px] w-full max-w-6xl items-center justify-center">
+          <div className="relative flex min-h-[340px] sm:min-h-[460px] lg:min-h-[540px] w-full max-w-7xl items-center justify-center">
             {visibleDrones.map(({ drone, index, offset }) => {
               const isActive = offset === 0;
 
@@ -181,25 +181,9 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
                       ? setSelectedDrone(drone)
                       : navigateTo(index)
                   }
-                  style={{
-                    height: isActive ? "46vh" : "22vh",
-                    maxHeight: isActive ? "390px" : "180px",
-                    maxWidth: isActive ? "720px" : "240px",
-                    opacity: isActive ? 1 : 0.7,
-                    transform: `translateX(${offset * 205}%) translateY(${
-                      isActive ? 10 : -78
-                    }px) scale(${
-                      isActive
-                        ? isActiveHovered
-                          ? 1.1
-                          : 1
-                        : 0.88
-                    })`,
-                    width: isActive ? "64vw" : "22vw",
-                    zIndex: isActive ? 2 : 1,
-                  }}
+                  style={getDroneSlideStyle(isActive, isActiveHovered, offset)}
                 >
-                  <DroneVisual drone={drone} />
+                  <DroneVisual drone={drone} priority={true} />
                 </button>
               );
             })}
@@ -218,9 +202,9 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
   );
 }
 
-// getVisibleDrones returns the active drone plus its immediate neighbours.
+// getVisibleDrones returns the active drone plus surrounding neighbours for smooth pre-loading transitions.
 function getVisibleDrones(drones: Drone[], activeIndex: number) {
-  return [-1, 0, 1].map((offset) => {
+  return [-2, -1, 0, 1, 2].map((offset) => {
     const index = wrapIndex(activeIndex + offset, drones.length);
 
     return {
@@ -235,3 +219,32 @@ function getVisibleDrones(drones: Drone[], activeIndex: number) {
 function wrapIndex(index: number, length: number) {
   return ((index % length) + length) % length;
 }
+
+// getDroneSlideStyle calculates responsive layout and transform properties for active and inactive drone slides.
+function getDroneSlideStyle(
+  isActive: boolean,
+  isActiveHovered: boolean,
+  offset: number,
+) {
+  const isOffscreen = Math.abs(offset) > 1;
+
+  return {
+    height: isActive ? "48vh" : "20vh",
+    maxHeight: isActive ? "520px" : "180px",
+    maxWidth: isActive ? "920px" : "240px",
+    opacity: isOffscreen ? 0 : isActive ? 1 : 0.65,
+    pointerEvents: isOffscreen ? ("none" as const) : ("auto" as const),
+    transform: `translateX(${offset * 195}%) translateY(${
+      isActive ? -16 : -90
+    }px) scale(${
+      isActive
+        ? isActiveHovered
+          ? 1.08
+          : 1
+        : 0.85
+    })`,
+    width: isActive ? "82vw" : "22vw",
+    zIndex: isActive ? 2 : 1,
+  };
+}
+

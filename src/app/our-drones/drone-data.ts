@@ -55,6 +55,30 @@ export const drones: Drone[] = [
     ],
   },
   {
+    slug: "ibis",
+    name: "Ibis",
+    description: [
+      "Ibis is a MUAS development aircraft used to explore dependable flight systems, payload integration, and team flight operations.",
+    ],
+    heroImage: "/images/drones/ibis.webp",
+    features: [
+      { label: "Payload Capacity", value: "1 kg" },
+    ],
+    dimensions: [
+      { label: "Wingspan", value: "2200 mm" },
+      { label: "Length", value: "1605 mm" },
+      { label: "Width", value: "2200 mm" },
+      { label: "Mass", value: "6.8 kg" },
+      { label: "Maximum Take-Off Weight", value: "7.8 kg" },
+    ],
+    gallery: [
+      "/images/drones/ibis/ibis-1.webp",
+      "/images/drones/ibis/ibis-2.webp",
+      "/images/drones/ibis/ibis-3.webp",
+      "/images/drones/ibis/ibis-4.webp",
+    ],
+  },
+  {
     slug: "peregrine",
     name: "Peregrine Mk II",
     description: [
@@ -88,91 +112,6 @@ export const drones: Drone[] = [
     ],
   },
   {
-    slug: "ibis",
-    name: "Ibis",
-    description: [
-      "Ibis is a MUAS development aircraft used to explore dependable flight systems, payload integration, and team flight operations.",
-    ],
-    heroImage: "/images/drones/ibis.webp",
-    features: [
-      { label: "Payload Capacity", value: "1 kg" },
-    ],
-    dimensions: [
-      { label: "Wingspan", value: "2200 mm" },
-      { label: "Length", value: "1605 mm" },
-      { label: "Width", value: "2200 mm" },
-      { label: "Mass", value: "6.8 kg" },
-      { label: "Maximum Take-Off Weight", value: "7.8 kg" },
-    ],
-    gallery: [
-      "/images/drones/ibis/ibis-1.webp",
-      "/images/drones/ibis/ibis-2.webp",
-      "/images/drones/ibis/ibis-3.webp",
-      "/images/drones/ibis/ibis-4.webp",
-    ],
-  },
-  // {
-  //   slug: "currawong",
-  //   name: "Currawong",
-  //   description: [
-  //     "Currawong is a team aircraft focused on practical testing, flight validation, and refining MUAS' autonomous systems in the field.",
-  //   ],
-  //   features: [
-  //     { label: "Range", value: "15 km" },
-  //     { label: "Max Flight Speed", value: "22 m/s" },
-  //     { label: "Min Flight Speed", value: "0 m/s" },
-  //     { label: "Design Max Speed", value: "22 m/s" },
-  //   ],
-  //   dimensions: [
-  //     { label: "Length", value: "908 mm" },
-  //     { label: "Width", value: "908 mm" },
-  //     { label: "Height", value: "358 mm" },
-  //     { label: "Mass", value: "9.1 kg" },
-  //     { label: "Maximum Take-Off Weight", value: "12.5 kg" },
-  //   ],
-  //   gallery: placeholderGallery,
-  // },
-  // {
-  //   slug: "fyrefly",
-  //   name: "Fyrefly",
-  //   description: [
-  //     "Fyrefly is part of the MUAS fleet, representing the team's continued experimentation with compact aircraft and autonomous flight capability.",
-  //   ],
-  //   features: [
-  //     { label: "Range", value: "2 km" },
-  //     { label: "Max Flight Speed", value: "18 m/s" },
-  //     { label: "Min Flight Speed", value: "0 m/s" },
-  //     { label: "Design Max Speed", value: "18 m/s" },
-  //   ],
-  //   dimensions: [
-  //     { label: "Length", value: "340 mm" },
-  //     { label: "Width", value: "355 mm" },
-  //     { label: "Height", value: "100 mm" },
-  //     { label: "Mass", value: "1 kg" },
-  //   ],
-  // },
-  {
-    slug: "mosquito",
-    name: "Mosquito",
-    description: [
-      "Mosquito is a lightweight MUAS platform used for agile testing, prototyping, and quick iteration across the team's systems.",
-    ],
-    heroImage: "/images/drones/mosquito.webp",
-    features: [
-      { label: "Payload Capacity", value: "0.7 kg" },
-      { label: "Range", value: "2 km" },
-      { label: "Max Flight Speed", value: "20 m/s" },
-      { label: "Min Flight Speed", value: "0 m/s" },
-      { label: "Design Max Speed", value: "20 m/s" },
-    ],
-    dimensions: [
-      { label: "Length", value: "230 mm" },
-      { label: "Width", value: "210 mm" },
-      { label: "Height", value: "150 mm" },
-      { label: "Mass", value: "1 kg" },
-    ],
-  },
-  {
     slug: "albatross",
     name: "Albatross",
     description: [
@@ -201,6 +140,27 @@ export const drones: Drone[] = [
       "/images/drones/albatross/albatross-7.webp",
       "/images/drones/albatross/albatross-8.webp",
       "/images/drones/albatross/albatross-9.webp",
+    ],
+  },
+  {
+    slug: "mosquito",
+    name: "Mosquito",
+    description: [
+      "Mosquito is a lightweight MUAS platform used for agile testing, prototyping, and quick iteration across the team's systems.",
+    ],
+    heroImage: "/images/drones/mosquito.webp",
+    features: [
+      { label: "Payload Capacity", value: "0.7 kg" },
+      { label: "Range", value: "2 km" },
+      { label: "Max Flight Speed", value: "20 m/s" },
+      { label: "Min Flight Speed", value: "0 m/s" },
+      { label: "Design Max Speed", value: "20 m/s" },
+    ],
+    dimensions: [
+      { label: "Length", value: "230 mm" },
+      { label: "Width", value: "210 mm" },
+      { label: "Height", value: "150 mm" },
+      { label: "Mass", value: "1 kg" },
     ],
   },
   {

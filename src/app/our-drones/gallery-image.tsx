@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 type GalleryImageProps = {
@@ -14,25 +14,49 @@ type GalleryImageProps = {
   onLoad?: () => void;
 };
 
-// GalleryImage renders an optimized image with GPU-accelerated smooth loading states and a lightweight loader spinner.
+// GalleryImage renders an optimized drone image with a subtle loading spinner and graceful error fallback.
 export function GalleryImage({
   src,
   alt,
   fill = true,
   sizes = "(min-width: 1024px) 62vw, 100vw",
   className = "",
-  priority = false,
+  priority = true,
   objectFit = "cover",
   onLoad,
 }: GalleryImageProps) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  // checkLoadedStatus checks if the image is already complete in browser memory cache.
+  const checkLoadedStatus = useCallback(
+    (node: HTMLImageElement | null) => {
+      if (node) {
+        imgRef.current = node;
+        if (node.complete && node.naturalWidth > 0) {
+          setIsLoaded(true);
+          onLoad?.();
+        }
+      }
+    },
+    [onLoad],
+  );
+
+  useEffect(() => {
+    setHasError(false);
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+      setIsLoaded(true);
+    }
+  }, [src]);
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-[inherit] transform-gpu">
-      {/* Keep a stable paint surface while near-active carousel images decode. */}
-      {isLoading && !hasError && (
-        <div className="absolute inset-0 z-10 bg-blue-100/40 transform-gpu" />
+      {/* Subtle loader spinner while downloading */}
+      {!isLoaded && !hasError && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+          <div className="h-7 w-7 animate-spin rounded-full border-2 border-blue-400/30 border-t-blue-600" />
+        </div>
       )}
 
       {/* Error state fallback */}
@@ -42,22 +66,22 @@ export function GalleryImage({
         </div>
       ) : (
         <Image
+          ref={checkLoadedStatus}
           src={src}
           alt={alt}
           fill={fill}
           sizes={sizes}
           priority={priority}
           draggable={false}
-          decoding="async"
-          className={`rounded-[inherit] transform-gpu will-change-[opacity] transition-opacity duration-300 ease-out ${
+          className={`rounded-[inherit] transform-gpu ${
             objectFit === "contain" ? "object-contain" : "object-cover"
-          } ${isLoading ? "opacity-0" : "opacity-100"} ${className}`}
-          onLoadingComplete={() => {
-            setIsLoading(false);
+          } ${className}`}
+          onLoad={() => {
+            setIsLoaded(true);
             onLoad?.();
           }}
           onError={() => {
-            setIsLoading(false);
+            setIsLoaded(false);
             setHasError(true);
           }}
         />
@@ -65,3 +89,5 @@ export function GalleryImage({
     </div>
   );
 }
+
+
