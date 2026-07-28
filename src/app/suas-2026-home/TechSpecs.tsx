@@ -248,7 +248,7 @@ export function TechSpecs() {
     <section
       id="technical-specifications"
       ref={sectionRef}
-      className="scroll-mt-10 bg-black-500 px-6 pb-4 pt-10 text-white sm:pb-8 sm:pt-12 lg:px-14 lg:pb-10 lg:pt-16"
+      className="scroll-mt-10 bg-black-500 px-6 py-10 text-white sm:py-14 lg:px-14 lg:py-20"
     >
       <div className="mx-auto w-full max-w-7xl">
         <h2

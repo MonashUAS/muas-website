@@ -486,7 +486,7 @@ export function KeyFeatures() {
     <section
       ref={sectionRef}
       id="key-features"
-      className="relative scroll-mt-10 overflow-hidden bg-black-500 pb-8 pt-12 text-white md:pb-10 lg:pb-8 lg:pt-14"
+      className="relative scroll-mt-10 overflow-hidden bg-black-500 py-10 text-white sm:py-14 lg:py-20"
     >
       {/* MOBILE CAROUSEL VIEW (Hidden on Tablet/Desktop) */}
       <div
@@ -665,9 +665,9 @@ export function KeyFeatures() {
       </div>
 
       {/* DESKTOP VIEW (Side-by-side, Hidden on Mobile) */}
-      <div className="relative mx-auto hidden w-full max-w-[1720px] px-5 sm:px-8 lg:px-12 lg:block">
+      <div className="relative mx-auto hidden w-full max-w-[1720px] flex-1 flex-col justify-center px-5 sm:px-8 lg:flex lg:px-12">
         {mounted && (
-          <div className="absolute inset-y-0 right-0 z-0 h-full w-3/4">
+          <div className="absolute inset-y-0 right-0 z-0 h-full w-3/4 min-h-[500px]">
             <ModelViewer
               isDesktop={true}
               canUseWebGL={canUseWebGL}
