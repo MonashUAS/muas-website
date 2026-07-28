@@ -103,7 +103,6 @@ export const scrollHeroCopy: ScrollHeroCopy[] = [
   {
     key: "closing",
     className: "max-w-xl text-h5",
-    layer: "behind-frame",
     lines: [
       {
         segments: [

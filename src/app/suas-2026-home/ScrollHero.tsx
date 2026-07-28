@@ -10,10 +10,9 @@ import { searchSlug } from "@/lib/search/content";
 import LoadingScreen from "./LoadingScreen"
 
 const FRAME_COUNT = 420;
-const FRAME_PATH = "/images/redback-animation/";
+const FRAME_PATH = "/images/redback-animation-small/";
 const PRELOAD_CONCURRENCY = 20;
-const INITIAL_CRITICAL_COUNT = 30;
-const KEYFRAME_STEP = 15;
+const LOAD_SCREEN_RATIO = 0.90;
 
 // Increase this value to make the scroll animation slower, or reduce it to make it faster.
 const SCROLL_LENGTH_VH = 1200;
@@ -28,15 +27,16 @@ function getLineText(line: ScrollHeroLine) {
     : line.segments.map((segment) => segment.text).join("");
 }
 
-/** Builds a list of frame indices ordered by loading priority (critical initial + keyframes, then remaining). */
+/** Builds a list of frame indices ordered by loading priority (90% of frames during load screen, remaining 10% in background). */
 function getPriorityFrameList(): { criticalFrames: number[]; remainingFrames: number[] } {
+  const targetCriticalCount = Math.floor(FRAME_COUNT * LOAD_SCREEN_RATIO);
   const criticalSet = new Set<number>();
 
-  for (let f = 1; f <= Math.min(INITIAL_CRITICAL_COUNT, FRAME_COUNT); f += 1) {
+  for (let f = 1; f <= targetCriticalCount; f += 1) {
     criticalSet.add(f);
   }
 
-  for (let f = INITIAL_CRITICAL_COUNT + 1; f <= FRAME_COUNT; f += KEYFRAME_STEP) {
+  for (let f = targetCriticalCount + 1; f <= FRAME_COUNT; f += 5) {
     criticalSet.add(f);
   }
   criticalSet.add(FRAME_COUNT);
@@ -81,7 +81,7 @@ export function ScrollHero() {
   const [frame, setFrame] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadedCount, setLoadedCount] = useState(0);
-  const [criticalTotal, setCriticalTotal] = useState(INITIAL_CRITICAL_COUNT);
+  const [criticalTotal, setCriticalTotal] = useState(Math.floor(FRAME_COUNT * LOAD_SCREEN_RATIO));
   const [progress, setProgress] = useState(0);
   const loadedFramesRef = useRef<Set<number>>(new Set());
   const imageCacheRef = useRef<(HTMLImageElement | null)[]>([]);
@@ -256,6 +256,8 @@ function ScrollHeroLineText({ line }: { line: ScrollHeroLine }) {
   ));
 }
 
+
+
 /** Preloads frame sequence in two stages: critical frames first to unblock UI, then remaining frames in background. */
 function preloadFramesProgressive(
   criticalFrames: number[],
@@ -307,8 +309,11 @@ function preloadFramesProgressive(
   }
 }
 
-// getFramePath formats the current frame number into the matching public image URL.
+/** Formats the current frame number into the matching public image URL, auto-handling standard and _# resized filenames. */
 function getFramePath(frame: number) {
+  if (FRAME_PATH.includes("smaller") || FRAME_PATH.includes("small")) {
+    return `${FRAME_PATH}${String(frame - 1).padStart(4, "0")}_${frame}.webp`;
+  }
   return `${FRAME_PATH}${String(frame).padStart(4, "0")}.webp`;
 }
 
