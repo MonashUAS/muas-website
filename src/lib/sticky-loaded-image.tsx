@@ -19,10 +19,15 @@ type StickyLoadedImageProps = {
 export function StickyLoadedImage({ shouldLoad, children }: StickyLoadedImageProps) {
   const [keepLoaded, setKeepLoaded] = useState(shouldLoad);
   const [isDecoded, setIsDecoded] = useState(false);
+  const showImage = keepLoaded || shouldLoad;
 
   useEffect(() => {
     if (shouldLoad) {
-      setKeepLoaded(true);
+      const frameId = window.requestAnimationFrame(() => {
+        setKeepLoaded(true);
+      });
+
+      return () => window.cancelAnimationFrame(frameId);
     }
   }, [shouldLoad]);
 
@@ -33,7 +38,7 @@ export function StickyLoadedImage({ shouldLoad, children }: StickyLoadedImagePro
   return (
     <>
       {children({
-        showImage: keepLoaded,
+        showImage,
         isDecoded,
         onDecoded,
       })}

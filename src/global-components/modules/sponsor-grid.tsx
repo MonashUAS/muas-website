@@ -226,6 +226,8 @@ export function SponsorGrid() {
                       src={sponsor.src}
                       alt={`${sponsor.name} logo`}
                       fill
+                      unoptimized
+                      decoding="async"
                       sizes={
                         row.desktopColumns === 1
                           ? "(min-width: 1024px) 18rem, (min-width: 640px) 18rem, calc(100vw - 116px)"

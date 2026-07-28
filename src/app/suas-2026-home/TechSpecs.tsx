@@ -236,11 +236,11 @@ export function TechSpecs() {
     };
   }, [activePanelSlug, registerSearchTarget]);
 
-  const handleImageError = () => {
+  const handleImageError = (src: string) => {
     setFailedImageSources((sources) =>
-      sources.includes(activePanel.image.src)
+      sources.includes(src)
         ? sources
-        : [...sources, activePanel.image.src],
+        : [...sources, src],
     );
   };
 
@@ -327,17 +327,33 @@ export function TechSpecs() {
 
           {/* Supporting specification image */}
           <div className="relative order-1 mb-4 h-[160px] shrink-0 overflow-hidden bg-black-500 sm:h-[210px] lg:order-2 lg:mb-0 lg:h-full">
-            <Image
-              key={activeImageSrc}
-              src={activeImageSrc}
-              alt={activePanel.image.alt}
-              fill
-              sizes="(min-width: 1024px) 58vw, 100vw"
-              decoding="async"
-              className="object-contain object-center"
-              onError={handleImageError}
-              priority={activeIndex === initialPanelIndex}
-            />
+            {techSpecPanels.map((panel, index) => {
+              const panelImageSrc = resolvePanelImageSrc(
+                panel.image.src,
+                failedImageSources,
+              );
+
+              const isActiveImage = index === activeIndex;
+
+              return (
+                <Image
+                  key={panel.navTitle}
+                  src={panelImageSrc}
+                  alt={isActiveImage ? activePanel.image.alt : ""}
+                  aria-hidden={isActiveImage ? undefined : true}
+                  fill
+                  sizes="(min-width: 1024px) 58vw, 100vw"
+                  decoding="async"
+                  loading={index === initialPanelIndex ? undefined : "eager"}
+                  priority={index === initialPanelIndex}
+                  unoptimized
+                  className={`object-contain object-center transition-opacity duration-300 ease-out motion-reduce:transition-none ${
+                    isActiveImage ? "opacity-100" : "opacity-0"
+                  }`}
+                  onError={() => handleImageError(panel.image.src)}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

@@ -15,7 +15,7 @@ export function HomepageExplorePanels() {
     >
       <div className="mx-auto max-w-[1720px]">
         <div className="flex flex-col gap-3 md:flex-col lg:min-h-[420px] lg:flex-row lg:gap-2">
-          {explorePanels.map((panel) => (
+          {explorePanels.map((panel, panelIndex) => (
             <Link
               key={panel.href}
               href={panel.href}
@@ -26,6 +26,8 @@ export function HomepageExplorePanels() {
                 src={panel.image}
                 alt={panel.alt}
                 fill
+                preload={panelIndex < 2}
+                fetchPriority={panelIndex < 2 ? "high" : "auto"}
                 sizes="(min-width: 1024px) 34vw, 100vw"
                 className="contain-paint object-cover transition-transform duration-500 will-change-transform group-active:scale-[1.02] motion-reduce:transition-none md:duration-700 md:ease-[cubic-bezier(0.22,1,0.36,1)] md:group-hover:scale-[1.035] md:group-focus-visible:scale-[1.035] md:group-active:scale-100"
               />

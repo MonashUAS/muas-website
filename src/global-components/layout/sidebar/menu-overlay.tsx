@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
 import { headingClass, overlayContentClass, overlayInnerClass } from "./navbar-classes";
 import { homeLink, navigationGroups } from "./navbar-data";
+import type { NavGroup } from "./navbar-data";
 
 type MenuOverlayProps = {
   menuId: string;
@@ -10,6 +11,16 @@ type MenuOverlayProps = {
   setExpandedGroup: Dispatch<SetStateAction<string | null>>;
   closeOverlay: () => void;
 };
+
+function getFirstGroupHref(group: NavGroup) {
+  const firstItem = group.links[0];
+
+  if (!firstItem) {
+    return "/";
+  }
+
+  return "href" in firstItem ? firstItem.href : firstItem.links[0]?.href ?? "/";
+}
 
 // Renders the full-screen navigation scene while Sidebar owns overlay state.
 export function MenuOverlay({
@@ -47,21 +58,17 @@ export function MenuOverlay({
               onMouseEnter={() => setExpandedGroup(group.label)}
               onMouseLeave={() => setExpandedGroup(null)}
             >
-              <button
-                type="button"
+              <Link
+                href={getFirstGroupHref(group)}
                 aria-expanded={isExpanded}
                 aria-controls={`${menuId}-${group.label.toLowerCase()}`}
                 onFocus={() => setExpandedGroup(group.label)}
-                onClick={() =>
-                  setExpandedGroup((current) =>
-                    current === group.label ? null : group.label,
-                  )
-                }
+                onClick={closeOverlay}
                 className={`group flex w-fit flex-col items-start text-left ${headingClass} transition-[color,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/35 motion-reduce:transition-none ${
                   isExpanded
                     ? "text-white"
                     : "text-white/46 hover:-translate-y-0.5 hover:text-white/78 focus-visible:text-white/78"
-                }`}
+                  }`}
               >
                 <span>{group.label}</span>
                 <span
@@ -70,7 +77,7 @@ export function MenuOverlay({
                     isExpanded ? "w-full opacity-100" : "w-0 opacity-0"
                   }`}
                 />
-              </button>
+              </Link>
 
               <div
                 id={`${menuId}-${group.label.toLowerCase()}`}

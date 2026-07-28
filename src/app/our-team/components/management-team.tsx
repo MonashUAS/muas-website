@@ -32,8 +32,8 @@ function preloadMemberImages(members: TeamMember[]) {
 }
 
 export function ManagementTeam() {
-  const [activeSectionId, setActiveSectionId] = useState("all");
-  const [displayedSectionId, setDisplayedSectionId] = useState("all");
+  const [activeSectionId, setActiveSectionId] = useState("management");
+  const [displayedSectionId, setDisplayedSectionId] = useState("management");
   const [isDissolving, setIsDissolving] = useState(false);
   const transitionTimer = useRef<number | null>(null);
   const preloadGeneration = useRef(0);

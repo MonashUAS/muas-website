@@ -63,7 +63,7 @@ export const ourTeamSearchDocument: SearchDocument = {
     ...teamSections.map(
       (section): SearchTarget => ({
         id: `team-section-${section.id}`,
-        label: section.label === "All" ? "Management Team" : section.label,
+        label: section.label,
         hash: "management-team",
         text: [
           {

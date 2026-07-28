@@ -11,8 +11,8 @@ export function RedbackWebHighlight({
   children,
 }: RedbackWebHighlightProps) {
   return (
-    <span className="relative inline-block px-[0.22em]">
-      <span className="redback-web-label relative z-10 inline-block bg-gradient-to-r from-red-700 to-red-200 bg-clip-text text-transparent">
+    <span className="relative inline-block px-[0.6em] pb-[0.06em]">
+      <span className="redback-web-label relative z-10 inline-block bg-gradient-to-r from-red-500 via-red-300 to-red-100 bg-clip-text pr-[0.1em] text-transparent drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
         {children}
       </span>
 
@@ -20,7 +20,7 @@ export function RedbackWebHighlight({
         aria-hidden="true"
         viewBox="0 0 360 220"
         preserveAspectRatio="none"
-        className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[2.2em] w-[calc(100%+1.35em)] -translate-x-1/2 -translate-y-1/2 overflow-visible"
+        className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[2.2em] w-[calc(100%+1.65em)] -translate-x-1/2 -translate-y-1/2 overflow-visible"
       >
         {/* Radial spokes from a shared hub */}
         <path

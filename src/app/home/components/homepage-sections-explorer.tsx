@@ -22,8 +22,11 @@ export function HomepageSectionsExplorer() {
     }
 
     if (typeof IntersectionObserver === "undefined") {
-      setPrepareAllSlides(true);
-      return;
+      const frameId = window.requestAnimationFrame(() => {
+        setPrepareAllSlides(true);
+      });
+
+      return () => window.cancelAnimationFrame(frameId);
     }
 
     const observer = new IntersectionObserver(
@@ -51,8 +54,15 @@ export function HomepageSectionsExplorer() {
       homepageSections.map((section) => ({
         key: section.href,
         searchTargetId: `home-sections-${section.href.replaceAll("/", "-").replace(/^-/, "")}`,
-        renderContent: ({ isNearActive }: { isNearActive: boolean }) => (
+        renderContent: ({
+          isActive,
+          isNearActive,
+        }: {
+          isActive: boolean;
+          isNearActive: boolean;
+        }) => (
           <SectionTile
+            isActive={isActive}
             section={section}
             loadImage={prepareAllSlides || isNearActive}
           />
@@ -99,11 +109,14 @@ export function HomepageSectionsExplorer() {
 }
 
 type SectionTileProps = {
+  isActive: boolean;
   section: (typeof homepageSections)[number];
   loadImage: boolean;
 };
 
-function SectionTile({ section, loadImage }: SectionTileProps) {
+function SectionTile({ isActive, section, loadImage }: SectionTileProps) {
+  const isFirstSection = section.href === homepageSections[0].href;
+
   return (
     <Link
       href={section.href}
@@ -121,6 +134,10 @@ function SectionTile({ section, loadImage }: SectionTileProps) {
               src={section.image}
               alt={section.alt}
               fill
+              preload={isFirstSection}
+              loading={isFirstSection ? undefined : loadImage ? "eager" : "lazy"}
+              fetchPriority={isActive ? "high" : "auto"}
+              unoptimized
               sizes="(min-width: 1024px) 54vw, 100vw"
               onLoadingComplete={onDecoded}
               className={`rounded-[inherit] object-cover transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.045] group-focus-visible:scale-[1.045] motion-reduce:transition-none ${
