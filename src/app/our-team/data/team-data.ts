@@ -112,7 +112,7 @@ const aerostructuresMembers: TeamMember[] = [
     name: "Sota Kawasaki",
     role: "Simulation Lead (FEA)",
     section: "Aerostructures",
-    image: temporaryImage,
+    image: portraits.sotaKawasaki,
   },
   {
     name: "Cooper Robley",
@@ -142,7 +142,7 @@ const aerostructuresMembers: TeamMember[] = [
     name: "George Vasilidis",
     role: "Landing Gear Lead",
     section: "Aerostructures",
-    image: temporaryImage,
+    image: portraits.georgeVasilidis,
   },
 ];
 
@@ -187,7 +187,7 @@ const avionicsMembers: TeamMember[] = [
     name: "Folger Kong",
     role: "DNA Lead",
     section: "Avionics",
-    image: temporaryImage,
+    image: portraits.folgerKong,
   },
 ];
 
@@ -214,7 +214,7 @@ const operationsMembers: TeamMember[] = [
     name: "Prajyoth Raireddy",
     role: "Events and Programs Lead",
     section: "Operations",
-    image: temporaryImage,
+    image: portraits.prajyothRaireddy,
   },
   {
     name: "Oliver Bilston",
@@ -241,7 +241,7 @@ const propulsionMembers: TeamMember[] = [
     name: "Lyndon Bulman",
     role: "Propellers Lead",
     section: "Propulsion",
-    image: temporaryImage,
+    image: portraits.lyndonBulman,
   },
   {
     name: "Shiyao Han",
@@ -259,7 +259,7 @@ const propulsionMembers: TeamMember[] = [
     name: "Ashvin Cali",
     role: "PIE Lead",
     section: "Propulsion",
-    image: temporaryImage,
+    image: portraits.ashvinCali,
   },
   {
     name: "Jasmeet Singh",
