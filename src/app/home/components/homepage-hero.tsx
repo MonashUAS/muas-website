@@ -3,15 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SearchableText } from "@/global-components/search/searchable-text";
+import { useIsMobile } from "@/lib/use-is-mobile";
 import { getVideoPosterSrc } from "@/lib/media-paths";
 import { usePreparedMediaSlideshow } from "@/lib/use-prepared-media-slideshow";
-import { heroSlides } from "../data/hero-slides";
+import { heroSlidesDesktop, heroSlidesMobile } from "../data/hero-slides";
 import { usePrefersReducedMotion } from "../utils/use-prefers-reduced-motion";
 
 // The homepage hero owns only slideshow behavior; slide content lives in data
 // so the media sequence can be updated without touching interaction code.
 export function HomepageHero() {
+  const isMobile = useIsMobile();
   const prefersReducedMotion = usePrefersReducedMotion();
+  const slides = isMobile ? heroSlidesMobile : heroSlidesDesktop;
+
   const {
     handleImageDecoded,
     handleMediaError,
@@ -21,7 +25,7 @@ export function HomepageHero() {
     sectionRef,
     visibleSlide,
   } = usePreparedMediaSlideshow({
-    slides: heroSlides,
+    slides,
     prefersReducedMotion,
   });
 
@@ -32,7 +36,7 @@ export function HomepageHero() {
       className="relative viewport-fold scroll-mt-20 overflow-hidden bg-black-500 text-white"
     >
       <div className="absolute inset-0">
-        {heroSlides.map((slide, index) => {
+        {slides.map((slide, index) => {
           if (!mountedSlideIndexes.has(index)) {
             return null;
           }
