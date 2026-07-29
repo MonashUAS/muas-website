@@ -15,6 +15,26 @@ export type HeroSlide =
 // 2 photos -> video -> 1 photo -> video -> 2 photos.
 export const heroSlides: HeroSlide[] = [
   {
+    id: "redback-flying-1",
+    type: "video",
+    src: "/images/homepage/hero/redback-flying-1.mp4",
+  },
+  {
+    id: "redback-flying-2",
+    type: "video",
+    src: "/images/homepage/hero/redback-flying-2.mp4",
+  },
+  {
+    id: "redback-flying-3",
+    type: "video",
+    src: "/images/homepage/hero/redback-flying-3.mp4",
+  },
+  {
+    id: "redback-flying-4",
+    type: "video",
+    src: "/images/homepage/hero/redback-flying-4.mp4",
+  },
+  {
     id: "composites",
     type: "image",
     src: "/images/homepage/hero/composites.webp",
