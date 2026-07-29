@@ -7,10 +7,11 @@ import {
 } from "@/global-components/search/search-navigation-provider";
 import { SearchableText } from "@/global-components/search/searchable-text";
 import type { TeamMember, TeamSection } from "../data/team-data";
-import { teamSections } from "../data/team-data";
+import { visibleTeamSections } from "../data/team-data";
 import { MemberCard } from "./member-card";
 
 const dissolveMs = 180;
+const initialVisibleSectionId = visibleTeamSections[0]?.id ?? "";
 
 function preloadMemberImages(members: TeamMember[]) {
   return Promise.all(
@@ -32,8 +33,12 @@ function preloadMemberImages(members: TeamMember[]) {
 }
 
 export function ManagementTeam() {
-  const [activeSectionId, setActiveSectionId] = useState("management");
-  const [displayedSectionId, setDisplayedSectionId] = useState("management");
+  const [activeSectionId, setActiveSectionId] = useState(
+    initialVisibleSectionId,
+  );
+  const [displayedSectionId, setDisplayedSectionId] = useState(
+    initialVisibleSectionId,
+  );
   const [isDissolving, setIsDissolving] = useState(false);
   const transitionTimer = useRef<number | null>(null);
   const preloadGeneration = useRef(0);
@@ -41,8 +46,8 @@ export function ManagementTeam() {
   const { registerSearchTarget } = useSearchNavigation();
 
   const displayedSection =
-    teamSections.find((section) => section.id === displayedSectionId) ??
-    teamSections[0];
+    visibleTeamSections.find((section) => section.id === displayedSectionId) ??
+    visibleTeamSections[0];
 
   useEffect(() => {
     return () => {
@@ -69,11 +74,15 @@ export function ManagementTeam() {
         }
 
         const nextSection =
-          teamSections.find(
+          visibleTeamSections.find(
             (section) =>
               section.id === (pillInteraction?.value ?? state.expand?.itemId),
           ) ??
-          teamSections[0];
+          visibleTeamSections[0];
+
+        if (!nextSection) {
+          return;
+        }
 
         if (transitionTimer.current !== null) {
           window.clearTimeout(transitionTimer.current);
@@ -133,10 +142,14 @@ export function ManagementTeam() {
     }
 
     const nextSection =
-      teamSections.find((section) => section.id === sectionId) ??
-      teamSections[0];
+      visibleTeamSections.find((section) => section.id === sectionId) ??
+      visibleTeamSections[0];
 
-    setActiveSectionId(sectionId);
+    if (!nextSection) {
+      return;
+    }
+
+    setActiveSectionId(nextSection.id);
     setIsDissolving(true);
 
     if (transitionTimer.current !== null) {
@@ -157,7 +170,7 @@ export function ManagementTeam() {
         return;
       }
 
-      setDisplayedSectionId(sectionId);
+      setDisplayedSectionId(nextSection.id);
 
       window.requestAnimationFrame(() => {
         if (generation !== preloadGeneration.current) {
@@ -168,6 +181,10 @@ export function ManagementTeam() {
       });
     });
   };
+
+  if (!displayedSection) {
+    return null;
+  }
 
   return (
     <section
@@ -189,7 +206,7 @@ export function ManagementTeam() {
           aria-label="Filter management team members"
           className="mx-auto mt-8 flex max-w-max gap-2 overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-3 shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-md sm:gap-3"
         >
-          {teamSections.map((section) => {
+          {visibleTeamSections.map((section) => {
             const isActive = activeSectionId === section.id;
 
             return (

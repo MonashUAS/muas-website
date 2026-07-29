@@ -17,6 +17,7 @@ export type SectionMedia = {
 export type SectionHeroMedia =
   | (SectionMedia & {
       alt: string;
+      blurDataURL?: string;
       id: string;
       type: "image";
     })
@@ -348,6 +349,8 @@ export const sections: TeamSection[] = [
         type: "image",
         src: "/images/teams/operations/hero/hero-events-updated.webp",
         alt: "MUAS members at an operations event",
+        blurDataURL:
+          "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAACwAwCdASoYABAAPwFwsE6rJyUiMAgBYCAJaQAAUopS2Qh6Fp60AAD8buyuVnTHw3QcCcHRr4ozA8AA",
         position: "50% 58%",
       },
       {

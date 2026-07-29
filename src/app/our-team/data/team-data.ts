@@ -11,6 +11,7 @@ export type TeamMember = {
   section: string;
   image: TeamMemberImage;
   priority?: number;
+  temporaryHiddenPendingUpdatedPhotos?: boolean;
 };
 
 export type TeamSection = {
@@ -18,6 +19,7 @@ export type TeamSection = {
   label: string;
   description: string;
   members: TeamMember[];
+  temporaryHiddenPendingUpdatedPhotos?: boolean;
 };
 
 export const temporaryImage = {
@@ -107,42 +109,49 @@ const aerostructuresMembers: TeamMember[] = [
     role: "Composites Lead",
     section: "Aerostructures",
     image: portraits.aliceBarling,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Sota Kawasaki",
     role: "Simulation Lead (FEA)",
     section: "Aerostructures",
     image: portraits.sotaKawasaki,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Cooper Robley",
     role: "Simulation Lead (CFD) / Fuselage/Wing Lead",
     section: "Aerostructures",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Valentino Vargetto",
     role: "3D Fabrication Lead",
     section: "Aerostructures",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Reuben Kobier",
     role: "CAD Manager",
     section: "Aerostructures",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Luke Nicholson",
     role: "Empennage Lead",
     section: "Aerostructures",
     image: portraits.lukeNicholson,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "George Vasilidis",
     role: "Landing Gear Lead",
     section: "Aerostructures",
     image: portraits.georgeVasilidis,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
 ];
 
@@ -164,30 +173,35 @@ const avionicsMembers: TeamMember[] = [
     role: "Integration / Mission Management / Pipeline / Echo Lead",
     section: "Avionics",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Tanvi Somvanshi",
     role: "Avionics Stack Lead",
     section: "Avionics",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Jia (Kimberley) Chin",
     role: "Vision Lead",
     section: "Avionics",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Jacky Liang",
     role: "Lifeline Lead",
     section: "Avionics",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Folger Kong",
     role: "DNA Lead",
     section: "Avionics",
     image: portraits.folgerKong,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
 ];
 
@@ -203,24 +217,28 @@ const operationsMembers: TeamMember[] = [
     role: "Marketing Lead",
     section: "Operations",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Connor Madigan",
     role: "Sponsorships Lead",
     section: "Operations",
     image: portraits.connorMadigan,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Prajyoth Raireddy",
     role: "Events and Programs Lead",
     section: "Operations",
     image: portraits.prajyothRaireddy,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Oliver Bilston",
     role: "Logistics Lead",
     section: "Operations",
     image: portraits.oliverBilston,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
 ];
 
@@ -242,30 +260,35 @@ const propulsionMembers: TeamMember[] = [
     role: "Propellers Lead",
     section: "Propulsion",
     image: portraits.lyndonBulman,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Shiyao Han",
     role: "Ibis Lead",
     section: "Propulsion",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Ava Bryant",
     role: "CSU Lead",
     section: "Propulsion",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Ashvin Cali",
     role: "PIE Lead",
     section: "Propulsion",
     image: portraits.ashvinCali,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Jasmeet Singh",
     role: "TTS Lead",
     section: "Propulsion",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
 ];
 
@@ -287,18 +310,21 @@ const flightOperationsMembers: TeamMember[] = [
     role: "Pilots Lead",
     section: "Flight Operations",
     image: portraits.tomMachin,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Adwik Ghosh",
     role: "Pilots Lead",
     section: "Flight Operations",
     image: portraits.adwikGhosh,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     name: "Nick Stringer",
     role: "Groundstation Lead",
     section: "Flight Operations",
     image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
 ];
 
@@ -341,6 +367,10 @@ const managementTeamMembers: TeamMember[] = [
   ...financeMembers,
 ].filter((member): member is TeamMember => Boolean(member));
 
+// Temporarily hides entries pending updated photos while preserving source records for easy restoration.
+const visibleMembers = (members: TeamMember[]) =>
+  members.filter((member) => !member.temporaryHiddenPendingUpdatedPhotos);
+
 export const teamSections: TeamSection[] = [
   {
     id: "management",
@@ -348,6 +378,7 @@ export const teamSections: TeamSection[] = [
     description:
       "Meet the 2026 leaders responsible for strategy, engineering, section delivery, finance and flight operations across Monash UAS. Together, they coordinate the complete aircraft lifecycle and support more than 100 members across the team.",
     members: managementTeamMembers,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
     id: "upper-management",
@@ -361,35 +392,35 @@ export const teamSections: TeamSection[] = [
     label: "Aerostructures",
     description:
       "Aerostructures leads the design and manufacture of the aircraft’s physical structure, balancing aerodynamic performance, strength, weight and manufacturability. The section works closely with propulsion, avionics and flight operations to turn engineering concepts into flight-ready airframes.",
-    members: aerostructuresMembers,
+    members: visibleMembers(aerostructuresMembers),
   },
   {
     id: "avionics",
     label: "Avionics",
     description:
       "Avionics develops the onboard electronics, embedded systems, communications and payload integration that allow the aircraft to operate reliably and autonomously. The section connects hardware and software while supporting testing, troubleshooting and competition readiness.",
-    members: avionicsMembers,
+    members: visibleMembers(avionicsMembers),
   },
   {
     id: "operations",
     label: "Operations",
     description:
       "Operations keeps the wider team coordinated through logistics, scheduling, documentation, events and internal communication. The section connects technical work with the people, resources and planning required to keep each project moving.",
-    members: operationsMembers,
+    members: visibleMembers(operationsMembers),
   },
   {
     id: "propulsion",
     label: "Propulsion",
     description:
       "Propulsion develops and validates the systems that generate thrust and power the aircraft through every stage of flight. The section supports component selection, integration, performance testing and safe operation alongside aerostructures and flight operations.",
-    members: propulsionMembers,
+    members: visibleMembers(propulsionMembers),
   },
   {
     id: "flight-operations",
     label: "Flight Operations",
     description:
       "Flight Operations plans and runs safe, structured flight testing. The section manages procedures, field logistics, risk controls and test objectives so engineering changes can be evaluated under real operating conditions.",
-    members: flightOperationsMembers,
+    members: visibleMembers(flightOperationsMembers),
   },
   {
     id: "lead-pilots",
@@ -406,3 +437,7 @@ export const teamSections: TeamSection[] = [
     members: orderedAuxiliaryMembers,
   },
 ];
+
+export const visibleTeamSections = teamSections.filter(
+  (section) => !section.temporaryHiddenPendingUpdatedPhotos,
+);

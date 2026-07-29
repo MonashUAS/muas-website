@@ -166,12 +166,14 @@ function HeroMedia({
     return (
       <Image
         alt={media.alt}
+        blurDataURL={media.blurDataURL}
         className="object-cover"
         fill
+        fetchPriority={priority ? "high" : "low"}
+        preload={priority}
         onError={onError}
         onLoadingComplete={onImageDecoded}
-        preload={priority}
-        fetchPriority={priority ? "high" : "auto"}
+        placeholder={media.blurDataURL ? "blur" : "empty"}
         sizes="100vw"
         src={media.src}
         style={mediaStyle}
