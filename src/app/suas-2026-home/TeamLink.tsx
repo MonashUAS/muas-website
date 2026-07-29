@@ -9,7 +9,7 @@ export function TeamLink() {
   return (
     <NextDestinationLink
       id="redback-team-link"
-      description="Learn about the people behind Redback and key design decisions made along the way towards SUAS 2026."
+      description="Learn about the people behind Redback, how it was built, and key design decisions made along the way towards SUAS 2026."
       href={teamHref}
       imageAlt="The Redback team gathered outdoors with the aircraft"
       imageSrc={teamImage}
