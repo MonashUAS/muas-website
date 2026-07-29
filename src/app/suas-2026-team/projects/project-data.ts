@@ -9,7 +9,7 @@ export type Project = {
   summary: string;
   leadLabel?: "Team lead" | "Team leads" | "Pilots";
   leads?: string[];
-  memberLabel?: "Team members";
+  memberLabel?: string;
   members?: string[];
   keyDecisions: KeyDesignDecision[];
   testingProcess?: string;
@@ -67,6 +67,8 @@ export const projects: Project[] = [
       "DNA provides real-time obstacle avoidance and supports autonomous mission functions, including diversion from the planned mission route and the aircraft's return to its original mission.",
     leadLabel: "Team lead",
     leads: ["Folger Kong"],
+    memberLabel: "Team member",
+    members: ["Tony Liang"],
     keyDecisions: [
       {
         title: "Receding-horizon motion planning",
@@ -141,7 +143,9 @@ export const projects: Project[] = [
     slug: "mission-management",
     summary:
       "Mission Management centralises control of Redback and its onboard avionics systems within a single operator interface.",
-    keyDecisions: [
+    leadLabel: "Team lead",
+    leads: ["Dylan Storey"],
+      keyDecisions: [
       {
         title: "PyQt6 desktop application",
         body: "The team considered both web and desktop architectures. Because the system requires only one active client, a desktop application was selected and built with PyQt6, using technologies already familiar to the team and suited to rapid development.",
@@ -170,7 +174,9 @@ export const projects: Project[] = [
     slug: "propulsion",
     summary:
       "Propulsion oversees the specification, installation and maintenance of Redback's commercial propulsion system, ensuring it can meet the endurance and performance requirements of the SUAS mission.",
-    keyDecisions: [
+    leadLabel: "Team leads",
+    leads: ["Oliver Bassily", "Julian Nosiara"],
+      keyDecisions: [
       {
         title: "Quad-rotor motor configuration",
         body: "A quad-rotor configuration with one motor per boom was selected instead of a coaxial arrangement. This reduces power consumption and supports the competition endurance requirement, while retaining the proven reliability of a conventional quad-rotor layout.",
@@ -201,6 +207,10 @@ export const projects: Project[] = [
       {
         title: "BEC power harness",
         body: "The power harness distributes regulated power from the main battery to systems including the flight controller, communications hardware and sensors. It protects sensitive electronics from voltage instability and allows each subsystem to receive reliable power without requiring separate batteries.",
+      },
+      {
+        title: "Efficient routing and placement of components",
+        body: "Stratigically mapped the placement of electrical compoenets and routed the wiring harness to minimize cable length, reduce electromagnetic interferance, and improve power efficiency. The layout optimises cooling, and makes the electrical system easier to inspect, maintain and troubleshoot.",
       },
     ],
     images: ["/images/suas-team-page/our-redback-projects/stack.webp"],
