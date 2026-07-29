@@ -21,11 +21,14 @@ const SEARCH_CONTROLLER_ID = "redback-projects-carousel";
 const MIN_SCROLLBAR_THUMB_HEIGHT_PX = 48;
 const SCROLLBAR_TRACK_VERTICAL_INSET_PX = 32;
 
-const LIFELINE_INDEX = projects.findIndex(
-  (project) => project.slug === "lifeline",
+const UPPER_MANAGEMENT_INDEX = projects.findIndex(
+  (project) =>
+    project.slug === "upper-management" ||
+    project.name.trim().toLowerCase() === "upper management",
 );
 
-const INITIAL_PROJECT_INDEX = LIFELINE_INDEX >= 0 ? LIFELINE_INDEX : 0;
+const INITIAL_PROJECT_INDEX =
+  UPPER_MANAGEMENT_INDEX >= 0 ? UPPER_MANAGEMENT_INDEX : 0;
 
 const UPPER_MANAGEMENT_PROJECT = projects.find(
   (project) =>
@@ -73,6 +76,7 @@ function RedbackTeamsCarousel() {
     clampIndex(INITIAL_PROJECT_INDEX, projects.length),
   );
   const [isCardTransitioning, setIsCardTransitioning] = useState(false);
+  const [isInfoPanelHovered, setIsInfoPanelHovered] = useState(false);
   const [referenceCardHeight, setReferenceCardHeight] = useState<
     number | undefined
   >(undefined);
@@ -259,9 +263,16 @@ function RedbackTeamsCarousel() {
         initialIndex={INITIAL_PROJECT_INDEX}
         onActiveIndexChange={handleActiveIndexChange}
         searchControllerId={SEARCH_CONTROLLER_ID}
+        isPaused={isInfoPanelHovered}
       />
 
-      <div className="relative px-12 sm:px-16 lg:px-20">
+      <div
+        className="relative px-12 sm:px-16 lg:px-20"
+        onMouseEnter={() => setIsInfoPanelHovered(true)}
+        onMouseLeave={() => setIsInfoPanelHovered(false)}
+        onFocus={() => setIsInfoPanelHovered(true)}
+        onBlur={() => setIsInfoPanelHovered(false)}
+      >
         <div className="mt-6 overflow-hidden rounded-[1.5rem]">
           <div
             data-redback-project-card-track="true"

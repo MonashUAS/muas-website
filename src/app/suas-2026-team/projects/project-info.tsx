@@ -90,9 +90,12 @@ function ProjectInfoContent({ project }: { project: Project }) {
         </p>
       </div>
 
-      {project.leadLabel && project.leads?.length ? (
+      {project.leads?.length ? (
         <div>
-          <p className="text-b2 text-blue-100/60">{project.leadLabel}</p>
+          <p className="text-b2 text-blue-100/60">
+            {project.leadLabel ??
+              (project.leads.length === 1 ? "Team lead" : "Team leads")}
+          </p>
           <ul
             data-search-target-id={`redback-project-${project.slug}-lead`}
             data-search-highlight-mode="text"
@@ -105,9 +108,12 @@ function ProjectInfoContent({ project }: { project: Project }) {
         </div>
       ) : null}
 
-      {project.memberLabel && project.members?.length ? (
+      {project.members?.length ? (
         <div>
-          <p className="text-b2 text-blue-100/60">{project.memberLabel}</p>
+          <p className="text-b2 text-blue-100/60">
+            {project.memberLabel ??
+              (project.members.length === 1 ? "Team member" : "Team members")}
+          </p>
           <ul
             data-search-target-id={`redback-project-${project.slug}-team`}
             data-search-highlight-mode="text"

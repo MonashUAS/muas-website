@@ -44,6 +44,7 @@ type SingleWindowCarouselProps = {
   onActiveIndexChange?: (index: number) => void;
   dotTone?: "light" | "blue";
   searchControllerId?: string;
+  isPaused?: boolean;
 };
 
 // Dependency-free single-window carousel shared by homepage and Redback projects.
@@ -58,6 +59,7 @@ export function SingleWindowCarousel({
   onActiveIndexChange,
   dotTone = "light",
   searchControllerId,
+  isPaused: externalIsPaused = false,
 }: SingleWindowCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(() =>
     clampIndex(initialIndex, slides.length),
@@ -280,7 +282,7 @@ export function SingleWindowCarousel({
     activeIndex,
     maxIndex,
     prefersReducedMotion,
-    isInteractionPaused: isPaused,
+    isInteractionPaused: isPaused || externalIsPaused,
     containerRef: carouselRef,
     onAdvance: goToNextSlide,
   });
