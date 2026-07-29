@@ -12,7 +12,7 @@ export function RedbackWebHighlight({
 }: RedbackWebHighlightProps) {
   return (
     <span className="relative inline-block px-[0.22em]">
-      <span className="redback-web-label relative z-10 inline-block bg-gradient-to-r from-red-700 to-red-200 bg-clip-text text-transparent">
+      <span className="redback-web-label relative z-10 inline-block bg-gradient-to-r from-red-700 to-red-200 bg-clip-text pr-[0.12em] text-transparent">
         {children}
       </span>
 
