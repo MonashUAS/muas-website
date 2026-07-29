@@ -84,7 +84,7 @@ function techSpecContent(panel: (typeof techSpecPanels)[number]) {
 
 export const suasHomeSearchDocument: SearchDocument = {
   route: "/suas-2026-home",
-  title: "Our Initiative",
+  title: "Redback",
   targets: [
     {
       id: "suas-hero",

@@ -37,7 +37,7 @@ export const navigationGroups: NavGroup[] = [
   {
     label: "SUAS 2026",
     links: [
-      { href: "/suas-2026-home", label: "Our Initiative" },
+      { href: "/suas-2026-home", label: "Redback" },
       { href: "/suas-2026-team", label: "The SUAS Team" },
     ],
   },
