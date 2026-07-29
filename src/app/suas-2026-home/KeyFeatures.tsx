@@ -27,7 +27,7 @@ const sectionHeadingClass =
   "text-[clamp(3rem,6vw,6rem)] font-medium leading-[0.92] tracking-[-0.05em] text-white";
 
 const defaultMedia: KeyFeature["media"] = {
-  src: "/models/redback.glb",
+  src: "/models/redback_web.glb",
   type: "model",
 };
 const defaultMobileFeatureTitle = keyFeatures[0]?.title ?? null;
@@ -47,7 +47,7 @@ const MODEL_INTERACTION_HOTSPOT_HEIGHT = 0.72;
 
 // Loads and frames one GLB inside the shared model viewer canvas using strict bounds matching.
 export function FeatureModel({ src }: { src: string }) {
-  const gltf = useGLTF(src);
+  const gltf = useGLTF(src, "https://www.gstatic.com/draco/v1/decoders/");
 
   return (
     <Bounds fit clip observe margin={MODEL_FRAME_MARGIN}>
@@ -756,3 +756,8 @@ export function KeyFeatures() {
 function getFeaturePanelId(title: string) {
   return `${title.replaceAll(" ", "-").toLowerCase()}-panel`;
 }
+
+useGLTF.preload(
+  defaultMedia.src,
+  "https://www.gstatic.com/draco/v1/decoders/",
+);
