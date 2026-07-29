@@ -1,6 +1,6 @@
 import type { SearchDocument, SearchTarget } from "@/lib/search/types";
 import { textSearchContent } from "@/lib/search/content";
-import { teamSections } from "./data/team-data";
+import { visibleTeamSections } from "./data/team-data";
 
 function memberSlug(name: string) {
   return name.toLowerCase().replaceAll(" ", "-");
@@ -60,10 +60,10 @@ export const ourTeamSearchDocument: SearchDocument = {
         }),
       ],
     },
-    ...teamSections.map(
+    ...visibleTeamSections.map(
       (section): SearchTarget => ({
         id: `team-section-${section.id}`,
-        label: section.label === "All" ? "Management Team" : section.label,
+        label: section.label,
         hash: "management-team",
         text: [
           {

@@ -27,7 +27,7 @@ export function HomepageSponsorCarousel({
     uniqueSponsorSrcs.forEach((src) => {
       const image = new window.Image();
       image.decoding = "async";
-      image.src = `/_next/image?url=${encodeURIComponent(src)}&w=384&q=75`;
+      image.src = src;
     });
   }, []);
 
@@ -87,6 +87,8 @@ export function HomepageSponsorCarousel({
                   alt={`${sponsor.name} logo`}
                   width={260}
                   height={128}
+                  unoptimized
+                  decoding="async"
                   sizes="(min-width: 1024px) 16rem, (min-width: 640px) 14rem, 11rem"
                   className="max-h-full w-auto max-w-full object-contain opacity-90 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100 motion-reduce:transition-none"
                 />

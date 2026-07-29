@@ -11,6 +11,7 @@ export type TeamMember = {
   section: string;
   image: TeamMemberImage;
   priority?: number;
+  temporaryHiddenPendingUpdatedPhotos?: boolean;
 };
 
 export type TeamSection = {
@@ -18,6 +19,7 @@ export type TeamSection = {
   label: string;
   description: string;
   members: TeamMember[];
+  temporaryHiddenPendingUpdatedPhotos?: boolean;
 };
 
 export const temporaryImage = {
@@ -82,7 +84,7 @@ const auxiliaryMembers: TeamMember[] = [
   },
   {
     name: "Connor Madigan",
-    role: "Finance Officer",
+    role: "Finance Manager",
     section: "Auxiliary",
     image: portraits.connorMadigan,
     priority: 5,
@@ -92,69 +94,237 @@ const auxiliaryMembers: TeamMember[] = [
 const aerostructuresMembers: TeamMember[] = [
   {
     name: "Lochlan Challis",
-    role: "Aerostructures",
+    role: "Aerostructures Lead",
     section: "Aerostructures",
     image: portraits.lochlanChallis,
   },
   {
     name: "Chee Yong",
-    role: "Aerostructures",
+    role: "Aerostructures Lead",
     section: "Aerostructures",
     image: portraits.cheeYong,
+  },
+  {
+    name: "Alice Barling",
+    role: "Composites Lead",
+    section: "Aerostructures",
+    image: portraits.aliceBarling,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Sota Kawasaki",
+    role: "Simulation Lead (FEA)",
+    section: "Aerostructures",
+    image: portraits.sotaKawasaki,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Cooper Robley",
+    role: "Simulation Lead (CFD) / Fuselage/Wing Lead",
+    section: "Aerostructures",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Valentino Vargetto",
+    role: "3D Fabrication Lead",
+    section: "Aerostructures",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Reuben Kobier",
+    role: "CAD Manager",
+    section: "Aerostructures",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Luke Nicholson",
+    role: "Empennage Lead",
+    section: "Aerostructures",
+    image: portraits.lukeNicholson,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "George Vasilidis",
+    role: "Landing Gear Lead",
+    section: "Aerostructures",
+    image: portraits.georgeVasilidis,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
 ];
 
 const avionicsMembers: TeamMember[] = [
   {
     name: "Yogita Anand",
-    role: "Avionics",
+    role: "Avionics Lead",
     section: "Avionics",
     image: portraits.yogitaAnand,
   },
   {
     name: "Izaak Estandarte",
-    role: "Avionics",
+    role: "Avionics Lead",
     section: "Avionics",
     image: portraits.izaakEstandarte,
+  },
+  {
+    name: "Dylan Storey",
+    role: "Integration / Mission Management / Pipeline / Echo Lead",
+    section: "Avionics",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Tanvi Somvanshi",
+    role: "Avionics Stack Lead",
+    section: "Avionics",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Jia (Kimberley) Chin",
+    role: "Vision Lead",
+    section: "Avionics",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Jacky Liang",
+    role: "Lifeline Lead",
+    section: "Avionics",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Folger Kong",
+    role: "DNA Lead",
+    section: "Avionics",
+    image: portraits.folgerKong,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
 ];
 
 const operationsMembers: TeamMember[] = [
   {
     name: "Sumi Bandara",
-    role: "Operations",
+    role: "Operations Lead / Logistics Lead",
     section: "Operations",
     image: portraits.sumiBandara,
+  },
+  {
+    name: "Sanjevan Rajesegar",
+    role: "Marketing Lead",
+    section: "Operations",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Connor Madigan",
+    role: "Sponsorships Lead",
+    section: "Operations",
+    image: portraits.connorMadigan,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Prajyoth Raireddy",
+    role: "Events and Programs Lead",
+    section: "Operations",
+    image: portraits.prajyothRaireddy,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Oliver Bilston",
+    role: "Logistics Lead",
+    section: "Operations",
+    image: portraits.oliverBilston,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
 ];
 
 const propulsionMembers: TeamMember[] = [
   {
     name: "Oliver Bassily",
-    role: "Propulsion",
+    role: "Propulsion Lead / Motors Lead",
     section: "Propulsion",
     image: portraits.oliverBassily,
   },
   {
     name: "Julian Nosiara",
-    role: "Propulsion",
+    role: "Propulsion Lead",
     section: "Propulsion",
     image: portraits.julianNosiara,
+  },
+  {
+    name: "Lyndon Bulman",
+    role: "Propellers Lead",
+    section: "Propulsion",
+    image: portraits.lyndonBulman,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Shiyao Han",
+    role: "Ibis Lead",
+    section: "Propulsion",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Ava Bryant",
+    role: "CSU Lead",
+    section: "Propulsion",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Ashvin Cali",
+    role: "PIE Lead",
+    section: "Propulsion",
+    image: portraits.ashvinCali,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Jasmeet Singh",
+    role: "TTS Lead",
+    section: "Propulsion",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
 ];
 
 const flightOperationsMembers: TeamMember[] = [
   {
     name: "Alexi Rampono Kelly",
-    role: "Flight Operations",
+    role: "Flight Operations Lead",
     section: "Flight Operations",
     image: portraits.alexiRampono,
   },
   {
-    name: "Alastair Mclennan",
-    role: "Flight Operations",
+    name: "Alistair McLennan",
+    role: "Flight Operations Lead",
     section: "Flight Operations",
     image: portraits.alastairMclennan,
+  },
+  {
+    name: "Tom Machin",
+    role: "Pilots Lead",
+    section: "Flight Operations",
+    image: portraits.tomMachin,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Adwik Ghosh",
+    role: "Pilots Lead",
+    section: "Flight Operations",
+    image: portraits.adwikGhosh,
+    temporaryHiddenPendingUpdatedPhotos: true,
+  },
+  {
+    name: "Nick Stringer",
+    role: "Groundstation Lead",
+    section: "Flight Operations",
+    image: temporaryImage,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
 ];
 
@@ -182,74 +352,75 @@ const sortMembersByPriority = (members: TeamMember[]) => {
 
 const orderedManagementMembers = sortMembersByPriority(managementMembers);
 const orderedAuxiliaryMembers = sortMembersByPriority(auxiliaryMembers);
+const financeMembers = orderedAuxiliaryMembers.filter(
+  (member) => member.role === "Finance Manager",
+);
 
-const allTeamMembers: TeamMember[] = [
+const managementTeamMembers: TeamMember[] = [
   ...orderedManagementMembers,
-  ...orderedAuxiliaryMembers,
-  ...aerostructuresMembers,
-  ...avionicsMembers,
-  ...operationsMembers,
-  ...propulsionMembers,
-  ...flightOperationsMembers,
+  ...aerostructuresMembers.slice(0, 2),
+  ...avionicsMembers.slice(0, 2),
+  operationsMembers[0],
+  ...propulsionMembers.slice(0, 2),
+  ...flightOperationsMembers.slice(0, 2),
   ...leadPilotMembers,
-];
+  ...financeMembers,
+].filter((member): member is TeamMember => Boolean(member));
+
+// Temporarily hides entries pending updated photos while preserving source records for easy restoration.
+const visibleMembers = (members: TeamMember[]) =>
+  members.filter((member) => !member.temporaryHiddenPendingUpdatedPhotos);
 
 export const teamSections: TeamSection[] = [
-  {
-    id: "all",
-    label: "All",
-    description:
-      "Meet the 2026 leaders responsible for strategy, engineering, operations, safety, aircraft development and flight delivery across Monash UAS. Together, they coordinate the complete aircraft lifecycle and support more than 100 members across the team.",
-    members: allTeamMembers,
-  },
   {
     id: "management",
     label: "Management",
     description:
-      "Our Management Team leads the team and sets the direction for the year, ensuring everything runs smoothly and aligns with compliance requirements. They coordinate sections, oversee major decisions, hold team-wide meetings and keep the wider program focused on its shared priorities.",
-    members: orderedManagementMembers,
+      "Meet the 2026 leaders responsible for strategy, engineering, section delivery, finance and flight operations across Monash UAS. Together, they coordinate the complete aircraft lifecycle and support more than 100 members across the team.",
+    members: managementTeamMembers,
+    temporaryHiddenPendingUpdatedPhotos: true,
   },
   {
-    id: "auxiliary",
-    label: "Auxiliary",
+    id: "upper-management",
+    label: "Upper Management",
     description:
-      "Auxiliary management supports the team’s day-to-day operations across the workshop, people and culture, IT systems and safety. These roles keep facilities, people processes and compliance running so the wider team can focus on aircraft delivery.",
-    members: orderedAuxiliaryMembers,
+      "Upper Management leads the team and sets the direction for the year, ensuring everything runs smoothly and aligns with compliance requirements. They coordinate sections, oversee major decisions, hold team-wide meetings and keep the wider program focused on its shared priorities.",
+    members: orderedManagementMembers,
   },
   {
     id: "aerostructures",
     label: "Aerostructures",
     description:
       "Aerostructures leads the design and manufacture of the aircraft’s physical structure, balancing aerodynamic performance, strength, weight and manufacturability. The section works closely with propulsion, avionics and flight operations to turn engineering concepts into flight-ready airframes.",
-    members: aerostructuresMembers,
+    members: visibleMembers(aerostructuresMembers),
   },
   {
     id: "avionics",
     label: "Avionics",
     description:
       "Avionics develops the onboard electronics, embedded systems, communications and payload integration that allow the aircraft to operate reliably and autonomously. The section connects hardware and software while supporting testing, troubleshooting and competition readiness.",
-    members: avionicsMembers,
+    members: visibleMembers(avionicsMembers),
   },
   {
     id: "operations",
     label: "Operations",
     description:
       "Operations keeps the wider team coordinated through logistics, scheduling, documentation, events and internal communication. The section connects technical work with the people, resources and planning required to keep each project moving.",
-    members: operationsMembers,
+    members: visibleMembers(operationsMembers),
   },
   {
     id: "propulsion",
     label: "Propulsion",
     description:
       "Propulsion develops and validates the systems that generate thrust and power the aircraft through every stage of flight. The section supports component selection, integration, performance testing and safe operation alongside aerostructures and flight operations.",
-    members: propulsionMembers,
+    members: visibleMembers(propulsionMembers),
   },
   {
     id: "flight-operations",
     label: "Flight Operations",
     description:
       "Flight Operations plans and runs safe, structured flight testing. The section manages procedures, field logistics, risk controls and test objectives so engineering changes can be evaluated under real operating conditions.",
-    members: flightOperationsMembers,
+    members: visibleMembers(flightOperationsMembers),
   },
   {
     id: "lead-pilots",
@@ -258,4 +429,15 @@ export const teamSections: TeamSection[] = [
       "The pilot team is responsible for aircraft handling, pilot readiness and the execution of safe test and competition flights. They work closely with Flight Operations and the technical sections to provide feedback and ensure each aircraft is ready to fly.",
     members: leadPilotMembers,
   },
+  {
+    id: "auxiliary",
+    label: "Auxiliary",
+    description:
+      "Auxiliary management supports the team’s day-to-day operations across the workshop, people and culture, IT systems, safety and finance. These roles keep facilities, people processes and compliance running so the wider team can focus on aircraft delivery.",
+    members: orderedAuxiliaryMembers,
+  },
 ];
+
+export const visibleTeamSections = teamSections.filter(
+  (section) => !section.temporaryHiddenPendingUpdatedPhotos,
+);

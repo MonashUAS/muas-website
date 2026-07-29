@@ -95,9 +95,14 @@ export default function RecruitmentPage() {
                 <Image
                   src={statusContent.image.src}
                   alt={statusContent.image.alt}
+                  blurDataURL={statusContent.image.blurDataURL}
                   fill
+                  fetchPriority="high"
+                  placeholder={
+                    statusContent.image.blurDataURL ? "blur" : "empty"
+                  }
                   priority
-                  sizes="(min-width: 1024px) 62vw, 100vw"
+                  sizes="(min-width: 1720px) 1018px, (min-width: 1024px) 62vw, calc(100vw - 40px)"
                   className="object-cover"
                   style={{
                     objectPosition: isRecruitmentOpen ? "50% 50%" : "50% 46%",
