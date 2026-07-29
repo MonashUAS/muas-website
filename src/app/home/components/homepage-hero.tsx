@@ -67,7 +67,11 @@ export function HomepageHero() {
                   poster={getVideoPosterSrc(slide.src)}
                   muted
                   playsInline
-                  preload="none"
+                  preload={
+                    isActive || mountedSlideIndexes.has(index)
+                      ? "auto"
+                      : "metadata"
+                  }
                   className="h-full w-full object-cover"
                   onEnded={() => handleVideoEnded(index)}
                   onError={() => handleMediaError(index)}

@@ -14,25 +14,16 @@ export type HeroSlide =
 // Homepage hero media is maintained here. Keep the sequence as:
 // 2 photos -> video -> 1 photo -> video -> 2 photos.
 export const heroSlides: HeroSlide[] = [
-  {
+    {
+    id: "peregrine",
+    type: "image",
+    src: "/images/homepage/hero/peregrine-flying.webp",
+    alt: "Peregrine taking off",
+  },
+    {
     id: "redback-flying-1",
     type: "video",
     src: "/images/homepage/hero/redback-flying-1.mp4",
-  },
-  {
-    id: "redback-flying-2",
-    type: "video",
-    src: "/images/homepage/hero/redback-flying-2.mp4",
-  },
-  {
-    id: "redback-flying-3",
-    type: "video",
-    src: "/images/homepage/hero/redback-flying-3.mp4",
-  },
-  {
-    id: "redback-flying-4",
-    type: "video",
-    src: "/images/homepage/hero/redback-flying-4.mp4",
   },
   {
     id: "composites",
@@ -46,21 +37,16 @@ export const heroSlides: HeroSlide[] = [
     src: "/images/homepage/hero/flight-monitor.webp",
     alt: "MUAS members monitoring flight data",
   },
-  {
-    id: "explaining",
+    {
+    id: "redback-flying-2",
     type: "video",
-    src: "/images/homepage/hero/explaining.mp4",
+    src: "/images/homepage/hero/redback-flying-2.mp4",
   },
   {
     id: "o-week",
     type: "image",
     src: "/images/homepage/hero/o-week_updated.webp",
     alt: "MUAS members speaking with students at O-Week",
-  },
-  {
-    id: "drone-footage",
-    type: "video",
-    src: "/images/homepage/hero/drone-footage.mp4",
   },
   {
     id: "sunset-redback",
@@ -73,5 +59,10 @@ export const heroSlides: HeroSlide[] = [
     type: "image",
     src: "/images/homepage/hero/tinkering.webp",
     alt: "MUAS members working on aircraft hardware",
+  },
+  {
+    id: "explaining",
+    type: "video",
+    src: "/images/homepage/hero/explaining.mp4",
   },
 ];
