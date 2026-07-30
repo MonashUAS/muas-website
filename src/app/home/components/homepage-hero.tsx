@@ -168,23 +168,25 @@ export function HomepageHero() {
           Redefining Drone Technology
         </SearchableText>
 
-        <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
-          <Link
-            href="/our-drones"
-            data-search-target-id="home-hero-explore-drones"
-            data-search-highlight-mode="text"
-            className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-b1 text-blue-900 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
-          >
-            Explore Our Drones
-          </Link>
-          <Link
-            href="/recruitment"
-            data-search-target-id="home-hero-join-team"
-            data-search-highlight-mode="text"
-            className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#051b5e] px-6 text-b1 text-white transition-colors duration-300 hover:bg-[#0b2a7a] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
-          >
-            Join The Team
-          </Link>
+        <div className="mt-9 flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Link
+              href="/our-drones"
+              data-search-target-id="home-hero-explore-drones"
+              data-search-highlight-mode="text"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-b1 text-blue-900 transition-colors duration-300 hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
+            >
+              Explore Our Drones
+            </Link>
+            <Link
+              href="/recruitment"
+              data-search-target-id="home-hero-join-team"
+              data-search-highlight-mode="text"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#051b5e] px-6 text-b1 text-white transition-colors duration-300 hover:bg-[#0b2a7a] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70 motion-reduce:transition-none"
+            >
+              Join The Team
+            </Link>
+          </div>
           <SuasHomeButton />
         </div>
       </div>
