@@ -9,6 +9,66 @@ import { usePreparedMediaSlideshow } from "@/lib/use-prepared-media-slideshow";
 import { heroSlidesDesktop, heroSlidesMobile } from "../data/hero-slides";
 import { usePrefersReducedMotion } from "../utils/use-prefers-reduced-motion";
 
+/**
+ * Renders a red and black themed call-to-action button with a fade-in animation linking to the SUAS home page.
+ */
+function SuasHomeButton() {
+  return (
+    <>
+      <Link
+        href="/suas-2026-home"
+        data-search-target-id="home-hero-suas-home"
+        data-search-highlight-mode="text"
+        className="suas-hero-fade-in group inline-flex min-h-11 items-center justify-center gap-2.5 rounded-full border border-red-600/60 bg-gradient-to-r from-red-950 via-black to-red-950 px-6 text-sm font-semibold text-white shadow-[0_0_15px_rgba(214,28,28,0.4)] transition-all duration-300 hover:border-red-500 hover:from-red-900 hover:via-black hover:to-red-900 hover:shadow-[0_0_25px_rgba(214,28,28,0.7)] hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/70 sm:text-b1 motion-reduce:transition-none motion-reduce:hover:scale-100"
+      >
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+        </span>
+        <span>SUAS Home</span>
+        <svg
+          aria-hidden="true"
+          className="h-4 w-4 text-red-400 transition-transform duration-300 group-hover:translate-x-1"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M14 5l7 7m0 0l-7 7m7-7H3"
+          />
+        </svg>
+      </Link>
+      <style jsx>{`
+        .suas-hero-fade-in {
+          animation: suasFadeIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+
+        @keyframes suasFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .suas-hero-fade-in {
+            animation: none;
+            opacity: 1;
+            transform: none;
+          }
+        }
+      `}</style>
+    </>
+  );
+}
+
 // The homepage hero owns only slideshow behavior; slide content lives in data
 // so the media sequence can be updated without touching interaction code.
 export function HomepageHero() {
@@ -108,7 +168,7 @@ export function HomepageHero() {
           Redefining Drone Technology
         </SearchableText>
 
-        <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
+        <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
           <Link
             href="/our-drones"
             data-search-target-id="home-hero-explore-drones"
@@ -125,8 +185,10 @@ export function HomepageHero() {
           >
             Join The Team
           </Link>
+          <SuasHomeButton />
         </div>
       </div>
     </section>
   );
 }
+

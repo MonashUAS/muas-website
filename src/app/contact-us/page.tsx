@@ -10,6 +10,7 @@ type SubmissionState = "idle" | "loading" | "success" | "error";
 export default function ContactUsPage() {
   const [submissionState, setSubmissionState] =
     useState<SubmissionState>("idle");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -17,6 +18,7 @@ export default function ContactUsPage() {
     const form = event.currentTarget;
 
     setSubmissionState("loading");
+    setErrorMessage("");
 
     const formData = new FormData(form);
 
@@ -40,13 +42,18 @@ export default function ContactUsPage() {
 
       if (!response.ok) {
         console.error("Contact form submission failed:", responsePayload);
-        throw new Error("Contact request failed.");
+        setErrorMessage(
+          responsePayload?.error ?? "Something went wrong. Please try again.",
+        );
+        setSubmissionState("error");
+        return;
       }
 
       form.reset();
       setSubmissionState("success");
     } catch (error) {
       console.error("Contact form submission error:", error);
+      setErrorMessage("Network error: Could not reach the server.");
       setSubmissionState("error");
     }
   };
@@ -153,7 +160,7 @@ export default function ContactUsPage() {
 
                 {submissionState === "error" ? (
                   <p className="text-sm text-red-100 sm:text-b1">
-                    Something went wrong. Please try again.
+                    {errorMessage || "Something went wrong. Please try again."}
                   </p>
                 ) : null}
               </div>
