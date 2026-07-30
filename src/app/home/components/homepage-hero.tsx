@@ -19,7 +19,7 @@ function SuasHomeButton() {
         href="/suas-2026-home"
         data-search-target-id="home-hero-suas-home"
         data-search-highlight-mode="text"
-        className="suas-hero-fade-in group inline-flex min-h-11 items-center justify-center gap-2.5 rounded-full border border-red-600/60 bg-gradient-to-r from-red-950 via-black to-red-950 px-6 text-sm font-semibold text-white shadow-[0_0_15px_rgba(214,28,28,0.4)] transition-all duration-300 hover:border-red-500 hover:from-red-900 hover:via-black hover:to-red-900 hover:shadow-[0_0_25px_rgba(214,28,28,0.7)] hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/70 sm:text-b1 motion-reduce:transition-none motion-reduce:hover:scale-100"
+        className="suas-hero-fade-in group inline-flex min-h-11 items-center justify-center gap-2.5 rounded-full border border-red-600/60 bg-gradient-to-r from-red-950 via-black to-red-950 px-6 text-sm text-white shadow-[0_0_15px_rgba(214,28,28,0.4)] transition-all duration-300 hover:border-red-500 hover:from-red-900 hover:via-black hover:to-red-900 hover:shadow-[0_0_25px_rgba(214,28,28,0.7)] hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/70 sm:text-b1 motion-reduce:transition-none motion-reduce:hover:scale-100"
       >
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
