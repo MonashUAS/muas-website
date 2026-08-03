@@ -101,14 +101,14 @@ export const drones: Drone[] = [
       { label: "Maximum Take-Off Weight", value: "15 kg" },
     ],
     gallery: [
-      "/images/drones/peregrine/peregrine-1.jpg",
+      "/images/drones/peregrine/peregrine-1.webp",
       "/images/drones/peregrine/peregrine-2.webp",
       "/images/drones/peregrine/peregrine-4.webp",
       "/images/drones/peregrine/peregrine-5.webp",
       "/images/drones/peregrine/peregrine-6.webp",
       "/images/drones/peregrine/peregrine-7.webp",
       "/images/drones/peregrine/peregrine-8.webp",
-      "/images/drones/peregrine/peregrine-9.jpg",
+      "/images/drones/peregrine/peregrine-9.webp",
     ],
   },
   {
@@ -133,8 +133,8 @@ export const drones: Drone[] = [
     ],
     gallery: [
       "/images/drones/albatross/albatross-1.webp",
-      "/images/drones/albatross/albatross-2.jpg",
-      "/images/drones/albatross/albatross-3.jpg",
+      "/images/drones/albatross/albatross-2.webp",
+      "/images/drones/albatross/albatross-3.webp",
       "/images/drones/albatross/albatross-5.webp",
       "/images/drones/albatross/albatross-6.webp",
       "/images/drones/albatross/albatross-7.webp",

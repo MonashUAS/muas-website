@@ -25,7 +25,7 @@ const dimensionsPanelIndex = techSpecPanels.findIndex(
 );
 
 const fallbackTechSpecImage =
-  "/images/suas initiative page/technical specifications/Deployed.jpg";
+  "/images/suas initiative page/technical specifications/Deployed.webp";
 
 const metricGradientClass =
   "bg-gradient-to-b from-red-500 to-red-200 bg-clip-text text-transparent";

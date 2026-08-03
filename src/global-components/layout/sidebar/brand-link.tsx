@@ -33,7 +33,7 @@ export function BrandLink({ isMenuOpen, onClick }: BrandLinkProps) {
 
       {/* Expanded logo lockup — no priority so it does not compete with page LCP. */}
       <Image
-        src="/logos/logo-white-clear-background.png"
+        src="/logos/logo-white-clear-background.webp"
         alt="MUAS Logo"
         width={148}
         height={54}

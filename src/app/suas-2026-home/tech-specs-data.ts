@@ -24,7 +24,7 @@ export const techSpecPanels: TechSpecPanel[] = [
     title: "Aerostructures",
     subtitle: "Collapsed and Deployed Dimensions",
     image: {
-      src: `${techSpecImageDir}/Deployed.jpg`,
+      src: `${techSpecImageDir}/Deployed.webp`,
       alt: "Redback aircraft deployed dimensions detail",
     },
     metrics: [

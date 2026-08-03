@@ -202,7 +202,7 @@ export const sections: TeamSection[] = [
         slug: "vision",
         name: "Vision",
         description: "Vision is an advanced aerial rescue system designed to detect individuals in need and determine their precise GPS coordinates during rescue operations. Utilising high-resolution onboard cameras and AI-driven person detection through a convolutional neural network, Vision accurately identifies people and pinpoints their location with sub-meter accuracy. Real-time video transmission allows ground station operators to monitor and coordinate rescue efforts effectively. Additionally, Vision has mapping abilities, producing a HD image of a search area.  ",
-        image: "/images/teams/avionics/projects/vision.jpg",
+        image: "/images/teams/avionics/projects/vision.webp",
         imagePosition: "50% 50%",
       },
       {
@@ -265,7 +265,7 @@ export const sections: TeamSection[] = [
       {
         id: "monitor",
         type: "image",
-        src: "/images/teams/flight-operations/hero/hero-monitor.jpg",
+        src: "/images/teams/flight-operations/hero/hero-monitor.webp",
         alt: "Flight Operations ground station monitor and radio equipment",
         position: "62% 52%",
       },

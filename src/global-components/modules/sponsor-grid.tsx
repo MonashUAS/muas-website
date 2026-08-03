@@ -82,7 +82,7 @@ export const sponsorRows: SponsorRow[] = [
       },
       {
         name: "Monash University PEARL",
-        src: "/images/sponsors/Pearl logo - Copy.jpg",
+        src: "/images/sponsors/Pearl logo - Copy.webp",
         frameClassName: "h-32 w-full max-w-[20rem]",
       },
       {

@@ -28,7 +28,7 @@ export const homepageSections: HomepageSection[] = [
     title: "Flight Operations",
     href: "/sections/flight-ops",
     description: "Planning, testing, and supporting safe aircraft flights.",
-    image: "/images/homepage/sections/flight-operations_updated.jpg",
+    image: "/images/homepage/sections/flight-operations_updated.webp",
     alt: "Flight Operations team preparing for testing",
     objectPosition: "50% 60%",
   },

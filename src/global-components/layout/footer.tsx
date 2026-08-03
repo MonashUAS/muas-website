@@ -81,7 +81,7 @@ export function Footer() {
       <div className="mx-auto grid w-full max-w-[1500px] gap-12 px-6 py-14 sm:px-8 lg:grid-cols-[minmax(300px,1.1fr)_minmax(420px,1.4fr)_minmax(240px,0.8fr)] lg:gap-20 lg:px-12 lg:py-16">
         <div className="flex max-w-lg flex-col items-start gap-5">
           <Image
-            src="/logos/logo-white-clear-background.png"
+            src="/logos/logo-white-clear-background.webp"
             alt="MUAS Logo"
             width={197}
             height={56}
