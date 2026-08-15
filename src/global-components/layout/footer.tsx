@@ -16,6 +16,7 @@ const footerNavigationGroups = [
       { href: "/", label: "Home" },
       { href: "/our-team", label: "Our Team" },
       { href: "/our-drones", label: "Our Drones" },
+      { href: "/newsletter", label: "Our Newsletters" },
     ],
   },
   {

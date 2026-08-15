@@ -18,10 +18,11 @@ export const homeLink: NavLink = { href: "/", label: "Home" };
 
 export const navigationGroups: NavGroup[] = [
   {
-    label: "Discover",
+    label: "Explore",
     links: [
       { href: "/our-team", label: "Our Team" },
       { href: "/our-drones", label: "Our Drones" },
+      { href: "/newsletter", label: "Our Newsletters" },
     ],
   },
   {

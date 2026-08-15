@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { useSearchRevealController } from "@/global-components/search/search-navigation-provider";
 import type { Drone } from "./drone-data";
 import { DroneDetailsModal } from "./drone-details-modal";
@@ -143,19 +144,19 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
             <button
               type="button"
               onClick={() => navigateTo(activeIndex - 1)}
-              className="pointer-events-auto inline-flex h-14 w-14 cursor-pointer items-center justify-center justify-self-center rounded-full bg-white text-4xl leading-none text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-900/30 focus-visible:outline-none motion-reduce:transition-none sm:h-16 sm:w-16"
+              className="pointer-events-auto inline-flex h-14 w-14 cursor-pointer items-center justify-center justify-self-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-900/30 focus-visible:outline-none motion-reduce:transition-none sm:h-16 sm:w-16"
               aria-label="Show previous drone"
             >
-              ‹
+              <LuChevronLeft className="h-7 w-7 sm:h-8 sm:w-8" />
             </button>
 
             <button
               type="button"
               onClick={() => navigateTo(activeIndex + 1)}
-              className="pointer-events-auto col-start-3 inline-flex h-14 w-14 cursor-pointer items-center justify-center justify-self-center rounded-full bg-white text-4xl leading-none text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-900/30 focus-visible:outline-none motion-reduce:transition-none sm:h-16 sm:w-16"
+              className="pointer-events-auto col-start-3 inline-flex h-14 w-14 cursor-pointer items-center justify-center justify-self-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-900/30 focus-visible:outline-none motion-reduce:transition-none sm:h-16 sm:w-16"
               aria-label="Show next drone"
             >
-              ›
+              <LuChevronRight className="h-7 w-7 sm:h-8 sm:w-8" />
             </button>
           </div>
 
