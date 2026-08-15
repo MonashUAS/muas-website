@@ -261,12 +261,52 @@ Main site content is organised by route and modular data files:
 | **Team Profiles** | `src/app/our-team/data/team-data.ts` |
 | **Sponsors Data** | `src/app/our-sponsors/sponsor-page-data.ts` |
 | **Drone Fleet Data** | `src/app/our-drones/drone-data.ts` |
+| **Newsletter Data** | `src/app/newsletter/newsletter-data.ts` |
+| **Newsletter Generator** | `scripts/generate-newsletter-assets.mjs` |
 | **Section Pages Data** | `src/app/sections/section-data.ts` |
 | **SUAS 2026 Timeline** | `src/app/suas-2026-team/timeline-data.ts` |
 | **SUAS 2026 Projects** | `src/app/suas-2026-team/projects/project-data.ts` |
 | **Static Assets / Media** | `public/` (Images, Videos, Logos, 3D Models) |
 
 *Note: Maintain consistent asset file names in `public/`. If a media filename changes, update all code references accordingly.*
+
+### D. Managing Newsletters & WebP Asset Generation
+
+Newsletters are rendered on `/newsletter` using high-performance **WebP** page images and cover thumbnails. Raw PDF files are **not stored in the repository** to keep git repository size lightweight and initial page load times fast.
+
+#### Adding a New Newsletter (Step-by-step):
+
+1. **Temporarily Place PDF in `public/newsletters/`:**  
+   Drop the new PDF document into `public/newsletters/` (e.g. `public/newsletters/newsletter-6.pdf`).
+
+2. **Run Asset Generation Script:**  
+   Execute the automated converter script:
+   ```bash
+   pnpm generate-newsletters
+   ```
+   *(or `node scripts/generate-newsletter-assets.mjs`)*
+
+   This script automatically renders every PDF page into compressed WebP format under `public/newsletters/pages/newsletter-6/page-[N].webp`, creates the cover thumbnail at `public/newsletters/covers/newsletter-6.webp`, and prints out the ready-to-use configuration snippet.
+
+3. **Update Newsletter Data File:**  
+   Open `src/app/newsletter/newsletter-data.ts` and add the new item to the `newsletters` array (keep ordered newest first):
+   ```typescript
+   {
+     id: "newsletter-6",
+     slug: "march-2026",
+     title: "MUAS Newsletter - March 2026",
+     date: "March 2026",
+     coverImage: "/newsletters/covers/newsletter-6.webp",
+     pageCount: 12,
+     pages: buildPagePaths("newsletter-6", 12),
+   },
+   ```
+
+4. **Delete Temporary PDF File:**  
+   Delete the raw `.pdf` file from `public/newsletters/` so it is not committed to git repository history.
+
+5. **Verify Local Build & Commit:**  
+   Run `pnpm dev` and `pnpm build` to verify the new issue displays cleanly on `/newsletter`, then commit only the generated WebP images and `newsletter-data.ts`.
 
 ---
 
