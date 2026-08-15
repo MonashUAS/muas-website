@@ -53,20 +53,23 @@ function wrapIndex(index: number, length: number): number {
 }
 
 /**
- * Obtains visible slide items with surrounding neighbours for smooth 3D carousel transitions.
- * @param items - Full array of newsletters.
- * @param activeIndex - Currently selected item index.
- * @returns Array of items with offset and index properties.
+ * Calculates the shortest cyclic offset distance between a slide index and the active index.
+ * Ensures consistent bidirectional carousel transitions without DOM node reordering glitches.
+ * @param index - Target item index in array.
+ * @param activeIndex - Currently active slide index.
+ * @param length - Total number of items in carousel.
+ * @returns Cyclic offset integer between -Math.floor(length/2) and Math.floor((length-1)/2).
  */
-function getVisibleNewsletters(items: Newsletter[], activeIndex: number) {
-  return [-2, -1, 0, 1, 2].map((offset) => {
-    const index = wrapIndex(activeIndex + offset, items.length);
-    return {
-      newsletter: items[index],
-      index,
-      offset,
-    };
-  });
+function getSlideOffset(
+  index: number,
+  activeIndex: number,
+  length: number,
+): number {
+  let diff = index - activeIndex;
+  const half = Math.floor(length / 2);
+  while (diff > half) diff -= length;
+  while (diff < -half) diff += length;
+  return diff;
 }
 
 /**
@@ -80,11 +83,6 @@ export function NewsletterCarousel({ newsletters }: NewsletterCarouselProps) {
     useState<Newsletter | null>(null);
   const [isActiveHovered, setIsActiveHovered] = useState(false);
   const carouselRef = useRef<HTMLElement | null>(null);
-
-  const visibleNewsletters = useMemo(
-    () => getVisibleNewsletters(newsletters, activeIndex),
-    [activeIndex, newsletters],
-  );
 
   const activeNewsletter = newsletters[activeIndex];
 
@@ -224,9 +222,14 @@ export function NewsletterCarousel({ newsletters }: NewsletterCarouselProps) {
             </button>
           </div>
 
-          {/* 3D Newsletter Cover Slides */}
+          {/* 3D Newsletter Cover Slides rendered in stable static DOM order */}
           <div className="relative flex min-h-[320px] sm:min-h-[420px] lg:min-h-[480px] w-full max-w-7xl items-center justify-center">
-            {visibleNewsletters.map(({ newsletter, index, offset }) => {
+            {newsletters.map((newsletter, index) => {
+              const offset = getSlideOffset(
+                index,
+                activeIndex,
+                newsletters.length,
+              );
               const isActive = offset === 0;
 
               return (
