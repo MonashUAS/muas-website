@@ -29,7 +29,41 @@ The website is structured as a modern, performance-focused Web Application using
 
 ---
 
-## 3. Ownership, Escalation & Access Control
+## 3. Key Design Principles & Styling Guidelines
+
+The MUAS website follows a cohesive, high-impact design system built around dark futuristic themes, bold typography, rich gradients, and fluid micro-animations.
+
+### Typography & Text Hierarchy
+* **Font Family:** Powered by `"Helvetica Neue", Helvetica, Arial, sans-serif`.
+* **Tight Display Headings (`tracking-tighter` / `tracking-[-0.05em]`):**  
+  Display titles and section headings utilize tight negative letter spacing (`tracking-tighter` / `tracking-[-0.04em]` to `tracking-[-0.05em]`) combined with tight line-heights (`leading-[0.9]` to `leading-[0.95]`) for a sleek, compressed aesthetic.
+* **Fluid Font Scaling:** Headings leverage responsive CSS `clamp()` functions (e.g. `text-[clamp(2.5rem,6vw,5.75rem)]`) for seamless scaling across mobile and ultra-wide viewports.
+* **Capitalized Captions (`tracking-[0.2em]`):** Small category labels and metadata use uppercase `text-caption` (10px) with wide letter spacing (`tracking-[0.2em]`).
+
+### Color System & Palette Tokens
+* **Dark Background Base:** Deep midnight dark mode (`--color-background: #02040a` / `#00040a`).
+* **Signature MUAS Blue Palette (`--color-blue-*`):**  
+  Ranging from `blue-50` (`#e6edf7`) for crisp text accents up to `blue-900` (`#001f49`) and dark radial center hues (`#002352`, `#020b18`). Used for interactive states, primary CTAs, hover rings, and brand headers.
+* **Accent Red Palette (`--color-red-*`):**  
+  Ranging from `red-500` (`#d61c1c`) to `red-900` (`#5a0c0c`). Used for close buttons, critical notifications, and Redback SUAS competition branding.
+* **Search & Target Pulse Highlight:**  
+  Gold/amber highlight token (`rgb(228 197 106)`) used for search result glow rings and text highlighting.
+
+### Reusable Animations & Motion Design
+* **3D Depth Carousels:** Smooth scale/transform/opacity transitions (`transition-all duration-700 ease-out` with 3D offset transforms) on `/our-drones` and `/newsletter`.
+* **Page Dissolve Transition (`PageDissolveTransition`):** Smooth route transition shell opacity fades (`cubic-bezier(0.22, 1, 0.36, 1)`).
+* **Sponsor Marquee (`animate-sponsor-marquee`):** Infinite horizontal ticker (`sponsor-marquee 34s linear infinite`).
+* **Search Match Pulse (`search-highlight-pulse`):** Pulse keyframe glow effect for deep-linked search results.
+* **Reduced Motion Compliance:** All key keyframes and transitions include `@media (prefers-reduced-motion: reduce)` fallbacks.
+
+### Layout & Glassmorphism Patterns
+* **`viewport-fold` Utility:** Viewport min-height calculation (`min-height: calc(100svh - var(--header-height))`) ensuring hero sections fill the fold below fixed headers.
+* **Radial Gradients & Glassmorphism:** Layered radial background gradients paired with `backdrop-blur-md` overlays for floating menus and reader modals.
+* **Accessibility Standards:** Minimum 44px touch targets on mobile, full keyboard navigation support (`Escape`, `ArrowLeft`, `ArrowRight`), and explicit `aria-modal` / `aria-label` attributes.
+
+---
+
+## 4. Ownership, Escalation & Access Control
 
 ### Primary Escalation Contact
 For queries regarding website access, production deployment errors, domain/DNS routing, secrets management, and Resend account configuration, contact the current Website Lead.
@@ -211,7 +245,41 @@ Before merging any pull request to production, execute the following validation 
 
 ## 9. Common Content & Configuration Updates
 
-### A. Managing Recruitment
+### A. Updating Team Member Names, Roles & Headshot Photos
+
+Team members, section leads, executive management, and headshot photos displayed on `/our-team` are managed through two data files and headshot image files in `public/images/headshots/`.
+
+#### Step-by-step Guide to Update Team Leads or Members:
+
+1. **Save Headshot Photo in `public/images/headshots/`:**  
+   Save the new member's headshot photo in `.webp` format in `public/images/headshots/` (e.g. `Team Lead - New Lead Name.webp`).
+
+2. **Register Headshot in `src/app/our-team/data/portrait-assets.ts`:**  
+   Open `src/app/our-team/data/portrait-assets.ts` and add or update the entry in the `portraits` object:
+   ```typescript
+   export const portraits = {
+     newLeadName: portrait("Team Lead - New Lead Name.webp"),
+     // Optional: Add custom focal position if facial framing needs vertical adjustment:
+     // newLeadName: portrait("Team Lead - New Lead Name.webp", "50% 25%"),
+   };
+   ```
+
+3. **Update Member Entry in `src/app/our-team/data/team-data.ts`:**  
+   Open `src/app/our-team/data/team-data.ts` and locate the appropriate section array (`managementMembers`, `auxiliaryMembers`, `aerostructuresMembers`, `avionicsMembers`, `operationsMembers`, `propulsionMembers`, or `flightOpsMembers`). Update or append the member object:
+   ```typescript
+   {
+     name: "New Lead Name",
+     role: "Team Lead",
+     section: "Management",
+     image: portraits.newLeadName,
+     priority: 1,
+   }
+   ```
+
+4. **Verify Local Build & Search Index:**  
+   Run `pnpm dev` and visit `/our-team` to inspect the updated headshots and titles. In-site search automatically indexes updated member names and roles.
+
+### B. Managing Recruitment
 Recruitment options, status, and target URLs are controlled in:
 `src/app/recruitment/recruitment-data.ts`
 
@@ -227,50 +295,7 @@ export const recruitmentConfig = {
 * **Closing Recruitment:** Set `isRecruitmentOpen: false`. This hides the application button, displays closed-state messaging, and shows `closedImage`.
 * **Verification:** Check both `/recruitment` and the Homepage Recruitment panel on the preview deployment before merging.
 
-### B. Contact Form & Resend Integration
-The contact form submits data to the serverless route at `src/app/api/contact/route.ts`.
-
-#### Modifying Form Recipient Inbox:
-1. Update `CONTACT_TO_EMAIL` in the Environment Variables tab on Vercel (and `.env.local`).
-2. Trigger a redeploy.
-3. Submit a test message at `/contact-us` and confirm delivery.
-
-#### Modifying Form Sender:
-1. Log in to the Resend Dashboard.
-2. Navigate to **Domains** and add new domain (e.g., `monashuas.org`).
-3. Copy the supplied DNS records (TXT/MX/CNAME) and add them to advanced DNS settings on Namecheap.
-4. Wait for domain verification in Resend.
-5. Update `CONTACT_FROM_EMAIL` in the Environment Variables tab on Vercel
-6. Redeploy and test submission.
-
-#### Rotating Resend API Key:
-1. Generate a new key in the Resend Dashboard.
-2. Update `RESEND_API_KEY` in `.env.local` and the Environment Variables tab on Vercel.
-3. Redeploy and send a test contact enquiry.
-4. Revoke/delete the old key in Resend once confirmed.
-
-### C. Content File Map
-Main site content is organised by route and modular data files:
-
-| Target Area | File Path / Location |
-| :--- | :--- |
-| **Recruitment Data** | `src/app/recruitment/recruitment-data.ts` |
-| **Main Navigation Bar** | `src/global-components/layout/sidebar/navbar-data.ts` |
-| **Footer & Social Links** | `src/global-components/layout/footer.tsx` |
-| **Homepage Quick-Nav** | `src/app/home/data/explore-panels.ts` |
-| **Team Profiles** | `src/app/our-team/data/team-data.ts` |
-| **Sponsors Data** | `src/app/our-sponsors/sponsor-page-data.ts` |
-| **Drone Fleet Data** | `src/app/our-drones/drone-data.ts` |
-| **Newsletter Data** | `src/app/newsletter/newsletter-data.ts` |
-| **Newsletter Generator** | `scripts/generate-newsletter-assets.mjs` |
-| **Section Pages Data** | `src/app/sections/section-data.ts` |
-| **SUAS 2026 Timeline** | `src/app/suas-2026-team/timeline-data.ts` |
-| **SUAS 2026 Projects** | `src/app/suas-2026-team/projects/project-data.ts` |
-| **Static Assets / Media** | `public/` (Images, Videos, Logos, 3D Models) |
-
-*Note: Maintain consistent asset file names in `public/`. If a media filename changes, update all code references accordingly.*
-
-### D. Managing Newsletters & WebP Asset Generation
+### C. Managing Newsletters & WebP Asset Generation
 
 Newsletters are rendered on `/newsletter` using high-performance **WebP** page images and cover thumbnails. Raw PDF files are **not stored in the repository** to keep git repository size lightweight and initial page load times fast.
 
@@ -307,6 +332,51 @@ Newsletters are rendered on `/newsletter` using high-performance **WebP** page i
 
 5. **Verify Local Build & Commit:**  
    Run `pnpm dev` and `pnpm build` to verify the new issue displays cleanly on `/newsletter`, then commit only the generated WebP images and `newsletter-data.ts`.
+
+### D. Contact Form & Resend Integration
+The contact form submits data to the serverless route at `src/app/api/contact/route.ts`.
+
+#### Modifying Form Recipient Inbox:
+1. Update `CONTACT_TO_EMAIL` in the Environment Variables tab on Vercel (and `.env.local`).
+2. Trigger a redeploy.
+3. Submit a test message at `/contact-us` and confirm delivery.
+
+#### Modifying Form Sender:
+1. Log in to the Resend Dashboard.
+2. Navigate to **Domains** and add new domain (e.g., `monashuas.org`).
+3. Copy the supplied DNS records (TXT/MX/CNAME) and add them to advanced DNS settings on Namecheap.
+4. Wait for domain verification in Resend.
+5. Update `CONTACT_FROM_EMAIL` in the Environment Variables tab on Vercel
+6. Redeploy and test submission.
+
+#### Rotating Resend API Key:
+1. Generate a new key in the Resend Dashboard.
+2. Update `RESEND_API_KEY` in `.env.local` and the Environment Variables tab on Vercel.
+3. Redeploy and send a test contact enquiry.
+4. Revoke/delete the old key in Resend once confirmed.
+
+### E. Content File Map
+Main site content is organised by route and modular data files:
+
+| Target Area | File Path / Location |
+| :--- | :--- |
+| **Team Profiles Data** | `src/app/our-team/data/team-data.ts` |
+| **Team Headshots Map** | `src/app/our-team/data/portrait-assets.ts` |
+| **Team Headshot Images** | `public/images/headshots/` |
+| **Recruitment Data** | `src/app/recruitment/recruitment-data.ts` |
+| **Main Navigation Bar** | `src/global-components/layout/sidebar/navbar-data.ts` |
+| **Footer & Social Links** | `src/global-components/layout/footer.tsx` |
+| **Homepage Quick-Nav** | `src/app/home/data/explore-panels.ts` |
+| **Sponsors Data** | `src/app/our-sponsors/sponsor-page-data.ts` |
+| **Drone Fleet Data** | `src/app/our-drones/drone-data.ts` |
+| **Newsletter Data** | `src/app/newsletter/newsletter-data.ts` |
+| **Newsletter Generator** | `scripts/generate-newsletter-assets.mjs` |
+| **Section Pages Data** | `src/app/sections/section-data.ts` |
+| **SUAS 2026 Timeline** | `src/app/suas-2026-team/timeline-data.ts` |
+| **SUAS 2026 Projects** | `src/app/suas-2026-team/projects/project-data.ts` |
+| **Static Assets / Media** | `public/` (Images, Videos, Logos, 3D Models) |
+
+*Note: Maintain consistent asset file names in `public/`. If a media filename changes, update all code references accordingly.*
 
 ---
 
