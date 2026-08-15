@@ -295,7 +295,49 @@ export const recruitmentConfig = {
 * **Closing Recruitment:** Set `isRecruitmentOpen: false`. This hides the application button, displays closed-state messaging, and shows `closedImage`.
 * **Verification:** Check both `/recruitment` and the Homepage Recruitment panel on the preview deployment before merging.
 
-### C. Managing Newsletters & WebP Asset Generation
+### C. Adding a New Drone to Fleet ("Our Drones")
+
+Aircraft profiles displayed on `/our-drones` are configured in `src/app/our-drones/drone-data.ts` with static transparent renders stored in `public/images/drones/`.
+
+#### Step-by-step Guide to Add a New Drone:
+
+1. **Add Hero Render in `public/images/drones/`:**  
+   Save a high-resolution, transparent background `.webp` render of the drone in `public/images/drones/` (e.g. `public/images/drones/new-drone.webp`).
+
+2. **(Optional) Add Gallery Photos in `public/images/drones/[slug]/`:**  
+   If the drone includes an expanded image gallery, create a subdirectory `public/images/drones/new-drone/` and save `.webp` gallery photos (e.g. `new-drone-1.webp`, `new-drone-2.webp`).
+
+3. **Register Entry in `src/app/our-drones/drone-data.ts`:**  
+   Open `src/app/our-drones/drone-data.ts` and add the new drone object to the `drones` array:
+   ```typescript
+   {
+     slug: "new-drone",
+     name: "New Drone Name",
+     description: [
+       "Brief operational description of the aircraft, design focus, and mission capability.",
+     ],
+     heroImage: "/images/drones/new-drone.webp",
+     features: [
+       { label: "Payload Capacity", value: "1.5 kg" },
+       { label: "Range", value: "20 km" },
+       { label: "Max Flight Speed", value: "25 m/s" },
+     ],
+     dimensions: [
+       { label: "Wingspan", value: "1800 mm" },
+       { label: "Length", value: "1200 mm" },
+       { label: "Maximum Take-Off Weight", value: "8.5 kg" },
+     ],
+     gallery: [
+       "/images/drones/new-drone/new-drone-1.webp",
+       "/images/drones/new-drone/new-drone-2.webp",
+     ],
+   },
+   ```
+
+4. **Verify Interactive Carousel & Modal:**  
+   Run `pnpm dev` and visit `/our-drones` to verify the 3D cover carousel, specs modal, and site-wide search indexing.
+
+### D. Managing Newsletters & WebP Asset Generation
 
 Newsletters are rendered on `/newsletter` using high-performance **WebP** page images and cover thumbnails. Raw PDF files are **not stored in the repository** to keep git repository size lightweight and initial page load times fast.
 
@@ -333,7 +375,7 @@ Newsletters are rendered on `/newsletter` using high-performance **WebP** page i
 5. **Verify Local Build & Commit:**  
    Run `pnpm dev` and `pnpm build` to verify the new issue displays cleanly on `/newsletter`, then commit only the generated WebP images and `newsletter-data.ts`.
 
-### D. Contact Form & Resend Integration
+### E. Contact Form & Resend Integration
 The contact form submits data to the serverless route at `src/app/api/contact/route.ts`.
 
 #### Modifying Form Recipient Inbox:
@@ -355,7 +397,7 @@ The contact form submits data to the serverless route at `src/app/api/contact/ro
 3. Redeploy and send a test contact enquiry.
 4. Revoke/delete the old key in Resend once confirmed.
 
-### E. Content File Map
+### F. Content File Map
 Main site content is organised by route and modular data files:
 
 | Target Area | File Path / Location |
@@ -367,8 +409,8 @@ Main site content is organised by route and modular data files:
 | **Main Navigation Bar** | `src/global-components/layout/sidebar/navbar-data.ts` |
 | **Footer & Social Links** | `src/global-components/layout/footer.tsx` |
 | **Homepage Quick-Nav** | `src/app/home/data/explore-panels.ts` |
-| **Sponsors Data** | `src/app/our-sponsors/sponsor-page-data.ts` |
 | **Drone Fleet Data** | `src/app/our-drones/drone-data.ts` |
+| **Sponsors Data** | `src/app/our-sponsors/sponsor-page-data.ts` |
 | **Newsletter Data** | `src/app/newsletter/newsletter-data.ts` |
 | **Newsletter Generator** | `scripts/generate-newsletter-assets.mjs` |
 | **Section Pages Data** | `src/app/sections/section-data.ts` |
