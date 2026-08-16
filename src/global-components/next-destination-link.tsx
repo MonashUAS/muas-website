@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 
 export type NextDestinationLinkProps = {
+  ctaLabel?: string;
   description: string;
   href: string;
   id?: string;
@@ -18,6 +19,7 @@ export type NextDestinationLinkProps = {
 
 // NextDestinationLink previews a destination page; shared dissolve owns the route transition.
 export function NextDestinationLink({
+  ctaLabel = "Explore Now",
   description,
   href,
   id,
@@ -117,7 +119,7 @@ export function NextDestinationLink({
               </p>
 
               <span className="mt-9 inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-white px-7 py-3 text-b1 font-bold text-blue-900 transition-colors duration-300 group-hover:bg-blue-100 motion-reduce:transition-none">
-                Explore Now
+                {ctaLabel}
                 <svg
                   aria-hidden="true"
                   viewBox="0 0 24 24"

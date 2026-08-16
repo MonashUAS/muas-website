@@ -20,6 +20,10 @@ const footerNavigationGroups = [
     ],
   },
   {
+    label: "NFC 2025",
+    links: [{ href: "/nfc-2025", label: "Peregrine MK II" }],
+  },
+  {
     label: "SUAS 2026",
     links: [
       { href: "/suas-2026-home", label: "Redback" },
