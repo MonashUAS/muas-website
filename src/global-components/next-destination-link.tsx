@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 
 export type NextDestinationLinkProps = {
+  containerPadding?: string;
   ctaLabel?: string;
   description: string;
   href: string;
@@ -19,6 +20,7 @@ export type NextDestinationLinkProps = {
 
 // NextDestinationLink previews a destination page; shared dissolve owns the route transition.
 export function NextDestinationLink({
+  containerPadding = "px-0 sm:px-8 lg:px-12",
   ctaLabel = "Explore Now",
   description,
   href,
@@ -73,7 +75,7 @@ export function NextDestinationLink({
     >
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_45%,rgba(0,74,173,0.22),transparent_34%)]" />
 
-      <div className="mx-auto w-full max-w-[1720px] px-5 sm:px-8 lg:px-12">
+      <div className={`mx-auto w-full max-w-[1720px] ${containerPadding}`}>
         <Link
           href={href}
           aria-label={title}

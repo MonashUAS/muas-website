@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { getVideoPosterSrc } from "@/lib/media-paths";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
+
+const defaultPeregrineVideoSrc = "/videos/peregrine-video.mp4";
 
 interface NFCVideoProps {
   videoSrc?: string;
@@ -11,20 +14,22 @@ interface NFCVideoProps {
 }
 
 /**
- * Renders the full-viewport Video section for Chee's render using a sleek blue theme.
- * Includes auto-play intersection management, motion preference support, and a placeholder state
- * when the video file is pending import.
+ * Renders the full-viewport Video section for Peregrine Mk II using a sleek blue theme.
+ * Includes auto-play intersection management, visibility change tracking, motion preference support,
+ * and matching playback settings with the Redback video section.
  */
 export function NFCVideo({
-  videoSrc,
-  posterSrc = "/images/nfc-2025/nfc-group.webp",
-  title = "Chee's Render",
+  videoSrc = defaultPeregrineVideoSrc,
+  posterSrc,
+  title = "Peregrine Mk II",
 }: NFCVideoProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const isSectionVisibleRef = useRef(false);
   const prefersReducedMotion = usePrefersReducedMotion();
   const [hasError, setHasError] = useState(!videoSrc);
+
+  const resolvedPoster = posterSrc ?? (videoSrc ? getVideoPosterSrc(videoSrc) : "/images/nfc-2025/nfc-group.webp");
 
   const pauseVideo = useCallback(() => {
     videoRef.current?.pause();
@@ -69,11 +74,35 @@ export function NFCVideo({
     };
   }, [pauseVideo, playVideo, videoSrc]);
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        pauseVideo();
+        return;
+      }
+
+      if (isSectionVisibleRef.current) {
+        playVideo();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [pauseVideo, playVideo]);
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      pauseVideo();
+    }
+  }, [pauseVideo, prefersReducedMotion]);
+
   return (
     <section
       ref={sectionRef}
       id="nfc-video"
-      className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-black px-4 py-10 text-white sm:px-6 sm:py-14 lg:px-8 lg:py-20"
+      className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-black px-0 py-10 text-white sm:px-6 sm:py-14 lg:px-8 lg:py-20"
     >
       {/* Blue Theme Radial Gradient Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_140%_50%_at_50%_50%,rgba(0,74,173,0.35)_0%,#000000_75%)]" />
@@ -85,7 +114,7 @@ export function NFCVideo({
             ref={videoRef}
             className="h-full w-full object-contain"
             src={videoSrc}
-            poster={posterSrc}
+            poster={resolvedPoster}
             loop
             muted
             playsInline
@@ -96,8 +125,8 @@ export function NFCVideo({
           /* Video Placeholder State */
           <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-blue-950/40 p-6 text-center">
             <Image
-              src={posterSrc}
-              alt="Chee's Render Video Placeholder"
+              src={resolvedPoster}
+              alt={`${title} Video Placeholder`}
               fill
               className="object-cover opacity-35 filter blur-[2px]"
             />

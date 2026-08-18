@@ -63,7 +63,7 @@ export function NFCSummary() {
 
           {/* Image Right Column */}
           <div className="relative flex min-w-0 items-center justify-center lg:justify-end">
-            <div className="relative h-[300px] w-full overflow-hidden border border-blue-100/20 bg-blue-900 shadow-[0_34px_110px_rgba(0,0,0,0.46)] [clip-path:polygon(5%_0,100%_0,100%_100%,0_100%)] sm:h-[420px] lg:h-[min(560px,calc(100svh-10rem))]">
+            <div className="relative h-[300px] w-full overflow-hidden rounded-none border border-blue-100/20 bg-blue-900 shadow-[0_34px_110px_rgba(0,0,0,0.46)] sm:h-[420px] lg:h-[min(560px,calc(100svh-10rem))] lg:[clip-path:polygon(5%_0,100%_0,100%_100%,0_100%)]">
               <div className="absolute -inset-8 bg-blue-500/15 blur-3xl" />
 
               <Image

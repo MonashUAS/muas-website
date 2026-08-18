@@ -35,12 +35,28 @@ export interface TakeawayCard {
 export const NFC_COMPETITION_URL = "https://neuesfliegen.de/competition/nfc-2025/";
 
 /**
- * Hero background visuals.
+ * Hero background visual slides for NFC 2025 slideshow hero.
  */
-export const heroImages = {
-  desktop: "/images/homepage/hero/peregrine-fly.webp",
-  mobile: "/images/homepage/hero/peregrine-fly-mobile.webp",
-};
+export const nfcHeroSlides = [
+  {
+    id: "nfc-hero-16",
+    src: "/images/nfc-2025/hero/peregrine-16.webp",
+    alt: "Peregrine Mk II aircraft at NFC 2025 airfield",
+    type: "image" as const,
+  },
+  {
+    id: "nfc-hero-17",
+    src: "/images/nfc-2025/hero/peregrine-17.webp",
+    alt: "Peregrine Mk II during competition flight preparation",
+    type: "image" as const,
+  },
+  {
+    id: "nfc-hero-9",
+    src: "/images/nfc-2025/hero/peregrine-9.webp",
+    alt: "Peregrine Mk II in flight at Hamburg airfield",
+    type: "image" as const,
+  },
+];
 
 /**
  * Competition summary text and bullet points.
@@ -141,7 +157,7 @@ export const nfcTimelineItems: TimelineEvent[] = [
 ];
 
 /**
- * Key takeaways copy and card data. Uses nfc-group.webp as placeholder per instruction.
+ * Key takeaways copy and card data.
  */
 export const keyTakeawaysData = {
   heading: "Key Takeaways",
@@ -152,28 +168,96 @@ export const keyTakeawaysData = {
       title: "Our Strength",
       description:
         "Our biggest strength was our processes and checklists. They gave us consistency, structure, and confidence. They kept us calm under pressure, ensured we were always ready on time and allowed us to focus on flying rather than firefighting. That level of organisation was a real point of difference at the competition.",
-      image: "/images/nfc-2025/nfc-group.webp",
-      alt: "MUAS team members at NFC 2025",
+      image: "/images/nfc-2025/key-takeaways/peregrine-3.webp",
+      alt: "MUAS team reviewing pre-flight safety checklists at NFC 2025",
     },
     {
       title: "Lessons Learned",
       description:
         "Several teams showed the power of technical simplicity: simpler geometries and smart use of off-the-shelf components over custom subsystems. Fewer parts meant fewer failure points and faster integration.",
-      image: "/images/nfc-2025/nfc-group.webp",
-      alt: "Aircraft inspection at NFC 2025",
+      image: "/images/nfc-2025/key-takeaways/peregrine-11.webp",
+      alt: "MUAS team inspecting aircraft components at Hamburg airfield",
     },
     {
       title: "Future Direction",
       description:
         "Peregrine Mk-II was ambitious, and that ambition showed in its complexity. While the airframe and design choices were solid, we have learned lessons in opting for simpler solutions and focusing innovation more strategically where it adds the most value.",
-      image: "/images/nfc-2025/nfc-group.webp",
-      alt: "Peregrine Mk II airframe overview",
+      image: "/images/nfc-2025/key-takeaways/peregrine-15.webp",
+      alt: "Peregrine Mk II airframe on display at NFC 2025",
     },
   ],
 };
 
+export interface CompPhoto {
+  id: string;
+  src: string;
+  alt: string;
+  caption?: string;
+}
+
 /**
- * Next section teaser for SUAS 2026. Uses nfc-group.webp as placeholder per instruction.
+ * Photos for the competition photo carousel ("Highlights in Hamburg").
+ */
+export const compCarouselPhotos: CompPhoto[] = [
+  {
+    id: "comp-photo-1",
+    src: "/images/nfc-2025/comp-carousel/peregrine-1.webp",
+    alt: "Peregrine Mk II at NFC 2025 Hamburg airfield",
+  },
+  {
+    id: "comp-photo-2",
+    src: "/images/nfc-2025/comp-carousel/peregrine-2.webp",
+    alt: "MUAS team setting up aircraft on flight line",
+  },
+  {
+    id: "comp-photo-4",
+    src: "/images/nfc-2025/comp-carousel/peregrine-4.webp",
+    alt: "Peregrine Mk II airframe undergoing system checks",
+  },
+  {
+    id: "comp-photo-5",
+    src: "/images/nfc-2025/comp-carousel/peregrine-5.webp",
+    alt: "Team engineers working on electronics box",
+  },
+  {
+    id: "comp-photo-6",
+    src: "/images/nfc-2025/comp-carousel/peregrine-6.webp",
+    alt: "Pre-flight calibration of telemetry and receiver",
+  },
+  {
+    id: "comp-photo-7",
+    src: "/images/nfc-2025/comp-carousel/peregrine-7.webp",
+    alt: "Team preparing for competition flight attempt",
+  },
+  {
+    id: "comp-photo-8",
+    src: "/images/nfc-2025/comp-carousel/peregrine-8.webp",
+    alt: "Judges inspecting Peregrine Mk II wings",
+  },
+  {
+    id: "comp-photo-10",
+    src: "/images/nfc-2025/comp-carousel/peregrine-10.webp",
+    alt: "Peregrine Mk II positioned on runway ready for takeoff",
+  },
+  {
+    id: "comp-photo-12",
+    src: "/images/nfc-2025/comp-carousel/peregrine-12.webp",
+    alt: "MUAS team members collaborating at Hamburg airfield",
+  },
+  {
+    id: "comp-photo-13",
+    src: "/images/nfc-2025/comp-carousel/peregrine-13.webp",
+    alt: "Flight crew monitoring ground control telemetry",
+  },
+  {
+    id: "comp-photo-14",
+    src: "/images/nfc-2025/comp-carousel/peregrine-14.webp",
+    alt: "Team photo with Peregrine Mk II at award ceremony",
+  },
+];
+
+/**
+ * Next section teaser for SUAS 2026.
  */
 export const nextSuasData = {
   title: "Next: SUAS 2026",
@@ -184,3 +268,4 @@ export const nextSuasData = {
   ctaText: "Discover Redback",
   ctaHref: "/suas-2026-home",
 };
+

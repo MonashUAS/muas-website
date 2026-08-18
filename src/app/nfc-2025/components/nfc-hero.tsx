@@ -1,70 +1,92 @@
 "use client";
 
 import Image from "next/image";
-import { heroImages } from "../nfc-2025-data";
+import { usePreparedMediaSlideshow } from "@/lib/use-prepared-media-slideshow";
+import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
+import { nfcHeroSlides } from "../nfc-2025-data";
 
 /**
  * Renders the full-viewport Hero section for the NFC 2025 page.
- * Uses desktop and mobile WebP hero background visuals with white heading
- * and gradient blue sub-heading that slowly fades into view.
+ * Displays an automated image slideshow of Peregrine Mk II visuals at NFC 2025
+ * with white heading and gradient blue sub-heading that slowly fades into view.
  */
 export function NFCHero() {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  const {
+    handleImageDecoded,
+    handleMediaError,
+    mountedSlideIndexes,
+    sectionRef,
+    visibleSlide,
+  } = usePreparedMediaSlideshow({
+    slides: nfcHeroSlides,
+    prefersReducedMotion,
+  });
+
   return (
     <section
       id="nfc-hero"
+      ref={sectionRef}
       className="relative isolate flex min-h-[100svh] scroll-mt-20 items-center justify-center overflow-hidden bg-black px-6 pt-[var(--header-height)] text-white sm:px-10"
     >
-      <style>
-        {`
-          @keyframes nfc-hero-fade-in {
-            0% {
-              opacity: 0;
-              transform: translateY(1.25rem) scale(0.97);
-            }
-            100% {
-              opacity: 1;
-              transform: translateY(0) scale(1);
-            }
-          }
-
-          .nfc-hero-text-fade {
-            animation: nfc-hero-fade-in 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+      <style jsx>{`
+        @keyframes nfc-hero-fade-in {
+          0% {
             opacity: 0;
-            will-change: opacity, transform;
+            transform: translateY(1.25rem) scale(0.97);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .nfc-hero-text-fade {
+          animation: nfc-hero-fade-in 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+          opacity: 0;
+          will-change: opacity, transform;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .nfc-hero-text-fade {
+            animation: none;
+            opacity: 1;
+            transform: none;
+          }
+        }
+      `}</style>
+
+      {/* Slideshow background images */}
+      <div className="absolute inset-0">
+        {nfcHeroSlides.map((slide, index) => {
+          if (!mountedSlideIndexes.has(index)) {
+            return null;
           }
 
-          @media (prefers-reduced-motion: reduce) {
-            .nfc-hero-text-fade {
-              animation: none;
-              opacity: 1;
-              transform: none;
-            }
-          }
-        `}
-      </style>
+          const isActive = index === visibleSlide;
 
-      {/* Desktop Hero Image */}
-      <div className="absolute inset-0 hidden sm:block">
-        <Image
-          src={heroImages.desktop}
-          alt="Peregrine Mk II aircraft flying low in flight"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[50%_42%]"
-        />
-      </div>
-
-      {/* Mobile Hero Image */}
-      <div className="absolute inset-0 sm:hidden">
-        <Image
-          src={heroImages.mobile}
-          alt="Peregrine Mk II aircraft flying low in flight"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[50%_42%]"
-        />
+          return (
+            <div
+              key={slide.id}
+              aria-hidden={!isActive}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                isActive ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={slide.src}
+                alt={slide.alt}
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                className="object-cover object-[50%_42%]"
+                onLoadingComplete={() => handleImageDecoded(index)}
+                onError={() => handleMediaError(index)}
+              />
+            </div>
+          );
+        })}
       </div>
 
       {/* Overlay Gradients for Depth and Readability */}

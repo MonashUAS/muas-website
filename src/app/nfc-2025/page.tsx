@@ -6,6 +6,7 @@ import { NFCVideo } from "./components/nfc-video";
 import { NFCAboutPeregrine } from "./components/nfc-about-peregrine";
 import { NFCTimeline } from "./components/nfc-timeline";
 import { NFCTakeaways } from "./components/nfc-takeaways";
+import { NFCGallery } from "./components/nfc-gallery";
 import { NFCNextSUAS } from "./components/nfc-next-suas";
 
 /**
@@ -20,12 +21,13 @@ export const metadata: Metadata = {
 /**
  * Renders the complete NFC 2025 page.
  * Assembles all full-viewport sections wrapped in ScrollRevealProvider:
- * - Hero section (Peregrine MK II & NFC 2025)
+ * - Hero section (Peregrine MK II & NFC 2025 slideshow)
  * - Summary section (Competition requirements, goals, significance, Learn more link)
- * - Video section (Chee's render video frame)
+ * - Video section (Peregrine Mk II render showcase video)
  * - About Peregrine MK II section (aircraft overview & specs)
  * - At NFC 2025 section (timeline of competition events)
  * - Key Takeaways section (strengths, lessons learned, future direction)
+ * - Highlights in Hamburg (competition photo carousel)
  * - Next: SUAS 2026 section (teaser banner)
  */
 export default function NFC2025Page() {
@@ -37,6 +39,7 @@ export default function NFC2025Page() {
       <NFCAboutPeregrine />
       <NFCTimeline />
       <NFCTakeaways />
+      <NFCGallery />
       <NFCNextSUAS />
     </ScrollRevealProvider>
   );
