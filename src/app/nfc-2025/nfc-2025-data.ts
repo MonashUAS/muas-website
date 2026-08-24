@@ -168,7 +168,7 @@ export const keyTakeawaysData = {
       title: "Our Strength",
       description:
         "Our biggest strength was our processes and checklists. They gave us consistency, structure, and confidence. They kept us calm under pressure, ensured we were always ready on time and allowed us to focus on flying rather than firefighting. That level of organisation was a real point of difference at the competition.",
-      image: "/images/nfc-2025/key-takeaways/peregrine-3.webp",
+      image: "/images/nfc-2025/key-takeaways/peregrine-5.webp",
       alt: "MUAS team reviewing pre-flight safety checklists at NFC 2025",
     },
     {
@@ -202,57 +202,68 @@ export const compCarouselPhotos: CompPhoto[] = [
   {
     id: "comp-photo-1",
     src: "/images/nfc-2025/comp-carousel/peregrine-1.webp",
-    alt: "Peregrine Mk II at NFC 2025 Hamburg airfield",
+    alt: "Team unboxing Peregrine Mk II at NFC 2025",
+    caption: "Unboxing Peregrine Mk II",
   },
   {
     id: "comp-photo-2",
     src: "/images/nfc-2025/comp-carousel/peregrine-2.webp",
-    alt: "MUAS team setting up aircraft on flight line",
+    alt: "Team testing Peregrine Mk II connections and electronics",
+    caption: "Connection and electronics testing",
   },
   {
-    id: "comp-photo-4",
-    src: "/images/nfc-2025/comp-carousel/peregrine-4.webp",
-    alt: "Peregrine Mk II airframe undergoing system checks",
-  },
-  {
-    id: "comp-photo-5",
-    src: "/images/nfc-2025/comp-carousel/peregrine-5.webp",
-    alt: "Team engineers working on electronics box",
-  },
-  {
-    id: "comp-photo-6",
-    src: "/images/nfc-2025/comp-carousel/peregrine-6.webp",
-    alt: "Pre-flight calibration of telemetry and receiver",
-  },
-  {
-    id: "comp-photo-7",
-    src: "/images/nfc-2025/comp-carousel/peregrine-7.webp",
-    alt: "Team preparing for competition flight attempt",
-  },
-  {
-    id: "comp-photo-8",
-    src: "/images/nfc-2025/comp-carousel/peregrine-8.webp",
-    alt: "Judges inspecting Peregrine Mk II wings",
-  },
-  {
-    id: "comp-photo-10",
-    src: "/images/nfc-2025/comp-carousel/peregrine-10.webp",
-    alt: "Peregrine Mk II positioned on runway ready for takeoff",
+    id: "comp-photo-3",
+    src: "/images/nfc-2025/comp-carousel/peregrine-3.webp",
+    alt: "Peregrine Mk II safety check with one of the NFC judges",
+    caption: "Safety check with one of the judges",
   },
   {
     id: "comp-photo-12",
     src: "/images/nfc-2025/comp-carousel/peregrine-12.webp",
-    alt: "MUAS team members collaborating at Hamburg airfield",
+    alt: "MUAS team huddle before the competition",
+    caption: "Team huddle and pre-competition laughs",
   },
   {
     id: "comp-photo-13",
     src: "/images/nfc-2025/comp-carousel/peregrine-13.webp",
-    alt: "Flight crew monitoring ground control telemetry",
+    alt: "MUAS team presenting before the NFC competition",
+    caption: "Team presentation before competition",
+  },
+  {
+    id: "comp-photo-6",
+    src: "/images/nfc-2025/comp-carousel/peregrine-6.webp",
+    alt: "MUAS team completing preflight checks on Peregrine Mk II",
+    caption: "Preflight checks",
+  },
+  {
+    id: "comp-photo-4",
+    src: "/images/nfc-2025/comp-carousel/peregrine-4.webp",
+    alt: "Peregrine Mk II taking off on day one",
+    caption: "Day one takeoff",
+  },
+  {
+    id: "comp-photo-10",
+    src: "/images/nfc-2025/comp-carousel/peregrine-10.webp",
+    alt: "Team inspecting Peregrine Mk II in the workshop",
+    caption: "Checking out Peregrine in the workshop",
+  },
+  {
+    id: "comp-photo-7",
+    src: "/images/nfc-2025/comp-carousel/peregrine-7.webp",
+    alt: "Team making tail adjustments to Peregrine Mk II",
+    caption: "Tail adjustments",
+  },
+  {
+    id: "comp-photo-8",
+    src: "/images/nfc-2025/comp-carousel/peregrine-8.webp",
+    alt: "Team carrying Peregrine Mk II off the field after the day two crash",
+    caption: "Day two post-crash recovery, still with a smile",
   },
   {
     id: "comp-photo-14",
     src: "/images/nfc-2025/comp-carousel/peregrine-14.webp",
-    alt: "Team photo with Peregrine Mk II at award ceremony",
+    alt: "MUAS team awarded sixth place at NFC 2025",
+    caption: "Awarded sixth place",
   },
 ];
 

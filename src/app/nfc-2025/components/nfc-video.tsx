@@ -102,7 +102,7 @@ export function NFCVideo({
     <section
       ref={sectionRef}
       id="nfc-video"
-      className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-black px-0 py-10 text-white sm:px-6 sm:py-14 lg:px-8 lg:py-20"
+      className="relative flex min-h-[92svh] flex-col items-center justify-center overflow-hidden bg-black px-0 py-8 text-white sm:px-6 sm:py-10 lg:px-8 lg:py-12"
     >
       {/* Blue Theme Radial Gradient Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_140%_50%_at_50%_50%,rgba(0,74,173,0.35)_0%,#000000_75%)]" />

@@ -12,7 +12,7 @@ export function NFCSummary() {
   return (
     <section
       id="nfc-summary"
-      className="relative isolate flex min-h-[100svh] scroll-mt-20 items-center overflow-hidden bg-black-500 py-12 text-white sm:py-16 lg:py-20"
+      className="relative isolate flex min-h-[92svh] scroll-mt-20 items-center overflow-hidden bg-black-500 py-12 pb-8 text-white sm:py-16 sm:pb-10 lg:py-20 lg:pb-12"
     >
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_82%_45%,rgba(0,74,173,0.18),transparent_38%)]" />
 

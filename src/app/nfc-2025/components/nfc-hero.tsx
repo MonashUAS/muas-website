@@ -95,10 +95,10 @@ export function NFCHero() {
 
       {/* Hero Content Box with Slow Fade Animation */}
       <div className="nfc-hero-text-fade relative z-10 mx-auto flex w-full max-w-6xl -translate-y-10 flex-col items-center text-center sm:-translate-y-12">
-        <h1 className="text-[clamp(3.5rem,8vw,7.5rem)] font-black leading-[0.95] tracking-[-0.06em] text-white">
+        <h1 className="text-[clamp(3.5rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.065em] text-white">
           NFC 2025
         </h1>
-        <p className="mt-3 inline-block px-3 py-1 text-[clamp(2.2rem,5vw,4.8rem)] font-bold leading-[1.15] tracking-[-0.03em] bg-gradient-to-r from-blue-200 to-blue-600 bg-clip-text text-transparent sm:mt-5">
+        <p className="mt-3 inline-block px-3 py-2 text-[clamp(2.2rem,5vw,4.8rem)] font-bold leading-[1.08] tracking-[-0.065em] bg-gradient-to-r from-blue-200 to-blue-600 bg-clip-text text-transparent sm:mt-5">
           Peregrine MK II
         </p>
       </div>

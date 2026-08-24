@@ -91,9 +91,6 @@ export function NFCGallery() {
         <h2 className="text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[0.95] tracking-[-0.05em] text-white">
           Highlights in Hamburg
         </h2>
-        <p className="mt-4 max-w-2xl text-b2 text-blue-100/75 sm:text-b1">
-          Moments captured during safety scrutineering, flight maneuvers, and team proceedings at NFC 2025.
-        </p>
       </div>
 
       {/* Carousel Area */}
@@ -158,6 +155,10 @@ export function NFCGallery() {
             })}
           </div>
         </div>
+
+        <p className="mt-3 text-b2 leading-relaxed text-blue-50/85 sm:mt-4 sm:text-b1">
+          {photos[activeIndex]?.caption}
+        </p>
       </div>
     </section>
   );
