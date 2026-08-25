@@ -196,7 +196,7 @@ export function NewsletterCarousel({ newsletters }: NewsletterCarouselProps) {
           onClick={() => setSelectedNewsletter(activeNewsletter)}
           aria-label={`Open ${activeNewsletter.date} newsletter reader`}
         >
-          {activeNewsletter.date}
+            {activeNewsletter.date}
         </button>
 
         {/* Carousel Container */}

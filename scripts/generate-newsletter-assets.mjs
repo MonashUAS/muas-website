@@ -16,30 +16,43 @@ async function generateNewsletterAssets() {
   const coversDir = path.join(newslettersDir, "covers");
   const pagesDir = path.join(newslettersDir, "pages");
 
+  const pdfsDir = path.join(newslettersDir, "pdfs");
   if (!fs.existsSync(coversDir)) {
     fs.mkdirSync(coversDir, { recursive: true });
   }
   if (!fs.existsSync(pagesDir)) {
     fs.mkdirSync(pagesDir, { recursive: true });
   }
+  if (!fs.existsSync(pdfsDir)) {
+    fs.mkdirSync(pdfsDir, { recursive: true });
+  }
 
-  // Scan public/newsletters for any .pdf files
-  const pdfFiles = fs
-    .readdirSync(newslettersDir)
-    .filter((file) => file.endsWith(".pdf"));
+  // Scan public/newsletters/pdfs and public/newsletters for any .pdf files
+  const pdfFiles = [
+    ...(fs.existsSync(pdfsDir)
+      ? fs
+          .readdirSync(pdfsDir)
+          .filter((file) => file.endsWith(".pdf"))
+          .map((file) => ({ file, dir: pdfsDir }))
+      : []),
+    ...fs
+      .readdirSync(newslettersDir)
+      .filter((file) => file.endsWith(".pdf"))
+      .map((file) => ({ file, dir: newslettersDir })),
+  ];
 
   if (pdfFiles.length === 0) {
     console.log(
-      "No PDF files found in public/newsletters/\nTo add a new newsletter:\n1. Place your PDF file in public/newsletters/ (e.g., newsletter-6.pdf)\n2. Re-run: pnpm generate-newsletters\n3. Update src/app/newsletter/newsletter-data.ts\n4. Delete the PDF file to keep repo lightweight.",
+      "No PDF files found in public/newsletters/pdfs/\nTo add a new newsletter:\n1. Place your PDF file in public/newsletters/pdfs/ (e.g., newsletter-6.pdf)\n2. Re-run: pnpm generate-newsletters\n3. Update src/app/newsletter/newsletter-data.ts",
     );
     return;
   }
 
   console.log(`Found ${pdfFiles.length} PDF file(s) to process...`);
 
-  for (const file of pdfFiles) {
+  for (const { file, dir } of pdfFiles) {
     const id = path.basename(file, ".pdf");
-    const pdfPath = path.join(newslettersDir, file);
+    const pdfPath = path.join(dir, file);
 
     console.log(`\nProcessing ${file} (ID: ${id})...`);
     const data = new Uint8Array(fs.readFileSync(pdfPath));
@@ -91,13 +104,14 @@ async function generateNewsletterAssets() {
     title: "MUAS Newsletter - [Month Year]",
     date: "[Month Year]",
     coverImage: "/newsletters/covers/${id}.webp",
+    pdfUrl: "/newsletters/pdfs/${id}.pdf",
     pageCount: ${numPages},
     pages: buildPagePaths("${id}", ${numPages}),
   },`);
   }
 
   console.log(
-    "\nAsset generation complete! Remember to delete the temporary PDF file(s) from public/newsletters/ after updating newsletter-data.ts.",
+    "\nAsset generation complete! PDFs in public/newsletters/pdfs/ are ready for user downloads.",
   );
 }
 

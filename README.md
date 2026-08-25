@@ -339,12 +339,12 @@ Aircraft profiles displayed on `/our-drones` are configured in `src/app/our-dron
 
 ### D. Managing Newsletters & WebP Asset Generation
 
-Newsletters are rendered on `/newsletter` using high-performance **WebP** page images and cover thumbnails. Raw PDF files are **not stored in the repository** to keep git repository size lightweight and initial page load times fast.
+Newsletters are rendered on `/newsletter` using high-performance **WebP** page images for fast interactive page-flipping, while raw **PDF** documents are stored in `public/newsletters/pdfs/` to enable visitors to download full PDF versions directly from the reader modal's "Download PDF" button.
 
 #### Adding a New Newsletter (Step-by-step):
 
-1. **Temporarily Place PDF in `public/newsletters/`:**  
-   Drop the new PDF document into `public/newsletters/` (e.g. `public/newsletters/newsletter-6.pdf`).
+1. **Place PDF in `public/newsletters/pdfs/`:**  
+   Save the new PDF document in `public/newsletters/pdfs/` (e.g. `public/newsletters/pdfs/newsletter-6.pdf`).
 
 2. **Run Asset Generation Script:**  
    Execute the automated converter script:
@@ -353,7 +353,7 @@ Newsletters are rendered on `/newsletter` using high-performance **WebP** page i
    ```
    *(or `node scripts/generate-newsletter-assets.mjs`)*
 
-   This script automatically renders every PDF page into compressed WebP format under `public/newsletters/pages/newsletter-6/page-[N].webp`, creates the cover thumbnail at `public/newsletters/covers/newsletter-6.webp`, and prints out the ready-to-use configuration snippet.
+   This script automatically scans `public/newsletters/pdfs/`, renders every page into compressed WebP format under `public/newsletters/pages/newsletter-6/page-[N].webp`, generates the cover thumbnail at `public/newsletters/covers/newsletter-6.webp`, and prints out the ready-to-use configuration snippet.
 
 3. **Update Newsletter Data File:**  
    Open `src/app/newsletter/newsletter-data.ts` and add the new item to the `newsletters` array (keep ordered newest first):
@@ -361,19 +361,18 @@ Newsletters are rendered on `/newsletter` using high-performance **WebP** page i
    {
      id: "newsletter-6",
      slug: "march-2026",
-     title: "MUAS Newsletter - March 2026",
+     title: "MUAS Newsletter - Issue 6",
      date: "March 2026",
+     issueNumber: 6,
      coverImage: "/newsletters/covers/newsletter-6.webp",
+     pdfUrl: "/newsletters/pdfs/newsletter-6.pdf",
      pageCount: 12,
      pages: buildPagePaths("newsletter-6", 12),
    },
    ```
 
-4. **Delete Temporary PDF File:**  
-   Delete the raw `.pdf` file from `public/newsletters/` so it is not committed to git repository history.
-
-5. **Verify Local Build & Commit:**  
-   Run `pnpm dev` and `pnpm build` to verify the new issue displays cleanly on `/newsletter`, then commit only the generated WebP images and `newsletter-data.ts`.
+4. **Verify Local Build & Commit:**  
+   Run `pnpm dev` and `pnpm build` to verify the new issue displays and downloads cleanly on `/newsletter`, then commit the PDF file in `public/newsletters/pdfs/`, generated WebP images, and `newsletter-data.ts`.
 
 ### E. Contact Form & Resend Integration
 The contact form submits data to the serverless route at `src/app/api/contact/route.ts`.
