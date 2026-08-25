@@ -18,6 +18,7 @@ export function NFCNextSUAS() {
       imageSrc={nextSuasData.image}
       imageAlt={nextSuasData.alt}
       imagePosition="50% 40%"
+      className="pt-4 pb-14 sm:pt-6 sm:pb-16 lg:pt-8 lg:pb-20"
     />
   );
 }

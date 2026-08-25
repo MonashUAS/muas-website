@@ -28,8 +28,8 @@ function getSlideOffset(
 }
 
 /**
- * Calculates transform, opacity, scale, and brightness for active and adjacent photo slides.
- * Slower animation timing is configured on the slide container.
+ * Calculates transform, opacity, scale, brightness, and height for active and adjacent photo slides.
+ * Active slide matches 100% container height to bring captions right beneath the image.
  */
 function getPhotoSlideStyle(
   isActive: boolean,
@@ -39,15 +39,12 @@ function getPhotoSlideStyle(
   const isOffscreen = Math.abs(offset) > 1;
 
   return {
-    height: isActive ? "52vh" : "28vh",
-    maxHeight: isActive ? "540px" : "260px",
+    height: isActive ? "100%" : "62%",
     maxWidth: isActive ? "880px" : "320px",
     opacity: isOffscreen ? 0 : isActive ? 1 : 0.45,
     filter: isActive ? "brightness(100%)" : "brightness(45%) contrast(90%)",
     pointerEvents: isOffscreen ? ("none" as const) : ("auto" as const),
-    transform: `translateX(${offset * 175}%) translateY(${
-      isActive ? 0 : 20
-    }px) scale(${
+    transform: `translateX(${offset * 175}%) translateY(0px) scale(${
       isActive
         ? isActiveHovered
           ? 1.03
@@ -80,22 +77,22 @@ export function NFCGallery() {
   return (
     <section
       id="highlights-in-hamburg"
-      className="relative flex min-h-[100svh] scroll-mt-20 flex-col items-center justify-between overflow-hidden bg-black py-12 text-white sm:py-16 lg:py-20"
+      className="relative flex scroll-mt-20 flex-col items-center overflow-hidden bg-black pt-10 pb-6 text-white sm:pt-14 sm:pb-8 lg:pt-16 lg:pb-10"
     >
       {/* Background Gradient Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(0,74,173,0.22),transparent_65%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,#000000_0%,rgba(0,17,38,0.4)_50%,#000000_100%)]" />
 
       {/* Header */}
-      <div className="relative z-10 flex max-w-4xl flex-col items-center px-6 pt-4 text-center">
+      <div className="relative z-10 flex max-w-4xl flex-col items-center px-6 pt-2 text-center">
         <h2 className="text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[0.95] tracking-[-0.05em] text-white">
           Highlights in Hamburg
         </h2>
       </div>
 
       {/* Carousel Area */}
-      <div className="relative z-10 my-auto flex w-full max-w-[1720px] flex-1 flex-col items-center justify-center py-6">
-        <div className="relative flex min-h-[360px] sm:min-h-[480px] lg:min-h-[560px] w-full items-center justify-center">
+      <div className="relative z-10 flex w-full max-w-[1720px] flex-col items-center justify-center pt-4 pb-2 sm:pt-6 lg:pt-8">
+        <div className="relative flex h-[280px] w-full items-center justify-center sm:h-[400px] lg:h-[480px]">
           {/* Arrow Navigation Controls */}
           <div className="pointer-events-none absolute inset-x-0 top-1/2 z-30 grid w-full -translate-y-1/2 grid-cols-[70px_minmax(0,1fr)_70px] items-center px-4 sm:grid-cols-[110px_minmax(0,1fr)_110px] sm:px-8 lg:px-12">
             <button
@@ -118,7 +115,7 @@ export function NFCGallery() {
           </div>
 
           {/* Photo Slides Container */}
-          <div className="relative flex min-h-[360px] sm:min-h-[480px] lg:min-h-[560px] w-full max-w-7xl items-center justify-center">
+          <div className="relative flex h-full w-full max-w-7xl items-center justify-center">
             {photos.map((photo, index) => {
               const offset = getSlideOffset(index, activeIndex, photos.length);
               const isActive = offset === 0;
@@ -156,7 +153,7 @@ export function NFCGallery() {
           </div>
         </div>
 
-        <p className="mt-3 text-b2 leading-relaxed text-blue-50/85 sm:mt-4 sm:text-b1">
+        <p className="mt-3 max-w-2xl px-4 text-center text-b2 font-medium leading-relaxed text-blue-50/90 sm:mt-4 sm:text-b1">
           {photos[activeIndex]?.caption}
         </p>
       </div>

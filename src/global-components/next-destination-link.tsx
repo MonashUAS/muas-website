@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 
 export type NextDestinationLinkProps = {
+  className?: string;
   containerPadding?: string;
   ctaLabel?: string;
   description: string;
@@ -20,6 +21,7 @@ export type NextDestinationLinkProps = {
 
 // NextDestinationLink previews a destination page; shared dissolve owns the route transition.
 export function NextDestinationLink({
+  className = "min-h-[calc(100vh-5rem)] py-16 sm:py-20 lg:py-24",
   containerPadding = "px-0 sm:px-8 lg:px-12",
   ctaLabel = "Explore Now",
   description,
@@ -71,7 +73,7 @@ export function NextDestinationLink({
     <section
       id={id}
       ref={sectionRef}
-      className="relative flex min-h-[calc(100vh-5rem)] scroll-mt-20 items-center justify-center bg-black-500 py-16 sm:py-20 lg:py-24"
+      className={`relative flex items-center justify-center bg-black-500 scroll-mt-20 ${className}`}
     >
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_45%,rgba(0,74,173,0.22),transparent_34%)]" />
 
