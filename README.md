@@ -50,7 +50,8 @@ The MUAS website follows a cohesive, high-impact design system built around dark
   Gold/amber highlight token (`rgb(228 197 106)`) used for search result glow rings and text highlighting.
 
 ### Reusable Animations & Motion Design
-* **3D Depth Carousels:** Smooth scale/transform/opacity transitions (`transition-all duration-700 ease-out` with 3D offset transforms) on `/our-drones` and `/newsletter`.
+* **3D Depth Carousels:** Smooth scale/transform/opacity transitions (`transition-all duration-700 ease-out` with 3D offset transforms) on `/our-drones`.
+* **Bookshelf Grid & Reader Modals:** Interactive 3-column desktop / 2-column mobile bookshelf grid with hover white-glow edge expansion on `/newsletter`.
 * **Page Dissolve Transition (`PageDissolveTransition`):** Smooth route transition shell opacity fades (`cubic-bezier(0.22, 1, 0.36, 1)`).
 * **Sponsor Marquee (`animate-sponsor-marquee`):** Infinite horizontal ticker (`sponsor-marquee 34s linear infinite`).
 * **Search Match Pulse (`search-highlight-pulse`):** Pulse keyframe glow effect for deep-linked search results.

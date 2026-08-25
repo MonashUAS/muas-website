@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { NewsletterCarousel } from "./newsletter-carousel";
+import { NewsletterShelf } from "./newsletter-shelf";
 import { newsletters } from "./newsletter-data";
 
 export const metadata: Metadata = {
@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 };
 
 /**
- * NewsletterPage renders the interactive 3D newsletter carousel and flipbook reader.
+ * NewsletterPage renders the interactive bookshelf layout and flipbook reader for MUAS newsletters.
  */
 export default function NewsletterPage() {
-  return <NewsletterCarousel newsletters={newsletters} />;
+  return <NewsletterShelf newsletters={newsletters} />;
 }

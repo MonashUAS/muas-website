@@ -307,7 +307,7 @@ export function NewsletterReaderModal({
             type="button"
             onClick={handleClose}
             className="flex h-8 w-8 sm:h-11 sm:w-11 shrink-0 aspect-square cursor-pointer items-center justify-center rounded-full bg-white/10 text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
-            aria-label="Close reader and return to carousel"
+            aria-label="Close reader and return to shelf"
             title="Close reader (Esc)"
           >
             <LuX className="h-4 w-4 sm:h-6 sm:w-6 stroke-[2.5]" />

@@ -41,7 +41,7 @@ export const newsletterSearchDocument: SearchDocument = {
         ],
         reveal: {
           carousel: {
-            id: "newsletter-carousel",
+            id: "newsletter-shelf",
             slideId: newsletter.slug,
           },
           modal: {
