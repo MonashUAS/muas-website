@@ -215,4 +215,37 @@ export const projects: Project[] = [
     ],
     images: ["/images/suas-team-page/our-redback-projects/stack.webp"],
   },
+  {
+    name: "Vision",
+    slug: "vision",
+    summary:
+      "We are the computer vision system that utilises lightweight hardware and real-time streaming to provide detections, localisations and mapping functionality.",
+    leadLabel: "Team lead",
+    leads: ["Kimberley Chin"],
+    memberLabel: "Team members",
+    members: [
+      "Zach Nabulsi",
+      "Hannah Black",
+      "Charlotte Evans",
+      "Sai Neeli",
+      "Cullen Clifford",
+      "Nino Karow",
+      "Justin Wu",
+      "Claire Zhang",
+      "Jahnavi Maithil",
+    ],
+    keyDecisions: [
+      {
+        title: "Components of data pipelines",
+        body: "Determining what models/software/algorithms to use in our data pipelines is key to ensuring an accurate and timely computer vision result. We ensured that the OD models we chose were lightweight for real-time streaming, mapping software was fast for quick but precise stitching, and other algorithms were small and scalable for easy harnessing onto our pipeline.",
+      },
+      {
+        title: "Off-the-shelf hardware",
+        body: "Due to time constraints, we decided to reduce the complexity with hardware development and focus on optimising software. While there was initial friction to integrate components together, once that was finalised it was easy for us to start researching and creating the data pipelines to provide quick and accurate results.",
+      },
+    ],
+    images: [
+      "/images/suas-team-page/our-redback-projects/vision.webp",
+    ],
+  },
 ];
