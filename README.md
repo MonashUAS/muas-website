@@ -29,7 +29,42 @@ The website is structured as a modern, performance-focused Web Application using
 
 ---
 
-## 3. Ownership, Escalation & Access Control
+## 3. Key Design Principles & Styling Guidelines
+
+The MUAS website follows a cohesive, high-impact design system built around dark futuristic themes, bold typography, rich gradients, and fluid micro-animations.
+
+### Typography & Text Hierarchy
+* **Font Family:** Powered by `"Helvetica Neue", Helvetica, Arial, sans-serif`.
+* **Tight Display Headings (`tracking-tighter` / `tracking-[-0.05em]`):**  
+  Display titles and section headings utilize tight negative letter spacing (`tracking-tighter` / `tracking-[-0.04em]` to `tracking-[-0.05em]`) combined with tight line-heights (`leading-[0.9]` to `leading-[0.95]`) for a sleek, compressed aesthetic.
+* **Fluid Font Scaling:** Headings leverage responsive CSS `clamp()` functions (e.g. `text-[clamp(2.5rem,6vw,5.75rem)]`) for seamless scaling across mobile and ultra-wide viewports.
+* **Capitalized Captions (`tracking-[0.2em]`):** Small category labels and metadata use uppercase `text-caption` (10px) with wide letter spacing (`tracking-[0.2em]`).
+
+### Color System & Palette Tokens
+* **Dark Background Base:** Deep midnight dark mode (`--color-background: #02040a` / `#00040a`).
+* **Signature MUAS Blue Palette (`--color-blue-*`):**  
+  Ranging from `blue-50` (`#e6edf7`) for crisp text accents up to `blue-900` (`#001f49`) and dark radial center hues (`#002352`, `#020b18`). Used for interactive states, primary CTAs, hover rings, and brand headers.
+* **Accent Red Palette (`--color-red-*`):**  
+  Ranging from `red-500` (`#d61c1c`) to `red-900` (`#5a0c0c`). Used for close buttons, critical notifications, and Redback SUAS competition branding.
+* **Search & Target Pulse Highlight:**  
+  Gold/amber highlight token (`rgb(228 197 106)`) used for search result glow rings and text highlighting.
+
+### Reusable Animations & Motion Design
+* **3D Depth Carousels:** Smooth scale/transform/opacity transitions (`transition-all duration-700 ease-out` with 3D offset transforms) on `/our-drones`.
+* **Bookshelf Grid & Reader Modals:** Interactive 3-column desktop / 2-column mobile bookshelf grid with hover white-glow edge expansion on `/newsletter`.
+* **Page Dissolve Transition (`PageDissolveTransition`):** Smooth route transition shell opacity fades (`cubic-bezier(0.22, 1, 0.36, 1)`).
+* **Sponsor Marquee (`animate-sponsor-marquee`):** Infinite horizontal ticker (`sponsor-marquee 34s linear infinite`).
+* **Search Match Pulse (`search-highlight-pulse`):** Pulse keyframe glow effect for deep-linked search results.
+* **Reduced Motion Compliance:** All key keyframes and transitions include `@media (prefers-reduced-motion: reduce)` fallbacks.
+
+### Layout & Glassmorphism Patterns
+* **`viewport-fold` Utility:** Viewport min-height calculation (`min-height: calc(100svh - var(--header-height))`) ensuring hero sections fill the fold below fixed headers.
+* **Radial Gradients & Glassmorphism:** Layered radial background gradients paired with `backdrop-blur-md` overlays for floating menus and reader modals.
+* **Accessibility Standards:** Minimum 44px touch targets on mobile, full keyboard navigation support (`Escape`, `ArrowLeft`, `ArrowRight`), and explicit `aria-modal` / `aria-label` attributes.
+
+---
+
+## 4. Ownership, Escalation & Access Control
 
 ### Primary Escalation Contact
 For queries regarding website access, production deployment errors, domain/DNS routing, secrets management, and Resend account configuration, contact the current Website Lead.
@@ -211,7 +246,41 @@ Before merging any pull request to production, execute the following validation 
 
 ## 9. Common Content & Configuration Updates
 
-### A. Managing Recruitment
+### A. Updating Team Member Names, Roles & Headshot Photos
+
+Team members, section leads, executive management, and headshot photos displayed on `/our-team` are managed through two data files and headshot image files in `public/images/headshots/`.
+
+#### Step-by-step Guide to Update Team Leads or Members:
+
+1. **Save Headshot Photo in `public/images/headshots/`:**  
+   Save the new member's headshot photo in `.webp` format in `public/images/headshots/` (e.g. `Team Lead - New Lead Name.webp`).
+
+2. **Register Headshot in `src/app/our-team/data/portrait-assets.ts`:**  
+   Open `src/app/our-team/data/portrait-assets.ts` and add or update the entry in the `portraits` object:
+   ```typescript
+   export const portraits = {
+     newLeadName: portrait("Team Lead - New Lead Name.webp"),
+     // Optional: Add custom focal position if facial framing needs vertical adjustment:
+     // newLeadName: portrait("Team Lead - New Lead Name.webp", "50% 25%"),
+   };
+   ```
+
+3. **Update Member Entry in `src/app/our-team/data/team-data.ts`:**  
+   Open `src/app/our-team/data/team-data.ts` and locate the appropriate section array (`managementMembers`, `auxiliaryMembers`, `aerostructuresMembers`, `avionicsMembers`, `operationsMembers`, `propulsionMembers`, or `flightOpsMembers`). Update or append the member object:
+   ```typescript
+   {
+     name: "New Lead Name",
+     role: "Team Lead",
+     section: "Management",
+     image: portraits.newLeadName,
+     priority: 1,
+   }
+   ```
+
+4. **Verify Local Build & Search Index:**  
+   Run `pnpm dev` and visit `/our-team` to inspect the updated headshots and titles. In-site search automatically indexes updated member names and roles.
+
+### B. Managing Recruitment
 Recruitment options, status, and target URLs are controlled in:
 `src/app/recruitment/recruitment-data.ts`
 
@@ -227,7 +296,86 @@ export const recruitmentConfig = {
 * **Closing Recruitment:** Set `isRecruitmentOpen: false`. This hides the application button, displays closed-state messaging, and shows `closedImage`.
 * **Verification:** Check both `/recruitment` and the Homepage Recruitment panel on the preview deployment before merging.
 
-### B. Contact Form & Resend Integration
+### C. Adding a New Drone to Fleet ("Our Drones")
+
+Aircraft profiles displayed on `/our-drones` are configured in `src/app/our-drones/drone-data.ts` with static transparent renders stored in `public/images/drones/`.
+
+#### Step-by-step Guide to Add a New Drone:
+
+1. **Add Hero Render in `public/images/drones/`:**  
+   Save a high-resolution, transparent background `.webp` render of the drone in `public/images/drones/` (e.g. `public/images/drones/new-drone.webp`).
+
+2. **(Optional) Add Gallery Photos in `public/images/drones/[slug]/`:**  
+   If the drone includes an expanded image gallery, create a subdirectory `public/images/drones/new-drone/` and save `.webp` gallery photos (e.g. `new-drone-1.webp`, `new-drone-2.webp`).
+
+3. **Register Entry in `src/app/our-drones/drone-data.ts`:**  
+   Open `src/app/our-drones/drone-data.ts` and add the new drone object to the `drones` array:
+   ```typescript
+   {
+     slug: "new-drone",
+     name: "New Drone Name",
+     description: [
+       "Brief operational description of the aircraft, design focus, and mission capability.",
+     ],
+     heroImage: "/images/drones/new-drone.webp",
+     features: [
+       { label: "Payload Capacity", value: "1.5 kg" },
+       { label: "Range", value: "20 km" },
+       { label: "Max Flight Speed", value: "25 m/s" },
+     ],
+     dimensions: [
+       { label: "Wingspan", value: "1800 mm" },
+       { label: "Length", value: "1200 mm" },
+       { label: "Maximum Take-Off Weight", value: "8.5 kg" },
+     ],
+     gallery: [
+       "/images/drones/new-drone/new-drone-1.webp",
+       "/images/drones/new-drone/new-drone-2.webp",
+     ],
+   },
+   ```
+
+4. **Verify Interactive Carousel & Modal:**  
+   Run `pnpm dev` and visit `/our-drones` to verify the 3D cover carousel, specs modal, and site-wide search indexing.
+
+### D. Managing Newsletters & WebP Asset Generation
+
+Newsletters are rendered on `/newsletter` using high-performance **WebP** page images for fast interactive page-flipping, while raw **PDF** documents are stored in `public/newsletters/pdfs/` to enable visitors to download full PDF versions directly from the reader modal's "Download PDF" button.
+
+#### Adding a New Newsletter (Step-by-step):
+
+1. **Place PDF in `public/newsletters/pdfs/`:**  
+   Save the new PDF document in `public/newsletters/pdfs/` (e.g. `public/newsletters/pdfs/newsletter-6.pdf`).
+
+2. **Run Asset Generation Script:**  
+   Execute the automated converter script:
+   ```bash
+   pnpm generate-newsletters
+   ```
+   *(or `node scripts/generate-newsletter-assets.mjs`)*
+
+   This script automatically scans `public/newsletters/pdfs/`, renders every page into compressed WebP format under `public/newsletters/pages/newsletter-6/page-[N].webp`, generates the cover thumbnail at `public/newsletters/covers/newsletter-6.webp`, and prints out the ready-to-use configuration snippet.
+
+3. **Update Newsletter Data File:**  
+   Open `src/app/newsletter/newsletter-data.ts` and add the new item to the `newsletters` array (keep ordered newest first):
+   ```typescript
+   {
+     id: "newsletter-6",
+     slug: "march-2026",
+     title: "MUAS Newsletter - Issue 6",
+     date: "March 2026",
+     issueNumber: 6,
+     coverImage: "/newsletters/covers/newsletter-6.webp",
+     pdfUrl: "/newsletters/pdfs/newsletter-6.pdf",
+     pageCount: 12,
+     pages: buildPagePaths("newsletter-6", 12),
+   },
+   ```
+
+4. **Verify Local Build & Commit:**  
+   Run `pnpm dev` and `pnpm build` to verify the new issue displays and downloads cleanly on `/newsletter`, then commit the PDF file in `public/newsletters/pdfs/`, generated WebP images, and `newsletter-data.ts`.
+
+### E. Contact Form & Resend Integration
 The contact form submits data to the serverless route at `src/app/api/contact/route.ts`.
 
 #### Modifying Form Recipient Inbox:
@@ -249,18 +397,22 @@ The contact form submits data to the serverless route at `src/app/api/contact/ro
 3. Redeploy and send a test contact enquiry.
 4. Revoke/delete the old key in Resend once confirmed.
 
-### C. Content File Map
+### F. Content File Map
 Main site content is organised by route and modular data files:
 
 | Target Area | File Path / Location |
 | :--- | :--- |
+| **Team Profiles Data** | `src/app/our-team/data/team-data.ts` |
+| **Team Headshots Map** | `src/app/our-team/data/portrait-assets.ts` |
+| **Team Headshot Images** | `public/images/headshots/` |
 | **Recruitment Data** | `src/app/recruitment/recruitment-data.ts` |
 | **Main Navigation Bar** | `src/global-components/layout/sidebar/navbar-data.ts` |
 | **Footer & Social Links** | `src/global-components/layout/footer.tsx` |
 | **Homepage Quick-Nav** | `src/app/home/data/explore-panels.ts` |
-| **Team Profiles** | `src/app/our-team/data/team-data.ts` |
-| **Sponsors Data** | `src/app/our-sponsors/sponsor-page-data.ts` |
 | **Drone Fleet Data** | `src/app/our-drones/drone-data.ts` |
+| **Sponsors Data** | `src/app/our-sponsors/sponsor-page-data.ts` |
+| **Newsletter Data** | `src/app/newsletter/newsletter-data.ts` |
+| **Newsletter Generator** | `scripts/generate-newsletter-assets.mjs` |
 | **Section Pages Data** | `src/app/sections/section-data.ts` |
 | **SUAS 2026 Timeline** | `src/app/suas-2026-team/timeline-data.ts` |
 | **SUAS 2026 Projects** | `src/app/suas-2026-team/projects/project-data.ts` |

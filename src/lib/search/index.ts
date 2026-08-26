@@ -1,5 +1,6 @@
 import { contactSearchDocument } from "@/app/contact-us/search";
 import { homeSearchDocument } from "@/app/home/search";
+import { newsletterSearchDocument } from "@/app/newsletter/search";
 import { ourDronesSearchDocument } from "@/app/our-drones/search";
 import { ourSponsorsSearchDocument } from "@/app/our-sponsors/search";
 import { ourTeamSearchDocument } from "@/app/our-team/search";
@@ -16,6 +17,7 @@ export const searchDocuments: SearchDocument[] = [
   homeSearchDocument,
   ourTeamSearchDocument,
   ourDronesSearchDocument,
+  newsletterSearchDocument,
   ...sectionSearchDocuments,
   suasHomeSearchDocument,
   suasTeamSearchDocument,

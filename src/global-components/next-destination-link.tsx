@@ -6,6 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import { StickyLoadedImage } from "@/lib/sticky-loaded-image";
 
 export type NextDestinationLinkProps = {
+  className?: string;
+  containerPadding?: string;
+  ctaLabel?: string;
   description: string;
   href: string;
   id?: string;
@@ -18,6 +21,9 @@ export type NextDestinationLinkProps = {
 
 // NextDestinationLink previews a destination page; shared dissolve owns the route transition.
 export function NextDestinationLink({
+  className = "min-h-[calc(100vh-5rem)] py-16 sm:py-20 lg:py-24",
+  containerPadding = "px-0 sm:px-8 lg:px-12",
+  ctaLabel = "Explore Now",
   description,
   href,
   id,
@@ -67,11 +73,11 @@ export function NextDestinationLink({
     <section
       id={id}
       ref={sectionRef}
-      className="relative flex min-h-[calc(100vh-5rem)] scroll-mt-20 items-center justify-center bg-black-500 py-16 sm:py-20 lg:py-24"
+      className={`relative flex items-center justify-center bg-black-500 scroll-mt-20 ${className}`}
     >
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_45%,rgba(0,74,173,0.22),transparent_34%)]" />
 
-      <div className="mx-auto w-full max-w-[1720px] px-5 sm:px-8 lg:px-12">
+      <div className={`mx-auto w-full max-w-[1720px] ${containerPadding}`}>
         <Link
           href={href}
           aria-label={title}
@@ -117,7 +123,7 @@ export function NextDestinationLink({
               </p>
 
               <span className="mt-9 inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-white px-7 py-3 text-b1 font-bold text-blue-900 transition-colors duration-300 group-hover:bg-blue-100 motion-reduce:transition-none">
-                Explore Now
+                {ctaLabel}
                 <svg
                   aria-hidden="true"
                   viewBox="0 0 24 24"

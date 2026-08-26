@@ -18,10 +18,11 @@ export const homeLink: NavLink = { href: "/", label: "Home" };
 
 export const navigationGroups: NavGroup[] = [
   {
-    label: "Discover",
+    label: "Explore",
     links: [
       { href: "/our-team", label: "Our Team" },
       { href: "/our-drones", label: "Our Drones" },
+      { href: "/newsletter", label: "Our Newsletters" },
     ],
   },
   {
@@ -39,6 +40,12 @@ export const navigationGroups: NavGroup[] = [
     links: [
       { href: "/suas-2026-home", label: "Redback" },
       { href: "/suas-2026-team", label: "The SUAS Team" },
+    ],
+  },
+  {
+    label: "NFC 2025",
+    links: [
+      { href: "/nfc-2025", label: "Peregrine MK II" },
     ],
   },
   {

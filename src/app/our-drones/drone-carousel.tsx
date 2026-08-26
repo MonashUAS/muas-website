@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { useSearchRevealController } from "@/global-components/search/search-navigation-provider";
 import type { Drone } from "./drone-data";
 import { DroneDetailsModal } from "./drone-details-modal";
@@ -11,17 +12,79 @@ type DroneCarouselProps = {
   drones: Drone[];
 };
 
-// DroneCarousel presents the fleet with arrow controls and adjacent-image navigation.
+/**
+ * Calculates responsive layout and transform properties for active and inactive drone slides.
+ * @param isActive - Whether the slide is active.
+ * @param isActiveHovered - Whether the active slide is hovered.
+ * @param offset - Relative slide offset distance.
+ * @returns CSS inline style object.
+ */
+function getDroneSlideStyle(
+  isActive: boolean,
+  isActiveHovered: boolean,
+  offset: number,
+) {
+  const isOffscreen = Math.abs(offset) > 1;
+
+  return {
+    height: isActive ? "48vh" : "20vh",
+    maxHeight: isActive ? "520px" : "180px",
+    maxWidth: isActive ? "920px" : "240px",
+    opacity: isOffscreen ? 0 : isActive ? 1 : 0.65,
+    pointerEvents: isOffscreen ? ("none" as const) : ("auto" as const),
+    transform: `translateX(${offset * 195}%) translateY(${
+      isActive ? -16 : -90
+    }px) scale(${
+      isActive
+        ? isActiveHovered
+          ? 1.08
+          : 1
+        : 0.85
+    })`,
+    width: isActive ? "82vw" : "22vw",
+    zIndex: isActive ? 2 : 1,
+  };
+}
+
+/**
+ * Loops carousel indices around the fleet list bounds.
+ * @param index - Target array index.
+ * @param length - Total length of array.
+ * @returns Wrapped index within valid range.
+ */
+function wrapIndex(index: number, length: number): number {
+  return ((index % length) + length) % length;
+}
+
+/**
+ * Calculates the shortest cyclic offset distance between a slide index and the active index.
+ * Ensures consistent bidirectional carousel transitions without DOM node reordering glitches.
+ * @param index - Target item index in array.
+ * @param activeIndex - Currently active slide index.
+ * @param length - Total number of items in carousel.
+ * @returns Cyclic offset integer between -Math.floor(length/2) and Math.floor((length-1)/2).
+ */
+function getSlideOffset(
+  index: number,
+  activeIndex: number,
+  length: number,
+): number {
+  let diff = index - activeIndex;
+  const half = Math.floor(length / 2);
+  while (diff > half) diff -= length;
+  while (diff < -half) diff += length;
+  return diff;
+}
+
+/**
+ * DroneCarousel presents the fleet with arrow controls and adjacent-image navigation.
+ * Uses static DOM mapping for seamless bidirectional transition animations.
+ */
 export function DroneCarousel({ drones }: DroneCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedDrone, setSelectedDrone] = useState<Drone | null>(null);
   const [isActiveHovered, setIsActiveHovered] = useState(false);
   const carouselRef = useRef<HTMLElement | null>(null);
-
-  const visibleDrones = useMemo(
-    () => getVisibleDrones(drones, activeIndex),
-    [activeIndex, drones],
-  );
 
   // navigateTo moves the active drone to the requested index.
   const navigateTo = useCallback(
@@ -143,25 +206,26 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
             <button
               type="button"
               onClick={() => navigateTo(activeIndex - 1)}
-              className="pointer-events-auto inline-flex h-14 w-14 cursor-pointer items-center justify-center justify-self-center rounded-full bg-white text-4xl leading-none text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-900/30 focus-visible:outline-none motion-reduce:transition-none sm:h-16 sm:w-16"
+              className="pointer-events-auto inline-flex h-14 w-14 cursor-pointer items-center justify-center justify-self-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-900/30 focus-visible:outline-none motion-reduce:transition-none sm:h-16 sm:w-16"
               aria-label="Show previous drone"
             >
-              ‹
+              <LuChevronLeft className="h-7 w-7 sm:h-8 sm:w-8" />
             </button>
 
             <button
               type="button"
               onClick={() => navigateTo(activeIndex + 1)}
-              className="pointer-events-auto col-start-3 inline-flex h-14 w-14 cursor-pointer items-center justify-center justify-self-center rounded-full bg-white text-4xl leading-none text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-900/30 focus-visible:outline-none motion-reduce:transition-none sm:h-16 sm:w-16"
+              className="pointer-events-auto col-start-3 inline-flex h-14 w-14 cursor-pointer items-center justify-center justify-self-center rounded-full bg-white text-blue-900 shadow-[0_14px_36px_rgba(0,0,0,0.28)] transition-colors duration-300 hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-900/30 focus-visible:outline-none motion-reduce:transition-none sm:h-16 sm:w-16"
               aria-label="Show next drone"
             >
-              ›
+              <LuChevronRight className="h-7 w-7 sm:h-8 sm:w-8" />
             </button>
           </div>
 
-          {/* Drone renders */}
+          {/* Drone renders in stable static DOM order */}
           <div className="relative flex min-h-[340px] sm:min-h-[460px] lg:min-h-[540px] w-full max-w-7xl items-center justify-center">
-            {visibleDrones.map(({ drone, index, offset }) => {
+            {drones.map((drone, index) => {
+              const offset = getSlideOffset(index, activeIndex, drones.length);
               const isActive = offset === 0;
 
               return (
@@ -201,50 +265,3 @@ export function DroneCarousel({ drones }: DroneCarouselProps) {
     </section>
   );
 }
-
-// getVisibleDrones returns the active drone plus surrounding neighbours for smooth pre-loading transitions.
-function getVisibleDrones(drones: Drone[], activeIndex: number) {
-  return [-2, -1, 0, 1, 2].map((offset) => {
-    const index = wrapIndex(activeIndex + offset, drones.length);
-
-    return {
-      drone: drones[index],
-      index,
-      offset,
-    };
-  });
-}
-
-// wrapIndex loops carousel indices around the fleet list.
-function wrapIndex(index: number, length: number) {
-  return ((index % length) + length) % length;
-}
-
-// getDroneSlideStyle calculates responsive layout and transform properties for active and inactive drone slides.
-function getDroneSlideStyle(
-  isActive: boolean,
-  isActiveHovered: boolean,
-  offset: number,
-) {
-  const isOffscreen = Math.abs(offset) > 1;
-
-  return {
-    height: isActive ? "48vh" : "20vh",
-    maxHeight: isActive ? "520px" : "180px",
-    maxWidth: isActive ? "920px" : "240px",
-    opacity: isOffscreen ? 0 : isActive ? 1 : 0.65,
-    pointerEvents: isOffscreen ? ("none" as const) : ("auto" as const),
-    transform: `translateX(${offset * 195}%) translateY(${
-      isActive ? -16 : -90
-    }px) scale(${
-      isActive
-        ? isActiveHovered
-          ? 1.08
-          : 1
-        : 0.85
-    })`,
-    width: isActive ? "82vw" : "22vw",
-    zIndex: isActive ? 2 : 1,
-  };
-}
-
