@@ -1,7 +1,7 @@
 export const recruitmentConfig = {
-  isRecruitmentOpen: false,
+  isRecruitmentOpen: true,
   recruitmentFormUrl:
-    "https://docs.google.com/forms/d/e/1FAIpQLSfwcHf9qlp82zL6ozTGCwcedqiVyZPMbfV5QdVsvk-8K2bcWA/viewform?usp=dialog",
+    "https://docs.google.com/forms/d/e/1FAIpQLSfvrzeJE1OgN34-_sc_pCzhodWIvi8nCTVxRG7m3xwOOyIWxA/viewform",
   openImage: {
     src: "/images/recruitment/true.webp",
     alt: "MUAS members carrying an aircraft during a flight day",

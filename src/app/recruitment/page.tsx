@@ -12,8 +12,8 @@ export default function RecruitmentPage() {
 
   const statusContent = isRecruitmentOpen
     ? {
-        heading: "Recruitment is Now Open",
-        copy: "Join MUAS and help shape the next generation of drone technology.",
+        heading: "Operations Recruitment is Now Open!",
+        copy: "Join MUAS Operations and help keep the team running behind the scenes through Marketing, Events and Programs and Sponsorships",
         image: recruitmentConfig.openImage,
       }
     : {
