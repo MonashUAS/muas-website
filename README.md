@@ -2,7 +2,7 @@
 
 **Repository:** [MonashUAS/muas-website](https://github.com/MonashUAS/muas-website)  
 **Current Website Lead:** Claire Zhang 
-**Last Updated:** 9 August 2026  
+**Last Updated:** 27 October 2026  
 
 ---
 
@@ -77,7 +77,7 @@ For queries regarding website access, production deployment errors, domain/DNS r
 | **Resend** | Access/create `muas-operations@monash.edu` Google profile and use Google Sign-In. | Contact COO or Operations Lead for `muas-operations@monash.edu` profile password. |
 | **NameCheap** | Access/create `contact@monashuas.org` Google profile. Also ask for NameCheap password. | Contact COO or Operations Lead for `contact@monashuas.org` profile password. Also ask for NameCheap password. MFA is sent to `contact@monashuas.org` email. |
 | **GitHub** | Create your own account. | Provide your username/email to the Website Lead or IT Manager so they can add you to the `muas-website` repository. |
-| **MUAS GitHub** | Username: contact@monashuas.org | Contact Team Lead for password and MFA |
+| **MUAS GitHub (general repository access does not require this account)** | Username: contact@monashuas.org | Contact Team Lead for password and MFA |
 
 ### GitHub Access Model
 Access permissions are strictly governed under the `MonashUAS` GitHub Organization based on the principle of least privilege:
