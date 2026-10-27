@@ -1,8 +1,8 @@
 # Monash Uncrewed Aerial Systems (MUAS) Website Documentation & Operations Handover
 
-**Repository:** [MonashUAS/muas-website](https://github.com/MonashUAS/muas-website)
-**Current Website Lead:** Claire Zhang
-**Last Updated:** 9 August 2026
+**Repository:** [MonashUAS/muas-website](https://github.com/MonashUAS/muas-website)  
+**Current Website Lead:** Claire Zhang 
+**Last Updated:** 9 August 2026  
 
 ---
 
@@ -11,7 +11,6 @@
 This document consolidates technical handover details and operational procedures for the public Monash Uncrewed Aerial Systems (MUAS) website. It serves as a unified reference for both core web maintainers and Operations team members requesting, reviewing, or applying routine updates.
 
 ### Core Objectives
-
 * Provide technical guidelines for local development, architecture, environment setup, and deployment.
 * Standardize operational processes for content updates, recruitment management, contact form maintenance, and GitHub workflows.
 * Maintain security best practices regarding environment variables, access control, and deployment safety.
@@ -35,22 +34,22 @@ The website is structured as a modern, performance-focused Web Application using
 The MUAS website follows a cohesive, high-impact design system built around dark futuristic themes, bold typography, rich gradients, and fluid micro-animations.
 
 ### Typography & Text Hierarchy
-
 * **Font Family:** Powered by `"Helvetica Neue", Helvetica, Arial, sans-serif`.
-* **Tight Display Headings (`tracking-tighter` / `tracking-[-0.05em]`):**Display titles and section headings utilize tight negative letter spacing (`tracking-tighter` / `tracking-[-0.04em]` to `tracking-[-0.05em]`) combined with tight line-heights (`leading-[0.9]` to `leading-[0.95]`) for a sleek, compressed aesthetic.
+* **Tight Display Headings (`tracking-tighter` / `tracking-[-0.05em]`):**  
+  Display titles and section headings utilize tight negative letter spacing (`tracking-tighter` / `tracking-[-0.04em]` to `tracking-[-0.05em]`) combined with tight line-heights (`leading-[0.9]` to `leading-[0.95]`) for a sleek, compressed aesthetic.
 * **Fluid Font Scaling:** Headings leverage responsive CSS `clamp()` functions (e.g. `text-[clamp(2.5rem,6vw,5.75rem)]`) for seamless scaling across mobile and ultra-wide viewports.
 * **Capitalized Captions (`tracking-[0.2em]`):** Small category labels and metadata use uppercase `text-caption` (10px) with wide letter spacing (`tracking-[0.2em]`).
 
 ### Color System & Palette Tokens
-
 * **Dark Background Base:** Deep midnight dark mode (`--color-background: #02040a` / `#00040a`).
-* **Signature MUAS Blue Palette (`--color-blue-*`):**Ranging from `blue-50` (`#e6edf7`) for crisp text accents up to `blue-900` (`#001f49`) and dark radial center hues (`#002352`, `#020b18`). Used for interactive states, primary CTAs, hover rings, and brand headers.
-* **Accent Red Palette (`--color-red-*`):**Ranging from `red-500` (`#d61c1c`) to `red-900` (`#5a0c0c`). Used for close buttons, critical notifications, and Redback SUAS competition branding.
-* **Search & Target Pulse Highlight:**
+* **Signature MUAS Blue Palette (`--color-blue-*`):**  
+  Ranging from `blue-50` (`#e6edf7`) for crisp text accents up to `blue-900` (`#001f49`) and dark radial center hues (`#002352`, `#020b18`). Used for interactive states, primary CTAs, hover rings, and brand headers.
+* **Accent Red Palette (`--color-red-*`):**  
+  Ranging from `red-500` (`#d61c1c`) to `red-900` (`#5a0c0c`). Used for close buttons, critical notifications, and Redback SUAS competition branding.
+* **Search & Target Pulse Highlight:**  
   Gold/amber highlight token (`rgb(228 197 106)`) used for search result glow rings and text highlighting.
 
 ### Reusable Animations & Motion Design
-
 * **3D Depth Carousels:** Smooth scale/transform/opacity transitions (`transition-all duration-700 ease-out` with 3D offset transforms) on `/our-drones`.
 * **Bookshelf Grid & Reader Modals:** Interactive 3-column desktop / 2-column mobile bookshelf grid with hover white-glow edge expansion on `/newsletter`.
 * **Page Dissolve Transition (`PageDissolveTransition`):** Smooth route transition shell opacity fades (`cubic-bezier(0.22, 1, 0.36, 1)`).
@@ -59,7 +58,6 @@ The MUAS website follows a cohesive, high-impact design system built around dark
 * **Reduced Motion Compliance:** All key keyframes and transitions include `@media (prefers-reduced-motion: reduce)` fallbacks.
 
 ### Layout & Glassmorphism Patterns
-
 * **`viewport-fold` Utility:** Viewport min-height calculation (`min-height: calc(100svh - var(--header-height))`) ensuring hero sections fill the fold below fixed headers.
 * **Radial Gradients & Glassmorphism:** Layered radial background gradients paired with `backdrop-blur-md` overlays for floating menus and reader modals.
 * **Accessibility Standards:** Minimum 44px touch targets on mobile, full keyboard navigation support (`Escape`, `ArrowLeft`, `ArrowRight`), and explicit `aria-modal` / `aria-label` attributes.
@@ -69,28 +67,26 @@ The MUAS website follows a cohesive, high-impact design system built around dark
 ## 4. Ownership, Escalation & Access Control
 
 ### Primary Escalation Contact
-
 For queries regarding website access, production deployment errors, domain/DNS routing, secrets management, and Resend account configuration, contact the current Website Lead.
 
 ### Account Credentials & MFA Access
 
-| Service / Platform                                                 | Access & Login Instructions                                                              | Password & MFA Contact Details                                                                                                                                  |
-| :----------------------------------------------------------------- | :--------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Vercel**                                                   | Access/create `muas-operations@monash.edu` Google profile and use Google Sign-In.      | Contact COO or Operations Lead for `muas-operations@monash.edu` profile password.                                                                             |
-| **Resend**                                                   | Access/create `muas-operations@monash.edu` Google profile and use Google Sign-In.      | Contact COO or Operations Lead for `muas-operations@monash.edu` profile password.                                                                             |
-| **NameCheap**                                                | Access/create `contact@monashuas.org` Google profile. Also ask for NameCheap password. | Contact COO or Operations Lead for `contact@monashuas.org` profile password. Also ask for NameCheap password. MFA is sent to `contact@monashuas.org` email. |
-| **GitHub**                                                   | Create your own account.                                                                 | Provide your username/email to the Website Lead or IT Manager so they can add you to the `muas-website` repository.                                           |
-| **MUAS GitHub (not required for general repository access)** | Username: contact@monashuas.org                                                          | Contact Team Lead for password and MFA                                                                                                                          |
+| Service / Platform | Access & Login Instructions | Password & MFA Contact Details |
+| :--- | :--- | :--- |
+| **Vercel** | Access/create `muas-operations@monash.edu` Google profile and use Google Sign-In. | Contact COO or Operations Lead for `muas-operations@monash.edu` profile password. |
+| **Resend** | Access/create `muas-operations@monash.edu` Google profile and use Google Sign-In. | Contact COO or Operations Lead for `muas-operations@monash.edu` profile password. |
+| **NameCheap** | Access/create `contact@monashuas.org` Google profile. Also ask for NameCheap password. | Contact COO or Operations Lead for `contact@monashuas.org` profile password. Also ask for NameCheap password. MFA is sent to `contact@monashuas.org` email. |
+| **GitHub** | Create your own account. | Provide your username/email to the Website Lead or IT Manager so they can add you to the `muas-website` repository. |
+| **MUAS GitHub** | Username: contact@monashuas.org | Contact Team Lead for password and MFA |
 
 ### GitHub Access Model
-
 Access permissions are strictly governed under the `MonashUAS` GitHub Organization based on the principle of least privilege:
 
-| Persona / Role                                     | Access Level    | Description & Responsibilities                                                                                                                                                     |
-| :------------------------------------------------- | :-------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **MUAS Members (Requesters)**                | No Write Access | Submit website change requests via MUAS Website Change Requests Google Sheet: https://docs.google.com/spreadsheets/d/1u9fldJoP2_-Tf5VmzKbaTg6rqUDOzmSY4g1cUc-kzrk/edit?usp=sharing |
-| **Website Maintainers (Operations Members)** | Write Access    | Create feature/content branches, make code/data adjustments, submit PRs, and merge approved changes.                                                                               |
-| **Website Lead**                             | Admin Access    | Manage repository settings, secret environment variables, DNS records, deployment integrations, and branch protection rules.                                                       |
+| Persona / Role | Access Level | Description & Responsibilities |
+| :--- | :--- | :--- |
+| **MUAS Members (Requesters)** | No Write Access | Submit website change requests via MUAS Website Change Requests Google Sheet: https://docs.google.com/spreadsheets/d/1u9fldJoP2_-Tf5VmzKbaTg6rqUDOzmSY4g1cUc-kzrk/edit?usp=sharing |
+| **Website Maintainers** | Write Access | Create feature/content branches, make code/data adjustments, submit PRs, and merge approved changes. |
+| **Website Lead** | Admin Access | Manage repository settings, secret environment variables, DNS records, deployment integrations, and branch protection rules. |
 
 *To request access updates or onboard new team members, contact the current Website Lead.*
 
@@ -99,27 +95,26 @@ Access permissions are strictly governed under the `MonashUAS` GitHub Organizati
 ## 4. Local Development & Setup
 
 ### Package Management Caution
-
 This repository supports both `pnpm` and `npm`, but **`pnpm` is recommended** for consistency with deployment builds and faster installation times.
 
 ### Environment Setup
 
 1. **Clone the repository and install dependencies:**
-
+   
    *Using pnpm:*
-
    ```bash
    pnpm install
    pnpm dev
    ```
 
    *Using npm:*
-
    ```bash
    npm install
    npm run dev
    ```
+
 2. Open `http://localhost:3000` in your web browser.
+
 3. **Configuring Local Environment Variables:**
    Create a `.env.local` file in the project root directory:
 
@@ -130,17 +125,16 @@ This repository supports both `pnpm` and `npm`, but **`pnpm` is recommended** fo
    ```
 
    *Note: Never commit `.env.local` or raw API keys to GitHub.*
+
 4. **Testing Production Builds Locally:**
 
    *Using pnpm:*
-
    ```bash
    pnpm build
    pnpm start
    ```
 
    *Using npm:*
-
    ```bash
    npm run build
    npm run start
@@ -151,7 +145,6 @@ This repository supports both `pnpm` and `npm`, but **`pnpm` is recommended** fo
 ## 5. Deployment & Environment Variables
 
 ### Vercel Deployment & Hosting Configuration
-
 The site is hosted and deployed as a standard Next.js application via Vercel. Vercel connects directly to the `MonashUAS/muas-website` GitHub repository. Pushing changes to feature branches triggers a preview deployment automatically, while merging into the `main` branch triggers a production build. Deployment configurations and environment variables are managed via the Vercel dashboard.
 
 * **Repository:** `MonashUAS/muas-website`
@@ -160,12 +153,11 @@ The site is hosted and deployed as a standard Next.js application via Vercel. Ve
 * **Start Command:** `pnpm start` or `npm run start`
 
 ### Required Environment Variables
-
 The following environment variables must be defined in the production Vercel dashboard:
 
 * `RESEND_API_KEY`: Secrets key generated in the Resend dashboard.
 * `CONTACT_FROM_EMAIL`: MUAS Team <noreply@monashuas.org>
-* `CONTACT_TO_EMAIL`: contact@monashuas.org
+* `CONTACT_TO_EMAIL`: contact@monashuas.org 
 
 > **CRITICAL:** After updating environment variables in the Vercel dashboard, **redeploy the application** so that the serverless API route receives the updated runtime values.
 
@@ -174,19 +166,18 @@ The following environment variables must be defined in the production Vercel das
 ## 6. Domain & DNS Configuration (Namecheap)
 
 To access and manage DNS settings:
-
 1. Sign in to **Namecheap**.
 2. Go to **Domain List** in the sidebar.
 3. Select **Advanced DNS** for the domain.
 
 ### DNS Records Summary
 
-| Section                 | Record Type    | Host / Name           | Value / Target                 | Purpose & Description                       |
-| :---------------------- | :------------- | :-------------------- | :----------------------------- | :------------------------------------------ |
-| **Host Records**  | `A Record`   | `@`                 | Vercel configuration IP/target | Points domain traffic to Vercel deployment. |
-| **Host Records**  | `TXT Record` | `resend._domainkey` | Resend DKIM Key                | Resend domain key authentication record.    |
-| **Host Records**  | `TXT Record` | `send`              | Resend SPF / Verification      | Resend sending domain verification record.  |
-| **Mail Settings** | `MX Record`  | `@`                 | `smtp.google.com`            | Email routing configuration.                |
+| Section | Record Type | Host / Name | Value / Target | Purpose & Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **Host Records** | `A Record` | `@` | Vercel configuration IP/target | Points domain traffic to Vercel deployment. |
+| **Host Records** | `TXT Record` | `resend._domainkey` | Resend DKIM Key | Resend domain key authentication record. |
+| **Host Records** | `TXT Record` | `send` | Resend SPF / Verification | Resend sending domain verification record. |
+| **Mail Settings** | `MX Record` | `@` | `smtp.google.com` | Email routing configuration. |
 
 > **CRITICAL:** Do not delete the mail settings configuration, we will not receive emails sent to contact@monashuas.org if this is missing!
 
@@ -223,18 +214,14 @@ To protect the production environment, all routine and emergency updates must fo
 10. **Verify Live Deployment on Vercel:** Check the live site on Vercel to confirm deployment success.
 
 ### Branch Naming Conventions
-
 Use descriptive prefixes for branch names:
-
 * `update/recruitment-link`
 * `update/contact-email`
 * `fix/contact-form`
 * `content/sponsor-update`
 
 ### Pull Request (PR) Checklist Summary
-
 When opening a PR, include:
-
 * Clear description of what changed and why.
 * Reference to the relevant issue, ticket, or request.
 * Mobile and desktop screenshots for visual/UI updates.
@@ -265,9 +252,11 @@ Team members, section leads, executive management, and headshot photos displayed
 
 #### Step-by-step Guide to Update Team Leads or Members:
 
-1. **Save Headshot Photo in `public/images/headshots/`:**Save the new member's headshot photo in `.webp` format in `public/images/headshots/` (e.g. `Team Lead - New Lead Name.webp`).
-2. **Register Headshot in `src/app/our-team/data/portrait-assets.ts`:**Open `src/app/our-team/data/portrait-assets.ts` and add or update the entry in the `portraits` object:
+1. **Save Headshot Photo in `public/images/headshots/`:**  
+   Save the new member's headshot photo in `.webp` format in `public/images/headshots/` (e.g. `Team Lead - New Lead Name.webp`).
 
+2. **Register Headshot in `src/app/our-team/data/portrait-assets.ts`:**  
+   Open `src/app/our-team/data/portrait-assets.ts` and add or update the entry in the `portraits` object:
    ```typescript
    export const portraits = {
      newLeadName: portrait("Team Lead - New Lead Name.webp"),
@@ -275,8 +264,9 @@ Team members, section leads, executive management, and headshot photos displayed
      // newLeadName: portrait("Team Lead - New Lead Name.webp", "50% 25%"),
    };
    ```
-3. **Update Member Entry in `src/app/our-team/data/team-data.ts`:**Open `src/app/our-team/data/team-data.ts` and locate the appropriate section array (`managementMembers`, `auxiliaryMembers`, `aerostructuresMembers`, `avionicsMembers`, `operationsMembers`, `propulsionMembers`, or `flightOpsMembers`). Update or append the member object:
 
+3. **Update Member Entry in `src/app/our-team/data/team-data.ts`:**  
+   Open `src/app/our-team/data/team-data.ts` and locate the appropriate section array (`managementMembers`, `auxiliaryMembers`, `aerostructuresMembers`, `avionicsMembers`, `operationsMembers`, `propulsionMembers`, or `flightOpsMembers`). Update or append the member object:
    ```typescript
    {
      name: "New Lead Name",
@@ -286,11 +276,11 @@ Team members, section leads, executive management, and headshot photos displayed
      priority: 1,
    }
    ```
-4. **Verify Local Build & Search Index:**
+
+4. **Verify Local Build & Search Index:**  
    Run `pnpm dev` and visit `/our-team` to inspect the updated headshots and titles. In-site search automatically indexes updated member names and roles.
 
 ### B. Managing Recruitment
-
 Recruitment options, status, and target URLs are controlled in:
 `src/app/recruitment/recruitment-data.ts`
 
@@ -312,10 +302,14 @@ Aircraft profiles displayed on `/our-drones` are configured in `src/app/our-dron
 
 #### Step-by-step Guide to Add a New Drone:
 
-1. **Add Hero Render in `public/images/drones/`:**Save a high-resolution, transparent background `.webp` render of the drone in `public/images/drones/` (e.g. `public/images/drones/new-drone.webp`).
-2. **(Optional) Add Gallery Photos in `public/images/drones/[slug]/`:**If the drone includes an expanded image gallery, create a subdirectory `public/images/drones/new-drone/` and save `.webp` gallery photos (e.g. `new-drone-1.webp`, `new-drone-2.webp`).
-3. **Register Entry in `src/app/our-drones/drone-data.ts`:**Open `src/app/our-drones/drone-data.ts` and add the new drone object to the `drones` array:
+1. **Add Hero Render in `public/images/drones/`:**  
+   Save a high-resolution, transparent background `.webp` render of the drone in `public/images/drones/` (e.g. `public/images/drones/new-drone.webp`).
 
+2. **(Optional) Add Gallery Photos in `public/images/drones/[slug]/`:**  
+   If the drone includes an expanded image gallery, create a subdirectory `public/images/drones/new-drone/` and save `.webp` gallery photos (e.g. `new-drone-1.webp`, `new-drone-2.webp`).
+
+3. **Register Entry in `src/app/our-drones/drone-data.ts`:**  
+   Open `src/app/our-drones/drone-data.ts` and add the new drone object to the `drones` array:
    ```typescript
    {
      slug: "new-drone",
@@ -340,7 +334,8 @@ Aircraft profiles displayed on `/our-drones` are configured in `src/app/our-dron
      ],
    },
    ```
-4. **Verify Interactive Carousel & Modal:**
+
+4. **Verify Interactive Carousel & Modal:**  
    Run `pnpm dev` and visit `/our-drones` to verify the 3D cover carousel, specs modal, and site-wide search indexing.
 
 ### D. Managing Newsletters & WebP Asset Generation
@@ -349,18 +344,20 @@ Newsletters are rendered on `/newsletter` using high-performance **WebP** page i
 
 #### Adding a New Newsletter (Step-by-step):
 
-1. **Place PDF in `public/newsletters/pdfs/`:**Save the new PDF document in `public/newsletters/pdfs/` (e.g. `public/newsletters/pdfs/newsletter-6.pdf`).
-2. **Run Asset Generation Script:**Execute the automated converter script:
+1. **Place PDF in `public/newsletters/pdfs/`:**  
+   Save the new PDF document in `public/newsletters/pdfs/` (e.g. `public/newsletters/pdfs/newsletter-6.pdf`).
 
+2. **Run Asset Generation Script:**  
+   Execute the automated converter script:
    ```bash
    pnpm generate-newsletters
    ```
-
    *(or `node scripts/generate-newsletter-assets.mjs`)*
 
    This script automatically scans `public/newsletters/pdfs/`, renders every page into compressed WebP format under `public/newsletters/pages/newsletter-6/page-[N].webp`, generates the cover thumbnail at `public/newsletters/covers/newsletter-6.webp`, and prints out the ready-to-use configuration snippet.
-3. **Update Newsletter Data File:**Open `src/app/newsletter/newsletter-data.ts` and add the new item to the `newsletters` array (keep ordered newest first):
 
+3. **Update Newsletter Data File:**  
+   Open `src/app/newsletter/newsletter-data.ts` and add the new item to the `newsletters` array (keep ordered newest first):
    ```typescript
    {
      id: "newsletter-6",
@@ -374,21 +371,19 @@ Newsletters are rendered on `/newsletter` using high-performance **WebP** page i
      pages: buildPagePaths("newsletter-6", 12),
    },
    ```
-4. **Verify Local Build & Commit:**
+
+4. **Verify Local Build & Commit:**  
    Run `pnpm dev` and `pnpm build` to verify the new issue displays and downloads cleanly on `/newsletter`, then commit the PDF file in `public/newsletters/pdfs/`, generated WebP images, and `newsletter-data.ts`.
 
 ### E. Contact Form & Resend Integration
-
 The contact form submits data to the serverless route at `src/app/api/contact/route.ts`.
 
 #### Modifying Form Recipient Inbox:
-
 1. Update `CONTACT_TO_EMAIL` in the Environment Variables tab on Vercel (and `.env.local`).
 2. Trigger a redeploy.
 3. Submit a test message at `/contact-us` and confirm delivery.
 
 #### Modifying Form Sender:
-
 1. Log in to the Resend Dashboard.
 2. Navigate to **Domains** and add new domain (e.g., `monashuas.org`).
 3. Copy the supplied DNS records (TXT/MX/CNAME) and add them to advanced DNS settings on Namecheap.
@@ -397,33 +392,31 @@ The contact form submits data to the serverless route at `src/app/api/contact/ro
 6. Redeploy and test submission.
 
 #### Rotating Resend API Key:
-
 1. Generate a new key in the Resend Dashboard.
 2. Update `RESEND_API_KEY` in `.env.local` and the Environment Variables tab on Vercel.
 3. Redeploy and send a test contact enquiry.
 4. Revoke/delete the old key in Resend once confirmed.
 
 ### F. Content File Map
-
 Main site content is organised by route and modular data files:
 
-| Target Area                     | File Path / Location                                    |
-| :------------------------------ | :------------------------------------------------------ |
-| **Team Profiles Data**    | `src/app/our-team/data/team-data.ts`                  |
-| **Team Headshots Map**    | `src/app/our-team/data/portrait-assets.ts`            |
-| **Team Headshot Images**  | `public/images/headshots/`                            |
-| **Recruitment Data**      | `src/app/recruitment/recruitment-data.ts`             |
-| **Main Navigation Bar**   | `src/global-components/layout/sidebar/navbar-data.ts` |
-| **Footer & Social Links** | `src/global-components/layout/footer.tsx`             |
-| **Homepage Quick-Nav**    | `src/app/home/data/explore-panels.ts`                 |
-| **Drone Fleet Data**      | `src/app/our-drones/drone-data.ts`                    |
-| **Sponsors Data**         | `src/app/our-sponsors/sponsor-page-data.ts`           |
-| **Newsletter Data**       | `src/app/newsletter/newsletter-data.ts`               |
-| **Newsletter Generator**  | `scripts/generate-newsletter-assets.mjs`              |
-| **Section Pages Data**    | `src/app/sections/section-data.ts`                    |
-| **SUAS 2026 Timeline**    | `src/app/suas-2026-team/timeline-data.ts`             |
-| **SUAS 2026 Projects**    | `src/app/suas-2026-team/projects/project-data.ts`     |
-| **Static Assets / Media** | `public/` (Images, Videos, Logos, 3D Models)          |
+| Target Area | File Path / Location |
+| :--- | :--- |
+| **Team Profiles Data** | `src/app/our-team/data/team-data.ts` |
+| **Team Headshots Map** | `src/app/our-team/data/portrait-assets.ts` |
+| **Team Headshot Images** | `public/images/headshots/` |
+| **Recruitment Data** | `src/app/recruitment/recruitment-data.ts` |
+| **Main Navigation Bar** | `src/global-components/layout/sidebar/navbar-data.ts` |
+| **Footer & Social Links** | `src/global-components/layout/footer.tsx` |
+| **Homepage Quick-Nav** | `src/app/home/data/explore-panels.ts` |
+| **Drone Fleet Data** | `src/app/our-drones/drone-data.ts` |
+| **Sponsors Data** | `src/app/our-sponsors/sponsor-page-data.ts` |
+| **Newsletter Data** | `src/app/newsletter/newsletter-data.ts` |
+| **Newsletter Generator** | `scripts/generate-newsletter-assets.mjs` |
+| **Section Pages Data** | `src/app/sections/section-data.ts` |
+| **SUAS 2026 Timeline** | `src/app/suas-2026-team/timeline-data.ts` |
+| **SUAS 2026 Projects** | `src/app/suas-2026-team/projects/project-data.ts` |
+| **Static Assets / Media** | `public/` (Images, Videos, Logos, 3D Models) |
 
 *Note: Maintain consistent asset file names in `public/`. If a media filename changes, update all code references accordingly.*
 
@@ -431,12 +424,12 @@ Main site content is organised by route and modular data files:
 
 ## 10. Troubleshooting Guide
 
-| Issue / Error Message                           | Probable Cause                                                                  | Corrective Action                                                                                                                       |
-| :---------------------------------------------- | :------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------- |
-| **"Contact Form Is Not Configured"**      | Missing environment variables in deployment environment.                        | Check `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, and `CONTACT_FROM_EMAIL` in Vercel settings; redeploy.                                |
-| **"Message Failed To Send"**              | Revoked API key, unverified sender domain, or disallowed sender email.          | Verify Resend API key status, verify `monashuas.org` domain status in Resend, and check server logs for `/api/contact`.             |
-| **Production Did Not Update After Merge** | Failed build, missing production environment variables, or wrong target branch. | Inspect deployment logs in Vercel dashboard to verify if build passed and target branch is correct.                                     |
-| **Image/Media Fails to Load**             | Missing asset, incorrect file path, or broken reference.                        | Ensure asset is stored in `public/`, reference path starts with `/`, filename casing matches exactly, and file format is supported. |
+| Issue / Error Message | Probable Cause | Corrective Action |
+| :--- | :--- | :--- |
+| **"Contact Form Is Not Configured"** | Missing environment variables in deployment environment. | Check `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, and `CONTACT_FROM_EMAIL` in Vercel settings; redeploy. |
+| **"Message Failed To Send"** | Revoked API key, unverified sender domain, or disallowed sender email. | Verify Resend API key status, verify `monashuas.org` domain status in Resend, and check server logs for `/api/contact`. |
+| **Production Did Not Update After Merge** | Failed build, missing production environment variables, or wrong target branch. | Inspect deployment logs in Vercel dashboard to verify if build passed and target branch is correct. |
+| **Image/Media Fails to Load** | Missing asset, incorrect file path, or broken reference. | Ensure asset is stored in `public/`, reference path starts with `/`, filename casing matches exactly, and file format is supported. |
 
 ---
 
