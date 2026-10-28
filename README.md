@@ -2,7 +2,7 @@
 
 **Repository:** [MonashUAS/muas-website](https://github.com/MonashUAS/muas-website)  
 **Current Website Lead:** Claire Zhang 
-**Last Updated:** 27 October 2026  
+**Last Updated:** 27 October 2026
 
 ---
 
@@ -188,13 +188,54 @@ To access and manage DNS settings:
 To protect the production environment, all routine and emergency updates must follow this standard workflow:
 
 ```
-[1. Request & Deadline] ➔ [2. Fetch main Branch] ➔ [3. Create Feature Branch] ➔ [4. Implement Change]
-                                                                                       │
-                                                                                       ▼
-[8. Review Pull Request] ◄── [7. Open Pull Request] ◄── [6. Review Preview Build] ◄── [5. Run Lint, Build & Push]
-         │
-         ▼
-[9. Merge to main] ➔ [10. Verify Live Deployment on Vercel]
+┌─────────────────────────────────────────┐
+│ 1. Request & Deadline                   │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│ 2. Fetch latest main branch             │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│ 3. Create Feature Branch                │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│ 4. Implement Change                     │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│ 5. Run Local Lint, Build & Push         │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│ 6. Review Preview Build on Vercel       │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│ 7. Open Pull Request                    │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│ 8. Review Pull Request Checklist        │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│ 9. Merge to main                        │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│ 10. Verify Live Deployment on Vercel    │
+└─────────────────────────────────────────┘
 ```
 
 ### Workflow Steps & Guidelines
